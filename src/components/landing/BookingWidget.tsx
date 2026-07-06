@@ -51,6 +51,8 @@ export function BookingWidget({
   const runGetCatalog = useServerFn(getCatalog);
   const runEstimate = useServerFn(estimateFare);
   const runCreate = useServerFn(createBooking);
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [cities, setCities] = useState<{ name: string }[]>([]);
   const [tripType, setTripType] = useState<TripType>("one-way");
