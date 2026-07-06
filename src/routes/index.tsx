@@ -15,6 +15,7 @@ import {
   FAQ,
   Footer,
 } from "@/components/landing/Sections";
+import { AuthLink } from "@/components/AuthLink";
 
 export const Route = createFileRoute("/")({
   component: Landing,
