@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "@tanstack/react-router";
+import { useAuth } from "@/hooks/useAuth";
 
 type Estimate = {
   vehicle_id: string;
