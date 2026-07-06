@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "ONE WAY CAB" },
+      { name: "description", content: "Aura Transit is a premium outstation cab booking platform offering seamless travel experiences." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "ONE WAY CAB" },
+      { property: "og:description", content: "Aura Transit is a premium outstation cab booking platform offering seamless travel experiences." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "ONE WAY CAB" },
+      { name: "twitter:description", content: "Aura Transit is a premium outstation cab booking platform offering seamless travel experiences." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db677a9f-0e05-49d3-a55e-5ff360f4c45f/id-preview-614ac969--152ec04e-fb58-4dbe-b4ce-d724cbfe7d4b.lovable.app-1783002700397.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db677a9f-0e05-49d3-a55e-5ff360f4c45f/id-preview-614ac969--152ec04e-fb58-4dbe-b4ce-d724cbfe7d4b.lovable.app-1783002700397.png" },
     ],
     links: [
       {
