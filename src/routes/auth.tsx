@@ -80,7 +80,7 @@ function AuthPage() {
         type: "email",
       });
       if (err) throw err;
-      navigate({ to: "/dashboard" });
+      navigate({ to: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid or expired code.");
     } finally {
@@ -96,7 +96,7 @@ function AuthPage() {
         redirect_uri: window.location.origin,
       });
       if (result.error) throw result.error;
-      if (!result.redirected) navigate({ to: "/dashboard" });
+      if (!result.redirected) navigate({ to: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google sign-in failed.");
       setBusy(false);
