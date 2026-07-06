@@ -65,9 +65,9 @@ export function Nav() {
                 <LogIn className="h-4 w-4" /> Sign in
               </Link>
             ))}
-            <Link to="/book" className="rounded-full btn-gold px-5 py-2 text-sm font-semibold">
+            <AuthLink to="/book" className="rounded-full btn-gold px-5 py-2 text-sm font-semibold">
               Book now
-            </Link>
+            </AuthLink>
           </div>
 
           <button
