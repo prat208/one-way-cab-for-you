@@ -108,6 +108,10 @@ export function BookingWidget({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    if (!user) {
+      navigate({ to: "/auth", search: { redirect: "/book" } });
+      return;
+    }
     if (!name.trim() || name.trim().length < 2) return setError("Please enter your name.");
     if (!/^[+0-9\s-]{7,20}$/.test(phone)) return setError("Please enter a valid phone number.");
     if (tripType !== "local" && pickup === drop) return setError("Pickup and destination must differ.");
