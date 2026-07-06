@@ -11,12 +11,17 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as BookRouteImport } from './routes/book'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminSignupRouteImport } from './routes/admin-signup'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrackRefRouteImport } from './routes/track.$ref'
+import { Route as DriverSignupRouteImport } from './routes/driver.signup'
 import { Route as CitySlugRouteImport } from './routes/city.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomerRouteImport } from './routes/_authenticated/customer'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const BookRoute = BookRouteImport.update({
   id: '/book',
@@ -28,6 +33,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminSignupRoute = AdminSignupRouteImport.update({
+  id: '/admin-signup',
+  path: '/admin-signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -35,6 +45,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrackRefRoute = TrackRefRouteImport.update({
+  id: '/track/$ref',
+  path: '/track/$ref',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DriverSignupRoute = DriverSignupRouteImport.update({
+  id: '/driver/signup',
+  path: '/driver/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CitySlugRoute = CitySlugRouteImport.update({
@@ -47,6 +67,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDriverRoute = AuthenticatedDriverRouteImport.update({
+  id: '/driver',
+  path: '/driver',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -57,74 +82,112 @@ const AuthenticatedCustomerRoute = AuthenticatedCustomerRouteImport.update({
   path: '/customer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin-signup': typeof AdminSignupRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/customer': typeof AuthenticatedCustomerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/driver': typeof AuthenticatedDriverRoute
   '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
+  '/driver/signup': typeof DriverSignupRoute
+  '/track/$ref': typeof TrackRefRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin-signup': typeof AdminSignupRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/customer': typeof AuthenticatedCustomerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/driver': typeof AuthenticatedDriverRoute
   '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
+  '/driver/signup': typeof DriverSignupRoute
+  '/track/$ref': typeof TrackRefRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/admin-signup': typeof AdminSignupRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/customer': typeof AuthenticatedCustomerRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
+  '/driver/signup': typeof DriverSignupRoute
+  '/track/$ref': typeof TrackRefRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin-signup'
     | '/auth'
     | '/book'
+    | '/admin'
     | '/customer'
     | '/dashboard'
+    | '/driver'
     | '/api/chat'
     | '/city/$slug'
+    | '/driver/signup'
+    | '/track/$ref'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin-signup'
     | '/auth'
     | '/book'
+    | '/admin'
     | '/customer'
     | '/dashboard'
+    | '/driver'
     | '/api/chat'
     | '/city/$slug'
+    | '/driver/signup'
+    | '/track/$ref'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/admin-signup'
     | '/auth'
     | '/book'
+    | '/_authenticated/admin'
     | '/_authenticated/customer'
     | '/_authenticated/dashboard'
+    | '/_authenticated/driver'
     | '/api/chat'
     | '/city/$slug'
+    | '/driver/signup'
+    | '/track/$ref'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AdminSignupRoute: typeof AdminSignupRoute
   AuthRoute: typeof AuthRoute
   BookRoute: typeof BookRoute
   ApiChatRoute: typeof ApiChatRoute
   CitySlugRoute: typeof CitySlugRoute
+  DriverSignupRoute: typeof DriverSignupRoute
+  TrackRefRoute: typeof TrackRefRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -143,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin-signup': {
+      id: '/admin-signup'
+      path: '/admin-signup'
+      fullPath: '/admin-signup'
+      preLoaderRoute: typeof AdminSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -155,6 +225,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/track/$ref': {
+      id: '/track/$ref'
+      path: '/track/$ref'
+      fullPath: '/track/$ref'
+      preLoaderRoute: typeof TrackRefRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/driver/signup': {
+      id: '/driver/signup'
+      path: '/driver/signup'
+      fullPath: '/driver/signup'
+      preLoaderRoute: typeof DriverSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/city/$slug': {
@@ -171,6 +255,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/driver': {
+      id: '/_authenticated/driver'
+      path: '/driver'
+      fullPath: '/driver'
+      preLoaderRoute: typeof AuthenticatedDriverRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -185,17 +276,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCustomerRoute: typeof AuthenticatedCustomerRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCustomerRoute: AuthenticatedCustomerRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDriverRoute: AuthenticatedDriverRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -204,10 +306,13 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AdminSignupRoute: AdminSignupRoute,
   AuthRoute: AuthRoute,
   BookRoute: BookRoute,
   ApiChatRoute: ApiChatRoute,
   CitySlugRoute: CitySlugRoute,
+  DriverSignupRoute: DriverSignupRoute,
+  TrackRefRoute: TrackRefRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

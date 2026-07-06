@@ -12,6 +12,7 @@ export function Nav() {
     { href: "/#cities", label: "Cities" },
     { href: "/#routes", label: "Routes" },
     { href: "/#faq", label: "FAQ" },
+    { href: "/driver/signup", label: "Drive with us" },
   ];
   return (
     <header className="fixed inset-x-0 top-0 z-50">

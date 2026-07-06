@@ -36,8 +36,15 @@ function Dashboard() {
 
   useEffect(() => {
     if (loading || !user) return;
+    if (isAdmin) {
+      navigate({ to: "/admin", replace: true });
+      return;
+    }
+    if (isDriver) {
+      navigate({ to: "/driver", replace: true });
+      return;
+    }
     setBusy(true);
-    // RLS handles filtering: admin sees all, driver sees assigned, customer sees own
     supabase
       .from("bookings")
       .select("*")
@@ -47,7 +54,7 @@ function Dashboard() {
         setBookings((data ?? []) as Booking[]);
         setBusy(false);
       });
-  }, [loading, user, activeRole]);
+  }, [loading, user, activeRole, isAdmin, isDriver, navigate]);
 
   async function handleSignOut() {
     await signOut();

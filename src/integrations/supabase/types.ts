@@ -21,11 +21,13 @@ export type Database = {
           customer_name: string
           distance_km: number | null
           driver_id: string | null
+          driver_vehicle_id: string | null
           drop_city: string
           email: string | null
           estimated_fare: number | null
           id: string
           notes: string | null
+          payment_status: string
           phone: string
           pickup_city: string
           pickup_date: string
@@ -42,11 +44,13 @@ export type Database = {
           customer_name: string
           distance_km?: number | null
           driver_id?: string | null
+          driver_vehicle_id?: string | null
           drop_city: string
           email?: string | null
           estimated_fare?: number | null
           id?: string
           notes?: string | null
+          payment_status?: string
           phone: string
           pickup_city: string
           pickup_date: string
@@ -63,11 +67,13 @@ export type Database = {
           customer_name?: string
           distance_km?: number | null
           driver_id?: string | null
+          driver_vehicle_id?: string | null
           drop_city?: string
           email?: string | null
           estimated_fare?: number | null
           id?: string
           notes?: string | null
+          payment_status?: string
           phone?: string
           pickup_city?: string
           pickup_date?: string
@@ -79,6 +85,13 @@ export type Database = {
           vehicle_name?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "bookings_driver_vehicle_id_fkey"
+            columns: ["driver_vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "driver_vehicles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "bookings_vehicle_id_fkey"
             columns: ["vehicle_id"]
@@ -112,11 +125,134 @@ export type Database = {
         }
         Relationships: []
       }
+      driver_vehicles: {
+        Row: {
+          category: string
+          color: string | null
+          created_at: string
+          driver_id: string
+          id: string
+          insurance_url: string | null
+          license_number: string | null
+          make: string
+          model: string
+          notes: string | null
+          plate: string
+          rc_url: string | null
+          seats: number
+          status: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          category?: string
+          color?: string | null
+          created_at?: string
+          driver_id: string
+          id?: string
+          insurance_url?: string | null
+          license_number?: string | null
+          make: string
+          model: string
+          notes?: string | null
+          plate: string
+          rc_url?: string | null
+          seats?: number
+          status?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          category?: string
+          color?: string | null
+          created_at?: string
+          driver_id?: string
+          id?: string
+          insurance_url?: string | null
+          license_number?: string | null
+          make?: string
+          model?: string
+          notes?: string | null
+          plate?: string
+          rc_url?: string | null
+          seats?: number
+          status?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      guest_booking_throttle: {
+        Row: {
+          created_at: string
+          id: string
+          ip: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip?: string
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          currency: string
+          id: string
+          method: string
+          provider_ref: string | null
+          receipt_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string
+          provider_ref?: string | null
+          receipt_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          method?: string
+          provider_ref?: string | null
+          receipt_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
           full_name: string | null
           id: string
+          is_online: boolean
           phone: string | null
           updated_at: string
         }
@@ -124,6 +260,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id: string
+          is_online?: boolean
           phone?: string | null
           updated_at?: string
         }
@@ -131,6 +268,7 @@ export type Database = {
           created_at?: string
           full_name?: string | null
           id?: string
+          is_online?: boolean
           phone?: string | null
           updated_at?: string
         }
