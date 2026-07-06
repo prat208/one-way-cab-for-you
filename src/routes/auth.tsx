@@ -45,7 +45,7 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: redirectTo });
+      if (data.session) navigate({ href: redirectTo });
     });
   }, [navigate, redirectTo]);
 
@@ -80,7 +80,7 @@ function AuthPage() {
         type: "email",
       });
       if (err) throw err;
-      navigate({ to: redirectTo });
+      navigate({ href: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid or expired code.");
     } finally {
@@ -96,7 +96,7 @@ function AuthPage() {
         redirect_uri: window.location.origin,
       });
       if (result.error) throw result.error;
-      if (!result.redirected) navigate({ to: redirectTo });
+      if (!result.redirected) navigate({ href: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google sign-in failed.");
       setBusy(false);
