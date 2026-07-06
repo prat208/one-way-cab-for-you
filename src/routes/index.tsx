@@ -79,15 +79,15 @@ function Landing() {
               transition={{ delay: 0.45 }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <a href="#book" className="rounded-full btn-gold px-6 py-3 text-sm font-semibold">
+              <AuthLink to="/book" className="rounded-full btn-gold px-6 py-3 text-sm font-semibold">
                 Get instant fare
-              </a>
-              <a
-                href="tel:+919999999999"
+              </AuthLink>
+              <AuthLink
+                to="/book"
                 className="rounded-full glass px-6 py-3 text-sm font-medium hover:bg-white/10"
               >
                 Talk to us · 24×7
-              </a>
+              </AuthLink>
             </motion.div>
 
             <motion.div
