@@ -34,6 +34,8 @@ type Step = "email" | "code";
 
 function AuthPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const redirectTo = sanitizeRedirect(search.redirect);
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -43,9 +45,9 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
+      if (data.session) navigate({ to: redirectTo });
     });
-  }, [navigate]);
+  }, [navigate, redirectTo]);
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
@@ -55,7 +57,7 @@ function AuthPage() {
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/dashboard` },
+        options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}${redirectTo}` },
       });
       if (err) throw err;
       setStep("code");
