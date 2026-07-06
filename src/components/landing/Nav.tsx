@@ -91,13 +91,13 @@ export function Nav() {
                 {l.label}
               </a>
             ))}
-            <Link
+            <AuthLink
               to="/book"
               onClick={() => setOpen(false)}
               className="mt-1 rounded-lg btn-gold px-3 py-2 text-center text-sm font-semibold"
             >
               Book now
-            </Link>
+            </AuthLink>
           </div>
         )}
       </div>
