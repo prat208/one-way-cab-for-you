@@ -1,12 +1,25 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2, Mail, KeyRound, ArrowRight } from "lucide-react";
 
+const searchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
+function sanitizeRedirect(raw: string | undefined): string {
+  if (!raw) return "/dashboard";
+  // Only allow same-origin absolute paths
+  if (!raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
       { title: "Sign in — ONE WAY CAB" },
@@ -21,6 +34,8 @@ type Step = "email" | "code";
 
 function AuthPage() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
+  const redirectTo = sanitizeRedirect(search.redirect);
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -30,9 +45,9 @@ function AuthPage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/dashboard" });
+      if (data.session) navigate({ href: redirectTo });
     });
-  }, [navigate]);
+  }, [navigate, redirectTo]);
 
   async function sendCode(e: React.FormEvent) {
     e.preventDefault();
@@ -42,7 +57,7 @@ function AuthPage() {
     try {
       const { error: err } = await supabase.auth.signInWithOtp({
         email: email.trim(),
-        options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}/dashboard` },
+        options: { shouldCreateUser: true, emailRedirectTo: `${window.location.origin}${redirectTo}` },
       });
       if (err) throw err;
       setStep("code");
@@ -65,7 +80,7 @@ function AuthPage() {
         type: "email",
       });
       if (err) throw err;
-      navigate({ to: "/dashboard" });
+      navigate({ href: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Invalid or expired code.");
     } finally {
@@ -81,7 +96,7 @@ function AuthPage() {
         redirect_uri: window.location.origin,
       });
       if (result.error) throw result.error;
-      if (!result.redirected) navigate({ to: "/dashboard" });
+      if (!result.redirected) navigate({ href: redirectTo });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Google sign-in failed.");
       setBusy(false);

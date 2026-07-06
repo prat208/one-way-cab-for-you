@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, Phone, LayoutDashboard, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthLink } from "@/components/AuthLink";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -64,9 +65,9 @@ export function Nav() {
                 <LogIn className="h-4 w-4" /> Sign in
               </Link>
             ))}
-            <Link to="/book" className="rounded-full btn-gold px-5 py-2 text-sm font-semibold">
+            <AuthLink to="/book" className="rounded-full btn-gold px-5 py-2 text-sm font-semibold">
               Book now
-            </Link>
+            </AuthLink>
           </div>
 
           <button
@@ -90,13 +91,13 @@ export function Nav() {
                 {l.label}
               </a>
             ))}
-            <Link
+            <AuthLink
               to="/book"
               onClick={() => setOpen(false)}
               className="mt-1 rounded-lg btn-gold px-3 py-2 text-center text-sm font-semibold"
             >
               Book now
-            </Link>
+            </AuthLink>
           </div>
         )}
       </div>
