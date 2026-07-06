@@ -16,6 +16,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import suvImg from "@/assets/hero-suv.png";
+import { AuthLink } from "@/components/AuthLink";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
