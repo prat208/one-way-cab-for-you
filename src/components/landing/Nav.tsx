@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Menu, X, Phone, LayoutDashboard, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { AuthLink } from "@/components/AuthLink";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
