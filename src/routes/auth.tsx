@@ -1,12 +1,25 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2, Mail, KeyRound, ArrowRight } from "lucide-react";
 
+const searchSchema = z.object({
+  redirect: z.string().optional(),
+});
+
+function sanitizeRedirect(raw: string | undefined): string {
+  if (!raw) return "/dashboard";
+  // Only allow same-origin absolute paths
+  if (!raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
 export const Route = createFileRoute("/auth")({
   ssr: false,
+  validateSearch: searchSchema,
   head: () => ({
     meta: [
       { title: "Sign in — ONE WAY CAB" },
