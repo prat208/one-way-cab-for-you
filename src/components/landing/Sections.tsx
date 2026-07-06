@@ -193,25 +193,28 @@ export function PopularRoutes() {
         <SectionHeader eyebrow="Popular routes" title={<>Most-loved <span className="text-gradient-gold">outstation trips</span>.</>} sub="Fares below are indicative sedan one-way rates." />
         <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {routes.map((r, i) => (
-            <motion.a
+            <motion.div
               key={`${r.from}-${r.to}`}
-              href="#book"
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: (i % 4) * 0.06 }}
-              className="glass group flex items-center justify-between rounded-2xl p-4 transition-transform hover:-translate-y-0.5"
             >
-              <div>
-                <div className="text-sm text-muted-foreground">{r.from}</div>
-                <div className="flex items-center gap-1.5 text-base font-semibold">
-                  <span>→</span> {r.to}
+              <AuthLink
+                to="/book"
+                className="glass group flex items-center justify-between rounded-2xl p-4 transition-transform hover:-translate-y-0.5"
+              >
+                <div>
+                  <div className="text-sm text-muted-foreground">{r.from}</div>
+                  <div className="flex items-center gap-1.5 text-base font-semibold">
+                    <span>→</span> {r.to}
+                  </div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">{r.km} km · ~{Math.round(r.km / 55)}h</div>
                 </div>
-                <div className="mt-1 text-[11px] text-muted-foreground">{r.km} km · ~{Math.round(r.km / 55)}h</div>
-              </div>
-              <div className="text-right">
-                <div className="text-xs text-muted-foreground">from</div>
-                <div className="text-base font-bold text-gradient-gold">₹{r.price.toLocaleString("en-IN")}</div>
-              </div>
-            </motion.a>
+                <div className="text-right">
+                  <div className="text-xs text-muted-foreground">from</div>
+                  <div className="text-base font-bold text-gradient-gold">₹{r.price.toLocaleString("en-IN")}</div>
+                </div>
+              </AuthLink>
+            </motion.div>
           ))}
         </div>
       </div>
