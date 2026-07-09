@@ -125,6 +125,41 @@ export type Database = {
         }
         Relationships: []
       }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          discount_pct: number
+          id: string
+          lead_id: string
+          valid_until: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          discount_pct?: number
+          id?: string
+          lead_id: string
+          valid_until?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          discount_pct?: number
+          id?: string
+          lead_id?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       driver_vehicles: {
         Row: {
           category: string
@@ -197,6 +232,108 @@ export type Database = {
           created_at?: string
           id?: string
           ip?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          assigned_to: string | null
+          budget_range: string | null
+          created_at: string
+          destination: string
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          origin_city: string
+          phone: string
+          status: string
+          travel_date: string
+          travelers: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          budget_range?: string | null
+          created_at?: string
+          destination: string
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          origin_city: string
+          phone: string
+          status?: string
+          travel_date: string
+          travelers?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          budget_range?: string | null
+          created_at?: string
+          destination?: string
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          origin_city?: string
+          phone?: string
+          status?: string
+          travel_date?: string
+          travelers?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      packages: {
+        Row: {
+          active: boolean
+          created_at: string
+          destination: string
+          duration_days: number
+          hero_image: string | null
+          highlights: string[]
+          id: string
+          itinerary: Json
+          price_inr: number
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          destination: string
+          duration_days?: number
+          hero_image?: string | null
+          highlights?: string[]
+          id?: string
+          itinerary?: Json
+          price_inr?: number
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          destination?: string
+          duration_days?: number
+          hero_image?: string | null
+          highlights?: string[]
+          id?: string
+          itinerary?: Json
+          price_inr?: number
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
