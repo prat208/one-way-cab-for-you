@@ -1,97 +1,132 @@
-## What's already live
-Landing pages + city hero, booking wizard (guest inserts to `bookings`), OTP + Google auth, `_authenticated/dashboard` with role-aware list (admin/driver/customer), `_authenticated/customer` hub, AI chat, seeded cities / vehicles / routes, RLS + `has_role` + `handle_new_user` (defaults new users to `customer`).
 
-## What's missing to launch a real, admin-run cab platform
+# Add Travel Agency Lead-Gen — Layered on Existing Cab Site
 
-### 1. Driver + admin onboarding
-- **Driver signup page** (`/driver/signup`) — form collects name, phone, license number, plus car details. Creates auth user with `raw_user_meta_data.requested_role = 'driver'`, then on first sign-in inserts a `driver_vehicles` row (status `pending_approval`).
-- **Hidden admin signup** (`/admin-signup?key=…`) — reads `ADMIN_SIGNUP_PASSCODE` env var via a `createServerFn`, verifies passcode, then grants `admin` role to the current signed-in user.
-- Keep `/auth` for customers unchanged (OTP + Google).
+Keep every existing feature (cab booking, driver console, admin, tracking, chat). Add a parallel **Travel Packages** experience with locked prices, mandatory lead capture, auto-generated coupons, WhatsApp notifications, and an admin leads dashboard. Nothing existing is removed.
 
-### 2. Fleet model (driver-owned + admin fleet)
-New table `driver_vehicles` (make, model, year, plate, seats, category, color, RC/insurance URLs, `driver_id`, `status: pending|approved|rejected|inactive`, `notes`). Keeps existing `vehicles` catalog for admin-priced classes. Booking wizard shows: admin classes for pricing quote; assignment picks either an admin-fleet vehicle or an approved driver's car.
-
-### 3. Admin console (`/_authenticated/admin/*`)
-Tabbed pages:
-- **Bookings** – filter by status/date, assign driver, change status, print voucher.
-- **Drivers** – list of drivers + their `driver_vehicles`, approve / reject / suspend.
-- **Fleet** – CRUD on admin `vehicles` (price/km, base fare, active).
-- **Cities & Routes** – CRUD on `cities` and `routes` with map of pricing.
-- **Users** – grant/revoke admin or driver role (uses `user_roles` table).
-All gated by `has_role(uid,'admin')` in a `_authenticated/_admin` layout with `beforeLoad` redirect.
-
-### 4. Driver console (`/_authenticated/driver/*`)
-- **My cabs** – submit / edit vehicle, see approval status.
-- **My trips** – trips assigned to `driver_id`, mark on-the-way / picked-up / completed.
-- **Availability toggle** – simple online/offline flag on the driver profile.
-
-### 5. Email notifications (Lovable Emails)
-On booking insert and status change:
-- customer: booking confirmed / driver assigned / status update
-- admin: new booking alert
-- driver: trip assigned
-Rendered with `@react-email/components`, enqueued via `enqueue_email`. In-app toast + dashboard badge covers the rest.
-
-### 6. Payments (accept everything)
-Wire Lovable's built-in Stripe payments. Add a `payments` table (booking_id, amount, method, status, provider_ref). Booking wizard end-step offers: **Pay full online**, **Pay 20% deposit online**, or **Pay driver after ride** (cash/UPI). Deposit + full flows create a Stripe Checkout session; webhook at `/api/public/webhooks/stripe` (HMAC-verified) updates `payments` + `bookings.payment_status`.
-
-### 7. Booking flow polish
-- Server-side fare calc via existing `booking.functions.ts` (already there) — make it authoritative (don't trust client fare).
-- Public route `/track/:ref` uses existing `lookup_booking` RPC so customers can track without login.
-- SMS-lite fallback: booking-ref pill + copy button after submission.
-- Rate-limit guest inserts: require reCAPTCHA-free simple check — max 5 bookings/hour per IP via a `guest_booking_throttle` table + trigger.
-
-### 8. SEO & launch hygiene
-- Real `head()` per city / route.
-- `robots.txt` + `sitemap.xml` server routes.
-- Set app-wide title & description in `__root.tsx` (remove "Lovable App" defaults).
-- 404 + error boundaries on every loader route.
-- Security scan → resolve criticals → publish.
-
-### 9. Secrets to add
-- `ADMIN_SIGNUP_PASSCODE` (generated)
-- `SESSION_SECRET` (generated, for future signed cookies)
-- Stripe keys handled by `enable_stripe_payments` tool
-- Lovable Emails handled by `email_domain--setup_email_infra`
-
-## Technical outline
+## Funnel
 
 ```text
-migrations/
-  add driver_vehicles, payments, guest_booking_throttle
-  add trigger: enforce max 5 guest bookings/hour/ip
-  add RLS policies (driver sees own vehicle+trips; admin sees all)
-  add GRANTs for authenticated + service_role
-
-src/routes/
-  driver.signup.tsx                  (public)
-  admin-signup.tsx                   (public, passcode-gated server fn)
-  track.$ref.tsx                     (public, uses lookup_booking)
-  _authenticated/driver/
-    route.tsx  (gate: has_role driver)
-    index.tsx  (trips)
-    vehicle.tsx (register/edit cab)
-  _authenticated/_admin/
-    route.tsx  (gate: has_role admin)
-    index.tsx  bookings.tsx drivers.tsx fleet.tsx routes.tsx users.tsx
-  api/public/webhooks/stripe.ts
-
-src/lib/
-  admin.functions.ts  driver.functions.ts  payments.functions.ts
-  emails/            (react-email templates)
+Landing (existing hero + NEW "Tour Packages" section with BLURRED prices)
+   │
+   └─ Click any package / "Unlock prices" CTA
+        │
+        ├─ Not signed in → /auth  (existing OTP email + Google; unchanged)
+        │
+        └─ Signed in but no lead yet → /lead (mandatory form)
+               │
+               ▼
+          Submit → server generates unique coupon → redirect /packages
+               │
+               ├─ Prices revealed
+               ├─ Coupon card (SVG) with Copy · Download PNG · WhatsApp share · Email share
+               └─ Server: Twilio WhatsApp DM to +919403001415 with lead details
+               │
+               ▼
+     Admin: /_authenticated/admin → "Leads" tab
+        search · filter · status · view coupon · Export to Excel (CSV)
+        + "Packages" tab (CRUD)
 ```
 
+Existing `/book`, `/driver/*`, `/track/*`, admin bookings — all untouched. A user can be both a cab customer and a package lead; they're stored in separate tables.
+
+## Database (new migration only)
+
+- `packages` — title, slug, destination, duration_days, price_inr, hero_image, highlights[], itinerary(jsonb), active, sort_order
+- `leads` — user_id (fk auth.users), name, phone, email, origin_city, destination, travel_date, travelers, budget_range, notes, status(new|contacted|converted|lost), assigned_to, created_at, updated_at
+- `coupons` — lead_id (unique), code (unique, `TRIP-XXXX-XXXX`), discount_pct, valid_until, created_at
+
+RLS + GRANTs (in same migration):
+- `packages`: public SELECT where `active`; admin ALL
+- `leads`: user reads/inserts own; admin ALL
+- `coupons`: user reads own via lead join; admin ALL
+
+## Server functions
+
+- `src/lib/leads.functions.ts`
+  - `submitLead(data)` — auth-required; zod-validated; insert lead, generate coupon (`TRIP-` + 8 base32 chars from `crypto.randomUUID`), insert coupon, fire `notifyAdminWhatsApp` inside handler (best-effort, non-blocking), return `{lead, coupon}`
+  - `getMyLead()` — returns current user's lead + coupon or null (used to gate reveal)
+  - `listLeads(filters)` — admin only; search + status + date range + destination
+  - `updateLeadStatus(id, status)` — admin only
+  - `exportLeadsCsv()` — admin only; returns CSV text; opens in Excel natively
+- `src/lib/packages.functions.ts`
+  - `listPackages()` — public; returns array WITHOUT `price_inr` when caller has no lead; WITH price when they do (server-side gate — client can't spoof)
+  - `upsertPackage`, `togglePackage`, `deletePackage` — admin only
+- `src/lib/notify.server.ts` (server-only) — Twilio WhatsApp send via connector gateway to `whatsapp:+919403001415`. Errors logged, never thrown into user flow.
+
+## Routes (new)
+
+- `src/routes/packages.tsx` — public page, price locked with 🔒 chip + "Unlock prices" CTA → AuthLink to `/lead`
+- `src/routes/_authenticated/lead.tsx` — mandatory form (name, phone, email, origin city, destination, travel date, travelers, budget range dropdown, notes). Zod client + server validation. On submit: call `submitLead` → navigate to `/packages?revealed=1`
+- `src/routes/_authenticated/coupon.tsx` — full-page coupon: SVG rendered inline (brand gradient, name, code, valid-until, watermark) + Copy · Download PNG (client `canvas` from SVG) · Share on WhatsApp (`wa.me?text=...` prefilled) · Email (mailto: prefilled)
+- `src/routes/_authenticated/admin.tsx` — add tabs shell: existing Bookings/Drivers/Fleet/Users + NEW **Leads**, **Packages**
+
+## Existing files touched (minimal)
+
+- `src/routes/index.tsx` — add a **"Tour Packages"** section between existing sections; shows package cards with 🔒 blurred prices for signed-out/no-lead users
+- `src/components/landing/Nav.tsx` — add "Packages" link
+- `src/routes/_authenticated/dashboard.tsx` — if lead exists, add "Your coupon" card linking to `/coupon`
+- No changes to auth, cab booking, driver, tracking, chat.
+
+## WhatsApp — Twilio (user chose Twilio API)
+
+Twilio connector via connector gateway. Requires:
+1. Link Twilio connector → gives `TWILIO_API_KEY` env var
+2. Enable **WhatsApp sandbox** (works instantly, sender `whatsapp:+14155238886`) OR use a Meta-approved business sender (3–7 day approval)
+3. Save Twilio "from" number to secret `TWILIO_WHATSAPP_FROM`
+4. Admin target hard-set to `whatsapp:+919403001415` in secret `ADMIN_WHATSAPP_TO` (editable later)
+
+Admin message template:
+```
+🆕 New Travel Lead
+{name}  ·  {phone}
+✉ {email}
+📍 {origin_city} → {destination}
+🗓 {travel_date}  ·  👥 {travelers}
+💰 {budget_range}
+Coupon: {code}
+Notes: {notes}
+```
+
+Customer-side WhatsApp share is `wa.me` deep link — no API cost, no approval needed.
+
+## Coupon image
+
+Server returns lead+coupon; client renders an SVG coupon card (Outfit display font, brand gradient, code in monospace, valid-until, small watermark). "Download PNG" uses browser `<canvas>` to rasterize the SVG. "Send via WhatsApp" opens `wa.me` with prefilled message + coupon code. "Send via Email" opens `mailto:` prefilled. No native image libs, Worker-safe.
+
+## Admin — Leads tab
+
+Table columns: created · name · phone · email · origin → dest · date · travelers · budget · coupon · status. Controls: search box (name/phone/email), status dropdown, destination filter, date range, "Export to Excel" (downloads `leads.csv` from `exportLeadsCsv`). Row actions: view detail drawer, change status, copy coupon, "Resend WhatsApp" button.
+
+## SMS OTP note
+
+Existing `/auth` uses **email OTP + Google**. User asked for "mobile OTP or email verification". Enabling Supabase phone provider needs Twilio SMS credentials configured in Supabase Auth settings (separate from connector). **Turn 1 ships email OTP + Google** (already works). Once you're happy, say the word and I'll wire SMS-OTP in a follow-up.
+
+## Secrets & prerequisites (build mode will handle)
+
+- Link **Twilio** connector → auto-provides `TWILIO_API_KEY`
+- `TWILIO_WHATSAPP_FROM` — you provide after Twilio linked (I'll prompt)
+- `ADMIN_WHATSAPP_TO` = `whatsapp:+919403001415` (set via `set_secret`, no interaction)
+- `LOVABLE_API_KEY` — already present
+
 ## Order of work
-1. Migration: `driver_vehicles`, `payments`, throttling, policies, GRANTs.
-2. Driver signup + driver console + admin approval UI.
-3. Admin console (bookings, drivers, fleet, users).
-4. Hidden admin signup with passcode.
-5. Lovable Emails setup + notification server functions.
-6. Stripe payments enablement + checkout + webhook.
-7. Public `/track/:ref`, SEO metadata, sitemap, 404s.
-8. Security scan, then publish.
+
+1. Migration: `packages`, `leads`, `coupons` + RLS + GRANTs + seed 8 sample packages
+2. Server fns: `leads.functions.ts`, `packages.functions.ts`, `notify.server.ts`
+3. Link Twilio connector + collect `TWILIO_WHATSAPP_FROM`
+4. Routes: `/packages`, `/_authenticated/lead`, `/_authenticated/coupon`
+5. Add Leads + Packages tabs to admin, wire CSV export
+6. Landing page: add Tour Packages section with lock/reveal state
+7. Nav + dashboard tweaks
+8. Typecheck → screenshot QA → publish
 
 ## Out of scope (say so, don't build)
-- WhatsApp/SMS (skipped per your answer).
-- Native mobile app.
-- Real-time driver GPS tracking (needs a mapping provider + realtime channel — happy to add later).
+
+- SMS-OTP login (Supabase phone provider) — email OTP + Google today
+- Automatic coupon redemption / discount enforcement on cab bookings — code is a reference for the sales team to honour manually
+- Payments — leads only, no checkout
+
+## Confirm before I build
+
+1. **Twilio sandbox for now?** (works instantly; each admin phone must once send `join <sandbox-word>` from WhatsApp — I'll walk you through). Or wait for business sender.
+2. **Coupon discount** — should the code carry a stated `discount_pct` (e.g. 10%) or just be a reference tag? I'll default to 10% off if unspecified.
+3. **Landing placement** — new Tour Packages section between "Popular Routes" and existing sections is fine? Or as its own top-level `/packages` page linked from nav only?
