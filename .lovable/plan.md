@@ -1,132 +1,164 @@
 
-# Add Travel Agency Lead-Gen — Layered on Existing Cab Site
+# Lead-First Cab Booking — Implementation Plan
 
-Keep every existing feature (cab booking, driver console, admin, tracking, chat). Add a parallel **Travel Packages** experience with locked prices, mandatory lead capture, auto-generated coupons, WhatsApp notifications, and an admin leads dashboard. Nothing existing is removed.
+Layer a lead-capture / coupon / CRM system on top of the existing cab site. **No redesign** — existing pages, hero, wizard, and styling stay exactly as they are. We only gate the fare view and add admin CRM screens.
 
-## Funnel
+---
+
+## 1. Customer flow (grafted onto existing site)
 
 ```text
-Landing (existing hero + NEW "Tour Packages" section with BLURRED prices)
-   │
-   └─ Click any package / "Unlock prices" CTA
-        │
-        ├─ Not signed in → /auth  (existing OTP email + Google; unchanged)
-        │
-        └─ Signed in but no lead yet → /lead (mandatory form)
-               │
-               ▼
-          Submit → server generates unique coupon → redirect /packages
-               │
-               ├─ Prices revealed
-               ├─ Coupon card (SVG) with Copy · Download PNG · WhatsApp share · Email share
-               └─ Server: Twilio WhatsApp DM to +919403001415 with lead details
-               │
-               ▼
-     Admin: /_authenticated/admin → "Leads" tab
-        search · filter · status · view coupon · Export to Excel (CSV)
-        + "Packages" tab (CRUD)
+Landing (unchanged)
+   │  click "See fares" / "Book a cab" / any package price
+   ▼
+Auth (existing /auth — email OTP + Google)   ← already works
+   ▼
+/lead   (mandatory one-page form — skipped if a lead already exists this session)
+   ├── Full name, mobile, email (prefilled), city, state, notes
+   └── on submit → create lead + unique coupon + fire notifications
+   ▼
+/coupon (full-screen coupon card — download PNG, share WhatsApp/Email)
+   ▼
+Rates are now unlocked everywhere for this user (server-checked)
+   • /routes fare table shows numbers
+   • Package prices reveal
+   • Booking wizard proceeds normally
 ```
 
-Existing `/book`, `/driver/*`, `/track/*`, admin bookings — all untouched. A user can be both a cab customer and a package lead; they're stored in separate tables.
+- Rates = cab ride fares (existing `routes` / `packages`), not gold/silver.
+- "Unlocked" is a **server-side gate**: any fare/price endpoint requires the caller to have a lead row.
+- Duplicate protection: one active lead per `user_id`. Re-submitting updates the existing lead instead of creating a new coupon.
 
-## Database (new migration only)
+---
 
-- `packages` — title, slug, destination, duration_days, price_inr, hero_image, highlights[], itinerary(jsonb), active, sort_order
-- `leads` — user_id (fk auth.users), name, phone, email, origin_city, destination, travel_date, travelers, budget_range, notes, status(new|contacted|converted|lost), assigned_to, created_at, updated_at
-- `coupons` — lead_id (unique), code (unique, `TRIP-XXXX-XXXX`), discount_pct, valid_until, created_at
+## 2. Database changes
 
-RLS + GRANTs (in same migration):
-- `packages`: public SELECT where `active`; admin ALL
-- `leads`: user reads/inserts own; admin ALL
-- `coupons`: user reads own via lead join; admin ALL
+Extend the existing `leads` and `coupons` tables (from the last migration) — do not recreate.
 
-## Server functions
+`leads` — add columns:
+- `state text`
+- `status text` default `'new'` — enum-checked: `new | contacted | negotiation | follow_up | converted | lost`
+- `assigned_to uuid` (admin user)
+- `follow_up_at timestamptz`
+- `last_contacted_at timestamptz`
+- unique index on `user_id` (one lead per customer; upsert on resubmit)
 
+New table `lead_notes` — timeline entries (note / call / status_change), fields: `lead_id`, `author_id`, `kind`, `body`, `created_at`. RLS: admins read/write all; customer can't see.
+
+New table `admin_notifications` — in-app feed for admins. Fields: `id`, `recipient_id`, `lead_id`, `title`, `body`, `read_at`, `created_at`. RLS: recipient reads own; service role inserts.
+
+`coupons` already has `code` + unique constraint — keep. Generation is server-side (`CAB-XXXXXX` base32, retry on collision).
+
+All new columns/tables include GRANTs + RLS in the same migration.
+
+---
+
+## 3. Server functions (`createServerFn`, TanStack Start)
+
+`src/lib/leads.functions.ts`
+- `submitLead(input)` — auth-gated, zod-validated. Upserts lead by `user_id`, creates coupon if none, dispatches notifications, returns `{ leadId, coupon }`.
+- `getMyLead()` — returns current user's lead + coupon (used to decide if rates should be shown).
+- `listLeads({ q, status, assigned_to, from, to, page })` — admin only, paginated.
+- `updateLead({ id, patch })` — admin only, adds `lead_notes` row for status changes.
+- `addLeadNote({ leadId, kind, body })` — admin only.
+- `assignLead({ leadId, adminId })` — admin only.
+- `exportLeadsCsv(filter)` — admin only, returns CSV string (Excel-openable).
+
+`src/lib/rates.functions.ts`
+- `getPublicRates()` — returns rates **masked** unless caller has a lead.
+- Existing package / route price reads gain the same gate.
+
+`src/lib/notifications.functions.ts` + `src/lib/notify/*.server.ts`
+- Pluggable dispatcher: `dispatch(event, payload)` iterates over enabled channels.
+- Channels shipped now: **in-app** (insert into `admin_notifications` for every admin) + **email** (Lovable Emails to admin recipients).
+- Adapter interface `Channel { id, isEnabled(), send(payload) }` so Telegram/Slack/SMS drop in later as new files without touching callers.
+- Recipient list = users with role `admin`.
+
+Email is sent via Lovable Emails. Requires a verified sender domain — plan surfaces the setup dialog if not configured yet.
+
+---
+
+## 4. Routes (files under `src/routes/`)
+
+Customer-facing (public shell, gate is server-side):
+- `_authenticated/lead.tsx` — mandatory form; redirects to `/coupon` on success, or to `/coupon` if lead already exists.
+- `_authenticated/coupon.tsx` — SVG coupon card, "Download PNG" (canvas), "Send on WhatsApp" (`wa.me` deep link), "Email me" (server fn re-sends).
+- `routes.tsx` / `packages` sections — read `getMyLead()`; if absent show a soft "Get today's fares — takes 20s" CTA linking to `/lead`. UI otherwise untouched.
+
+Admin CRM (`_authenticated/admin/…`, gated by `has_role(auth.uid(), 'admin')`):
+- `admin/leads.tsx` — live feed (Supabase realtime on `leads` + `admin_notifications`), search box, filters (status, assigned, date range), row → drawer.
+- `admin/leads.$id.tsx` — detail panel: customer info, coupon code, status dropdown, assignee picker, follow-up datetime, notes timeline, "Log call" button.
+- `admin/leads.export` — server route returning `text/csv` (works from a plain `<a href>`).
+- A bell in the existing admin nav shows unread `admin_notifications` count with a dropdown feed.
+
+Existing routes (`index`, `book`, `dashboard`, other admin tabs) — untouched except: nav gets a "Leads" admin link, and the current admin dashboard tile grid gets one extra card.
+
+---
+
+## 5. Coupon rendering
+
+- Server returns `{ code, issuedAt, validUntil, customerName }`.
+- Client renders an SVG card (Outfit heading, brand gold accent, monospace code, subtle watermark) — this file already lives in the design brief; nothing new visually.
+- "Download PNG": rasterize via `<canvas>` in-browser, no server round-trip.
+- "Send on WhatsApp": opens `https://wa.me/?text=<encoded message + code>` — no Twilio, no API key.
+- "Email me": server fn re-enqueues the coupon email to the customer.
+
+---
+
+## 6. Notifications wiring on submit
+
+On `submitLead` success, dispatcher fires event `lead.created` with:
+`{ leadId, name, phone, email, city, state, couponCode, submittedAt, loginMethod }`.
+
+Channels this round:
+1. **In-app**: insert one `admin_notifications` row per admin. Admin bell + `/admin/leads` live-update via Supabase realtime subscription.
+2. **Email**: Lovable Emails template to each admin's email. Subject "New lead — {name} ({city})", body has all fields + a deep link to `/admin/leads/{id}`.
+
+Telegram/Slack/SMS: not built this round. Adapter interface is in place so adding them later is one file + a row in a `notification_channels` config (documented but out of scope now).
+
+---
+
+## 7. Files touched
+
+New:
+- `supabase/migrations/<ts>_lead_crm.sql`
 - `src/lib/leads.functions.ts`
-  - `submitLead(data)` — auth-required; zod-validated; insert lead, generate coupon (`TRIP-` + 8 base32 chars from `crypto.randomUUID`), insert coupon, fire `notifyAdminWhatsApp` inside handler (best-effort, non-blocking), return `{lead, coupon}`
-  - `getMyLead()` — returns current user's lead + coupon or null (used to gate reveal)
-  - `listLeads(filters)` — admin only; search + status + date range + destination
-  - `updateLeadStatus(id, status)` — admin only
-  - `exportLeadsCsv()` — admin only; returns CSV text; opens in Excel natively
-- `src/lib/packages.functions.ts`
-  - `listPackages()` — public; returns array WITHOUT `price_inr` when caller has no lead; WITH price when they do (server-side gate — client can't spoof)
-  - `upsertPackage`, `togglePackage`, `deletePackage` — admin only
-- `src/lib/notify.server.ts` (server-only) — Twilio WhatsApp send via connector gateway to `whatsapp:+919403001415`. Errors logged, never thrown into user flow.
+- `src/lib/rates.functions.ts`
+- `src/lib/notifications.functions.ts`
+- `src/lib/notify/inapp.server.ts`
+- `src/lib/notify/email.server.ts`
+- `src/lib/notify/index.server.ts` (dispatcher)
+- `src/routes/_authenticated/lead.tsx`
+- `src/routes/_authenticated/coupon.tsx`
+- `src/routes/_authenticated/admin/leads.tsx`
+- `src/routes/_authenticated/admin/leads.$id.tsx`
+- `src/routes/_authenticated/admin/leads.export.ts` (server route, CSV)
+- `src/components/admin/LeadTable.tsx`, `LeadDetailDrawer.tsx`, `NotesTimeline.tsx`, `AdminBell.tsx`
+- `src/components/coupon/CouponCard.tsx`
+- Auth email templates for the coupon delivery + new-lead admin alert
 
-## Routes (new)
+Edited (small, additive only — no visual overhaul):
+- `src/routes/_authenticated/admin/index.tsx` — add "Leads" tile
+- `src/components/landing/Nav.tsx` — add "Admin → Leads" link (admins only)
+- Rates/packages read paths — apply lead gate (data-only, no UI change)
 
-- `src/routes/packages.tsx` — public page, price locked with 🔒 chip + "Unlock prices" CTA → AuthLink to `/lead`
-- `src/routes/_authenticated/lead.tsx` — mandatory form (name, phone, email, origin city, destination, travel date, travelers, budget range dropdown, notes). Zod client + server validation. On submit: call `submitLead` → navigate to `/packages?revealed=1`
-- `src/routes/_authenticated/coupon.tsx` — full-page coupon: SVG rendered inline (brand gradient, name, code, valid-until, watermark) + Copy · Download PNG (client `canvas` from SVG) · Share on WhatsApp (`wa.me?text=...` prefilled) · Email (mailto: prefilled)
-- `src/routes/_authenticated/admin.tsx` — add tabs shell: existing Bookings/Drivers/Fleet/Users + NEW **Leads**, **Packages**
+Not touched: hero, booking widget, wizard, existing dashboards, styling tokens.
 
-## Existing files touched (minimal)
+---
 
-- `src/routes/index.tsx` — add a **"Tour Packages"** section between existing sections; shows package cards with 🔒 blurred prices for signed-out/no-lead users
-- `src/components/landing/Nav.tsx` — add "Packages" link
-- `src/routes/_authenticated/dashboard.tsx` — if lead exists, add "Your coupon" card linking to `/coupon`
-- No changes to auth, cab booking, driver, tracking, chat.
+## 8. Prerequisites & assumptions
 
-## WhatsApp — Twilio (user chose Twilio API)
+- **Email sender domain** must be set up (Lovable Emails). If not present, the plan surfaces the one-click setup dialog before turning on the email channel; in-app still works without it.
+- Admin role already exists (`user_roles` + `has_role`) — reused as-is.
+- No Twilio, no external WhatsApp API — customer WhatsApp share uses `wa.me` links; admin notification uses in-app + email now, Telegram next round.
+- No SMS-OTP work — existing email OTP + Google login remain the only login methods.
+- Duplicate customers are collapsed by `user_id`; a returning customer sees the same coupon.
 
-Twilio connector via connector gateway. Requires:
-1. Link Twilio connector → gives `TWILIO_API_KEY` env var
-2. Enable **WhatsApp sandbox** (works instantly, sender `whatsapp:+14155238886`) OR use a Meta-approved business sender (3–7 day approval)
-3. Save Twilio "from" number to secret `TWILIO_WHATSAPP_FROM`
-4. Admin target hard-set to `whatsapp:+919403001415` in secret `ADMIN_WHATSAPP_TO` (editable later)
+---
 
-Admin message template:
-```
-🆕 New Travel Lead
-{name}  ·  {phone}
-✉ {email}
-📍 {origin_city} → {destination}
-🗓 {travel_date}  ·  👥 {travelers}
-💰 {budget_range}
-Coupon: {code}
-Notes: {notes}
-```
+## 9. Verification
 
-Customer-side WhatsApp share is `wa.me` deep link — no API cost, no approval needed.
-
-## Coupon image
-
-Server returns lead+coupon; client renders an SVG coupon card (Outfit display font, brand gradient, code in monospace, valid-until, small watermark). "Download PNG" uses browser `<canvas>` to rasterize the SVG. "Send via WhatsApp" opens `wa.me` with prefilled message + coupon code. "Send via Email" opens `mailto:` prefilled. No native image libs, Worker-safe.
-
-## Admin — Leads tab
-
-Table columns: created · name · phone · email · origin → dest · date · travelers · budget · coupon · status. Controls: search box (name/phone/email), status dropdown, destination filter, date range, "Export to Excel" (downloads `leads.csv` from `exportLeadsCsv`). Row actions: view detail drawer, change status, copy coupon, "Resend WhatsApp" button.
-
-## SMS OTP note
-
-Existing `/auth` uses **email OTP + Google**. User asked for "mobile OTP or email verification". Enabling Supabase phone provider needs Twilio SMS credentials configured in Supabase Auth settings (separate from connector). **Turn 1 ships email OTP + Google** (already works). Once you're happy, say the word and I'll wire SMS-OTP in a follow-up.
-
-## Secrets & prerequisites (build mode will handle)
-
-- Link **Twilio** connector → auto-provides `TWILIO_API_KEY`
-- `TWILIO_WHATSAPP_FROM` — you provide after Twilio linked (I'll prompt)
-- `ADMIN_WHATSAPP_TO` = `whatsapp:+919403001415` (set via `set_secret`, no interaction)
-- `LOVABLE_API_KEY` — already present
-
-## Order of work
-
-1. Migration: `packages`, `leads`, `coupons` + RLS + GRANTs + seed 8 sample packages
-2. Server fns: `leads.functions.ts`, `packages.functions.ts`, `notify.server.ts`
-3. Link Twilio connector + collect `TWILIO_WHATSAPP_FROM`
-4. Routes: `/packages`, `/_authenticated/lead`, `/_authenticated/coupon`
-5. Add Leads + Packages tabs to admin, wire CSV export
-6. Landing page: add Tour Packages section with lock/reveal state
-7. Nav + dashboard tweaks
-8. Typecheck → screenshot QA → publish
-
-## Out of scope (say so, don't build)
-
-- SMS-OTP login (Supabase phone provider) — email OTP + Google today
-- Automatic coupon redemption / discount enforcement on cab bookings — code is a reference for the sales team to honour manually
-- Payments — leads only, no checkout
-
-## Confirm before I build
-
-1. **Twilio sandbox for now?** (works instantly; each admin phone must once send `join <sandbox-word>` from WhatsApp — I'll walk you through). Or wait for business sender.
-2. **Coupon discount** — should the code carry a stated `discount_pct` (e.g. 10%) or just be a reference tag? I'll default to 10% off if unspecified.
-3. **Landing placement** — new Tour Packages section between "Popular Routes" and existing sections is fine? Or as its own top-level `/packages` page linked from nav only?
+- `bunx tsgo --noEmit`
+- Manual: sign in (fresh user) → hit `/routes` → redirected to `/lead` gate CTA → submit → land on `/coupon` → confirm coupon visible + downloadable → return to `/routes` → fares now visible.
+- Admin: open `/admin/leads` in a second tab → new lead appears live, bell increments, email arrives, CSV export downloads.
+- `supabase--linter` after migration.
