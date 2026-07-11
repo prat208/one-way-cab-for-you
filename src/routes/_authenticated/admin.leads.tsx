@@ -170,7 +170,7 @@ function LeadsAdmin() {
                     <div className="text-xs text-muted-foreground">{r.phone} · {r.email}</div>
                   </td>
                   <td className="px-3 py-2.5 text-xs">{r.origin_city}{r.state ? `, ${r.state}` : ""}</td>
-                  <td className="px-3 py-2.5 font-mono text-xs">{r.coupons?.[0]?.code ?? "—"}</td>
+                  <td className="px-3 py-2.5 font-mono text-xs">{couponOf(r)?.code ?? "—"}</td>
                   <td className="px-3 py-2.5">
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_COLORS[r.status]}`}>
                       {r.status}
@@ -248,8 +248,8 @@ function LeadDrawer({ lead, onClose, onChange }: { lead: Lead; onClose: () => vo
           <Info label="Email" value={<a href={`mailto:${lead.email}`} className="text-[color:var(--gold)] hover:underline break-all">{lead.email}</a>} />
           <Info label="City" value={lead.origin_city} />
           <Info label="State" value={lead.state ?? "—"} />
-          <Info label="Coupon" value={<span className="font-mono">{lead.coupons?.[0]?.code ?? "—"}</span>} />
-          <Info label="Discount" value={`${lead.coupons?.[0]?.discount_pct ?? 0}%`} />
+          <Info label="Coupon" value={<span className="font-mono">{couponOf(lead)?.code ?? "—"}</span>} />
+          <Info label="Discount" value={`${couponOf(lead)?.discount_pct ?? 0}%`} />
         </div>
         {lead.notes && (
           <div className="mt-4 rounded-lg border border-white/10 bg-white/[0.02] p-3 text-sm">
