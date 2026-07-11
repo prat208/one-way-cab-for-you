@@ -92,6 +92,10 @@ function AdminConsole() {
             <span className="text-sm font-semibold">Admin</span>
           </Link>
           <div className="flex items-center gap-3">
+            <Link to="/admin/leads" className="rounded-full glass px-3 py-1.5 text-xs font-semibold hover:bg-white/10">
+              Leads
+            </Link>
+            <AdminBell />
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
             <button
               onClick={handleSignOut}
