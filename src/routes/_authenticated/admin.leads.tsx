@@ -19,6 +19,7 @@ export const Route = createFileRoute("/_authenticated/admin/leads")({
   component: LeadsAdmin,
 });
 
+type Coupon = { code: string; discount_pct: number; valid_until: string };
 type Lead = {
   id: string;
   name: string;
@@ -32,8 +33,13 @@ type Lead = {
   last_contacted_at: string | null;
   notes: string | null;
   created_at: string;
-  coupons?: { code: string; discount_pct: number; valid_until: string }[];
+  coupons?: Coupon | Coupon[] | null;
 };
+function couponOf(l: Lead): Coupon | undefined {
+  const c = l.coupons;
+  if (!c) return undefined;
+  return Array.isArray(c) ? c[0] : c;
+}
 
 const STATUSES = ["new", "contacted", "negotiation", "follow_up", "converted", "lost"] as const;
 const STATUS_COLORS: Record<string, string> = {

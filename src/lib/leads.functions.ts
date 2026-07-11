@@ -234,7 +234,8 @@ export const exportLeadsCsv = createServerFn({ method: "POST" })
     };
     const lines = [headers.join(",")];
     for (const r of rows ?? []) {
-      const c = (r as { coupons?: { code: string; discount_pct: number }[] }).coupons?.[0];
+      const cRaw = (r as { coupons?: unknown }).coupons;
+      const c = Array.isArray(cRaw) ? (cRaw[0] as { code?: string; discount_pct?: number } | undefined) : (cRaw as { code?: string; discount_pct?: number } | null);
       lines.push([
         r.created_at, r.name, r.phone, r.email, r.origin_city,
         (r as { state?: string | null }).state ?? "",
