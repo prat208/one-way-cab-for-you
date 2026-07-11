@@ -22,12 +22,19 @@ type Trip = {
 function CustomerHub() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [tab, setTab] = useState<"book" | "trips">("book");
+  const fetchLead = useServerFn(getMyLead);
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [hasLead, setHasLead] = useState<boolean | null>(null);
 
   useEffect(() => {
+    fetchLead().then((r) => {
+      setHasLead(Boolean(r.lead));
+      setCouponCode(r.coupon?.code ?? null);
+    }).catch(() => setHasLead(false));
     supabase.from("bookings").select("id,booking_ref,pickup_city,drop_city,pickup_date,pickup_time,vehicle_name,estimated_fare,status,trip_type")
       .order("created_at", { ascending: false }).limit(50)
       .then(({ data }) => setTrips((data ?? []) as Trip[]));
-  }, []);
+  }, [fetchLead]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
