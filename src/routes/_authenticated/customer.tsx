@@ -51,6 +51,32 @@ function CustomerHub() {
           </div>
         </header>
 
+        {hasLead === false && (
+          <Link to="/lead" className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--gold)]/30 bg-[color:var(--gold)]/10 p-4 hover:bg-[color:var(--gold)]/15">
+            <div className="flex items-center gap-3">
+              <Ticket className="h-6 w-6 text-[color:var(--gold)]" />
+              <div>
+                <div className="text-sm font-semibold">Grab your discount coupon</div>
+                <div className="text-xs text-muted-foreground">Tell us about your trip (20s) and we'll issue a personal coupon.</div>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-[color:var(--gold)]" />
+          </Link>
+        )}
+        {hasLead && couponCode && (
+          <Link to="/coupon" className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.06]">
+            <div className="flex items-center gap-3">
+              <Ticket className="h-6 w-6 text-[color:var(--gold)]" />
+              <div>
+                <div className="text-sm font-semibold">Your coupon <span className="font-mono text-[color:var(--gold)]">{couponCode}</span></div>
+                <div className="text-xs text-muted-foreground">Tap to view, download or share.</div>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
+        )}
+
+
         {tab === "book" ? (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
             <BookingWizard />
