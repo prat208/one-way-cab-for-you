@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { AdminBell } from "@/components/admin/AdminBell";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -92,6 +93,10 @@ function AdminConsole() {
             <span className="text-sm font-semibold">Admin</span>
           </Link>
           <div className="flex items-center gap-3">
+            <Link to="/admin/leads" className="rounded-full glass px-3 py-1.5 text-xs font-semibold hover:bg-white/10">
+              Leads
+            </Link>
+            <AdminBell />
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
             <button
               onClick={handleSignOut}

@@ -18,10 +18,13 @@ import { Route as TrackRefRouteImport } from './routes/track.$ref'
 import { Route as DriverSignupRouteImport } from './routes/driver.signup'
 import { Route as CitySlugRouteImport } from './routes/city.$slug'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedLeadRouteImport } from './routes/_authenticated/lead'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedCustomerRouteImport } from './routes/_authenticated/customer'
+import { Route as AuthenticatedCouponRouteImport } from './routes/_authenticated/coupon'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 
 const BookRoute = BookRouteImport.update({
   id: '/book',
@@ -67,6 +70,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedLeadRoute = AuthenticatedLeadRouteImport.update({
+  id: '/lead',
+  path: '/lead',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDriverRoute = AuthenticatedDriverRouteImport.update({
   id: '/driver',
   path: '/driver',
@@ -82,10 +90,20 @@ const AuthenticatedCustomerRoute = AuthenticatedCustomerRouteImport.update({
   path: '/customer',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCouponRoute = AuthenticatedCouponRouteImport.update({
+  id: '/coupon',
+  path: '/coupon',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -93,28 +111,34 @@ export interface FileRoutesByFullPath {
   '/admin-signup': typeof AdminSignupRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/coupon': typeof AuthenticatedCouponRoute
   '/customer': typeof AuthenticatedCustomerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
+  '/lead': typeof AuthenticatedLeadRoute
   '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
   '/driver/signup': typeof DriverSignupRoute
   '/track/$ref': typeof TrackRefRoute
+  '/admin/leads': typeof AuthenticatedAdminLeadsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin-signup': typeof AdminSignupRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
-  '/admin': typeof AuthenticatedAdminRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/coupon': typeof AuthenticatedCouponRoute
   '/customer': typeof AuthenticatedCustomerRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
+  '/lead': typeof AuthenticatedLeadRoute
   '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
   '/driver/signup': typeof DriverSignupRoute
   '/track/$ref': typeof TrackRefRoute
+  '/admin/leads': typeof AuthenticatedAdminLeadsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -123,14 +147,17 @@ export interface FileRoutesById {
   '/admin-signup': typeof AdminSignupRoute
   '/auth': typeof AuthRoute
   '/book': typeof BookRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/coupon': typeof AuthenticatedCouponRoute
   '/_authenticated/customer': typeof AuthenticatedCustomerRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
+  '/_authenticated/lead': typeof AuthenticatedLeadRoute
   '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
   '/driver/signup': typeof DriverSignupRoute
   '/track/$ref': typeof TrackRefRoute
+  '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -140,13 +167,16 @@ export interface FileRouteTypes {
     | '/auth'
     | '/book'
     | '/admin'
+    | '/coupon'
     | '/customer'
     | '/dashboard'
     | '/driver'
+    | '/lead'
     | '/api/chat'
     | '/city/$slug'
     | '/driver/signup'
     | '/track/$ref'
+    | '/admin/leads'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -154,13 +184,16 @@ export interface FileRouteTypes {
     | '/auth'
     | '/book'
     | '/admin'
+    | '/coupon'
     | '/customer'
     | '/dashboard'
     | '/driver'
+    | '/lead'
     | '/api/chat'
     | '/city/$slug'
     | '/driver/signup'
     | '/track/$ref'
+    | '/admin/leads'
   id:
     | '__root__'
     | '/'
@@ -169,13 +202,16 @@ export interface FileRouteTypes {
     | '/auth'
     | '/book'
     | '/_authenticated/admin'
+    | '/_authenticated/coupon'
     | '/_authenticated/customer'
     | '/_authenticated/dashboard'
     | '/_authenticated/driver'
+    | '/_authenticated/lead'
     | '/api/chat'
     | '/city/$slug'
     | '/driver/signup'
     | '/track/$ref'
+    | '/_authenticated/admin/leads'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -255,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/lead': {
+      id: '/_authenticated/lead'
+      path: '/lead'
+      fullPath: '/lead'
+      preLoaderRoute: typeof AuthenticatedLeadRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/driver': {
       id: '/_authenticated/driver'
       path: '/driver'
@@ -276,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCustomerRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/coupon': {
+      id: '/_authenticated/coupon'
+      path: '/coupon'
+      fullPath: '/coupon'
+      preLoaderRoute: typeof AuthenticatedCouponRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
@@ -283,21 +333,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/leads': {
+      id: '/_authenticated/admin/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AuthenticatedAdminLeadsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminLeadsRoute: typeof AuthenticatedAdminLeadsRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminLeadsRoute: AuthenticatedAdminLeadsRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedCouponRoute: typeof AuthenticatedCouponRoute
   AuthenticatedCustomerRoute: typeof AuthenticatedCustomerRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDriverRoute: typeof AuthenticatedDriverRoute
+  AuthenticatedLeadRoute: typeof AuthenticatedLeadRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedCouponRoute: AuthenticatedCouponRoute,
   AuthenticatedCustomerRoute: AuthenticatedCustomerRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDriverRoute: AuthenticatedDriverRoute,
+  AuthenticatedLeadRoute: AuthenticatedLeadRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -317,13 +389,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

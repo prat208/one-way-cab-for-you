@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          lead_id: string | null
+          read_at: string | null
+          recipient_id: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id?: string | null
+          read_at?: string | null
+          recipient_id: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id?: string | null
+          read_at?: string | null
+          recipient_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notifications_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           booking_ref: string
@@ -235,6 +276,41 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_notes: {
+        Row: {
+          author_id: string
+          body: string
+          created_at: string
+          id: string
+          kind: string
+          lead_id: string
+        }
+        Insert: {
+          author_id: string
+          body: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id: string
+        }
+        Update: {
+          author_id?: string
+          body?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          lead_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_notes_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           assigned_to: string | null
@@ -242,11 +318,14 @@ export type Database = {
           created_at: string
           destination: string
           email: string
+          follow_up_at: string | null
           id: string
+          last_contacted_at: string | null
           name: string
           notes: string | null
           origin_city: string
           phone: string
+          state: string | null
           status: string
           travel_date: string
           travelers: number
@@ -259,11 +338,14 @@ export type Database = {
           created_at?: string
           destination: string
           email: string
+          follow_up_at?: string | null
           id?: string
+          last_contacted_at?: string | null
           name: string
           notes?: string | null
           origin_city: string
           phone: string
+          state?: string | null
           status?: string
           travel_date: string
           travelers?: number
@@ -276,11 +358,14 @@ export type Database = {
           created_at?: string
           destination?: string
           email?: string
+          follow_up_at?: string | null
           id?: string
+          last_contacted_at?: string | null
           name?: string
           notes?: string | null
           origin_city?: string
           phone?: string
+          state?: string | null
           status?: string
           travel_date?: string
           travelers?: number

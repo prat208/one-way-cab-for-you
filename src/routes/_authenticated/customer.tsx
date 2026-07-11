@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Nav } from "@/components/landing/Nav";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 import { AssistantPanel } from "@/components/chat/AssistantPanel";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Calendar, IndianRupee, PlusCircle } from "lucide-react";
+import { getMyLead } from "@/lib/leads.functions";
+import { MapPin, Calendar, IndianRupee, PlusCircle, Ticket, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/customer")({
   head: () => ({ meta: [{ title: "My rides — ONE WAY CAB" }, { name: "robots", content: "noindex" }] }),
@@ -20,12 +22,19 @@ type Trip = {
 function CustomerHub() {
   const [trips, setTrips] = useState<Trip[]>([]);
   const [tab, setTab] = useState<"book" | "trips">("book");
+  const fetchLead = useServerFn(getMyLead);
+  const [couponCode, setCouponCode] = useState<string | null>(null);
+  const [hasLead, setHasLead] = useState<boolean | null>(null);
 
   useEffect(() => {
+    fetchLead().then((r) => {
+      setHasLead(Boolean(r.lead));
+      setCouponCode(r.coupon?.code ?? null);
+    }).catch(() => setHasLead(false));
     supabase.from("bookings").select("id,booking_ref,pickup_city,drop_city,pickup_date,pickup_time,vehicle_name,estimated_fare,status,trip_type")
       .order("created_at", { ascending: false }).limit(50)
       .then(({ data }) => setTrips((data ?? []) as Trip[]));
-  }, []);
+  }, [fetchLead]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -41,6 +50,32 @@ function CustomerHub() {
             <button onClick={() => setTab("trips")} className={`rounded-full px-4 py-1.5 ${tab === "trips" ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)]" : "text-muted-foreground"}`}>My trips ({trips.length})</button>
           </div>
         </header>
+
+        {hasLead === false && (
+          <Link to="/lead" className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--gold)]/30 bg-[color:var(--gold)]/10 p-4 hover:bg-[color:var(--gold)]/15">
+            <div className="flex items-center gap-3">
+              <Ticket className="h-6 w-6 text-[color:var(--gold)]" />
+              <div>
+                <div className="text-sm font-semibold">Grab your discount coupon</div>
+                <div className="text-xs text-muted-foreground">Tell us about your trip (20s) and we'll issue a personal coupon.</div>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-[color:var(--gold)]" />
+          </Link>
+        )}
+        {hasLead && couponCode && (
+          <Link to="/coupon" className="mb-6 flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 hover:bg-white/[0.06]">
+            <div className="flex items-center gap-3">
+              <Ticket className="h-6 w-6 text-[color:var(--gold)]" />
+              <div>
+                <div className="text-sm font-semibold">Your coupon <span className="font-mono text-[color:var(--gold)]">{couponCode}</span></div>
+                <div className="text-xs text-muted-foreground">Tap to view, download or share.</div>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
+        )}
+
 
         {tab === "book" ? (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
