@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { Nav } from "@/components/landing/Nav";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 import { AssistantPanel } from "@/components/chat/AssistantPanel";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Calendar, IndianRupee, PlusCircle } from "lucide-react";
+import { getMyLead } from "@/lib/leads.functions";
+import { MapPin, Calendar, IndianRupee, PlusCircle, Ticket, ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/customer")({
   head: () => ({ meta: [{ title: "My rides — ONE WAY CAB" }, { name: "robots", content: "noindex" }] }),
