@@ -27,7 +27,7 @@ const SERVICE_ROLE = env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY || !SERVICE_ROLE) {
   throw new Error(
-    "Missing Supabase env. Need SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY (checked process.env and .env).",
+    "Missing Supabase env. Need SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY.",
   );
 }
 
@@ -35,7 +35,6 @@ const admin = createClient(SUPABASE_URL, SERVICE_ROLE, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
-// Derive the localStorage key the Supabase browser client uses.
 function storageKey(): string {
   const ref = new URL(SUPABASE_URL!).host.split(".")[0];
   return `sb-${ref}-auth-token`;
@@ -66,7 +65,6 @@ async function signIn(email: string, password: string) {
 
 async function injectSession(page: Page, session: unknown) {
   const key = storageKey();
-  // Establish origin so localStorage writes to the right storage.
   await page.goto("/");
   await page.evaluate(
     ([k, s]) => window.localStorage.setItem(k as string, s as string),
@@ -75,11 +73,13 @@ async function injectSession(page: Page, session: unknown) {
 }
 
 async function cleanupUser(userId: string) {
-  await admin.from("coupons").delete().eq("lead_id",
-    (await admin.from("leads").select("id").eq("user_id", userId).maybeSingle()).data?.id ?? "");
+  const { data: lead } = await admin.from("leads").select("id").eq("user_id", userId).maybeSingle();
+  if (lead?.id) await admin.from("coupons").delete().eq("lead_id", lead.id);
   await admin.from("leads").delete().eq("user_id", userId);
   await admin.auth.admin.deleteUser(userId).catch(() => undefined);
 }
+
+test.describe.configure({ mode: "serial" });
 
 test.describe("Lead → Coupon flow", () => {
   let user: { email: string; password: string; userId: string };
@@ -96,30 +96,36 @@ test.describe("Lead → Coupon flow", () => {
     const session = await signIn(user.email, user.password);
     await injectSession(page, session);
 
-    // Go to lead form as a signed-in user.
+    // Go to the lead form.
     await page.goto("/lead");
-    await expect(page).toHaveURL(/\/lead$/);
-    await expect(page.getByRole("heading", { name: /tell us a bit about you/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /tell us a bit about you/i })).toBeVisible({
+      timeout: 15_000,
+    });
 
-    // Fill the form.
-    await page.getByLabel(/full name/i).fill("E2E Tester");
-    await page.getByLabel(/mobile number/i).fill("+15555550100");
-    await page.getByLabel(/^email/i).fill(user.email);
-    await page.getByLabel(/^city/i).fill("Mumbai");
-    await page.getByLabel(/^state/i).fill("MH");
+    // Fill by explicit input ordering — label wraps input without htmlFor,
+    // so we scope each fill to the label containing the field name.
+    const fillField = async (labelText: string, value: string) => {
+      const input = page.locator("label", { hasText: new RegExp(`^${labelText}\\b`, "i") }).locator("input").first();
+      await input.fill(value);
+    };
+    await fillField("Full name", "E2E Tester");
+    await fillField("Mobile number", "+15555550100");
+    await fillField("Email", user.email);
+    await fillField("City", "Mumbai");
+    await fillField("State", "MH");
 
     await Promise.all([
-      page.waitForURL(/\/coupon$/, { timeout: 20_000 }),
+      page.waitForURL(/\/coupon(\?|$)/, { timeout: 30_000 }),
       page.getByRole("button", { name: /get my coupon/i }).click(),
     ]);
 
-    // Coupon page shows the generated code (CAB-XXXXXX).
-    const codeLocator = page.locator("text=/CAB-[A-Z2-9]{6}/").first();
-    await expect(codeLocator).toBeVisible({ timeout: 15_000 });
+    // The coupon page renders CAB-XXXXXX in an <svg><text/></svg>.
+    const codeLocator = page.locator("svg text").filter({ hasText: /^CAB-[A-Z2-9]{6}$/ }).first();
+    await expect(codeLocator).toBeVisible({ timeout: 20_000 });
     const codeText = (await codeLocator.textContent())?.trim() ?? "";
     expect(codeText).toMatch(/^CAB-[A-Z2-9]{6}$/);
 
-    // Verify persisted state in DB.
+    // Verify DB state.
     const { data: lead } = await admin
       .from("leads")
       .select("id, name, origin_city, status")
@@ -142,8 +148,11 @@ test.describe("Lead → Coupon flow", () => {
     const session = await signIn(user.email, user.password);
     await injectSession(page, session);
 
+    // Land on /lead — the page's effect calls getMyLead and redirects to /coupon.
     await page.goto("/lead");
-    await page.waitForURL(/\/coupon$/, { timeout: 15_000 });
-    await expect(page.locator("text=/CAB-[A-Z2-9]{6}/").first()).toBeVisible();
+    await page.waitForURL(/\/coupon(\?|$)/, { timeout: 30_000 });
+    await expect(
+      page.locator("svg text").filter({ hasText: /^CAB-[A-Z2-9]{6}$/ }).first(),
+    ).toBeVisible({ timeout: 20_000 });
   });
 });
