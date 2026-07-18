@@ -32,43 +32,48 @@ export function CallCare() {
         (user.user_metadata?.name as string) ||
         user.email?.split("@")[0];
       const next: Personalization = { name };
-      const [{ data: lead }, { data: coupon }, { data: booking }] = await Promise.all([
+      const [{ data: lead }, { data: booking }] = await Promise.all([
         supabase
           .from("leads")
-          .select("city, destination, travel_date")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(1)
-          .maybeSingle(),
-        supabase
-          .from("coupons")
-          .select("code")
+          .select("id, origin_city, destination, travel_date")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle(),
         supabase
           .from("bookings")
-          .select("ref")
+          .select("booking_ref")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle(),
       ]);
+      let couponCode: string | undefined;
+      if (lead?.id) {
+        const { data: coupon } = await supabase
+          .from("coupons")
+          .select("code")
+          .eq("lead_id", lead.id)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        couponCode = coupon?.code;
+      }
       if (cancelled) return;
       if (lead) {
-        next.city = lead.city ?? undefined;
+        next.city = lead.origin_city ?? undefined;
         next.destination = lead.destination ?? undefined;
         next.travel_date = lead.travel_date ?? undefined;
       }
-      if (coupon?.code) next.coupon = coupon.code;
-      if (booking?.ref) next.lastBookingRef = booking.ref;
+      if (couponCode) next.coupon = couponCode;
+      if (booking?.booking_ref) next.lastBookingRef = booking.booking_ref;
       setInfo(next);
     })();
     return () => {
       cancelled = true;
     };
   }, [user, open]);
+
 
   function personalizedMessage() {
     const lines: string[] = [];
