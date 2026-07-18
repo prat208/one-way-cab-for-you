@@ -34,6 +34,7 @@ function Stat({ v, l }: { v: string; l: string }) {
 function Landing() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
+      <BrandIntro />
       <Nav />
 
       {/* HERO */}
