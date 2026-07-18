@@ -92,8 +92,11 @@ function AuthPage() {
     setError(null);
     setBusy(true);
     try {
+      // Return to /auth so the useEffect picks up the session and navigates to
+      // redirectTo — this preserves the OAuth consent URL across the round trip.
+      const returnUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: returnUrl,
       });
       if (result.error) throw result.error;
       if (!result.redirected) navigate({ href: redirectTo });
