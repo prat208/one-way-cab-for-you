@@ -92,15 +92,11 @@ function AuthPage() {
     setError(null);
     setBusy(true);
     try {
-      // Preserve the post-sign-in destination across the OAuth round trip so
-      // OAuth consent (or any other redirect target) resumes correctly.
-      try {
-        sessionStorage.setItem("owc.postAuthRedirect", redirectTo);
-      } catch {
-        /* ignore storage failures */
-      }
+      // Return to /auth so the useEffect picks up the session and navigates to
+      // redirectTo — this preserves the OAuth consent URL across the round trip.
+      const returnUrl = `${window.location.origin}/auth?redirect=${encodeURIComponent(redirectTo)}`;
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: returnUrl,
       });
       if (result.error) throw result.error;
       if (!result.redirected) navigate({ href: redirectTo });

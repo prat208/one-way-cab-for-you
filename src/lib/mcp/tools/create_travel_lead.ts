@@ -40,7 +40,7 @@ export default defineTool({
     const { data, error } = await supabase
       .from("leads")
       .insert({
-        user_id: ctx.getUserId(),
+        user_id: ctx.getUserId()!,
         name: input.name,
         phone: input.phone,
         email: input.email,

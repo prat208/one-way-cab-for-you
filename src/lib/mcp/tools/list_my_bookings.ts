@@ -37,7 +37,7 @@ export default defineTool({
       .select(
         "booking_ref, status, pickup_city, drop_city, pickup_date, pickup_time, vehicle_name, trip_type, estimated_fare, payment_status, created_at",
       )
-      .eq("user_id", ctx.getUserId())
+      .eq("user_id", ctx.getUserId()!)
       .order("created_at", { ascending: false })
       .limit(Math.max(1, Math.min(limit ?? 20, 100)));
     if (error) {

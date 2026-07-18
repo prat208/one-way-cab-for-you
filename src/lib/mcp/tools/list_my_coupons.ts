@@ -29,7 +29,7 @@ export default defineTool({
     const { data, error } = await supabase
       .from("coupons")
       .select("code, discount_pct, valid_until, created_at, leads!inner(user_id)")
-      .eq("leads.user_id", ctx.getUserId())
+      .eq("leads.user_id", ctx.getUserId()!)
       .order("created_at", { ascending: false });
     if (error) {
       return { content: [{ type: "text", text: error.message }], isError: true };
