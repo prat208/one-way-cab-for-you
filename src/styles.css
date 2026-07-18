@@ -180,3 +180,9 @@
     color: #0a0f24;
   }
 }
+
+@utility brand-intro-mask {
+  background:
+    radial-gradient(1200px 600px at 50% 40%, color-mix(in oklab, var(--navy-soft) 90%, transparent), var(--navy-deep) 70%),
+    var(--navy-deep);
+}
