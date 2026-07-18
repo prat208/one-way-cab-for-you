@@ -92,6 +92,13 @@ function AuthPage() {
     setError(null);
     setBusy(true);
     try {
+      // Preserve the post-sign-in destination across the OAuth round trip so
+      // OAuth consent (or any other redirect target) resumes correctly.
+      try {
+        sessionStorage.setItem("owc.postAuthRedirect", redirectTo);
+      } catch {
+        /* ignore storage failures */
+      }
       const result = await lovable.auth.signInWithOAuth("google", {
         redirect_uri: window.location.origin,
       });
