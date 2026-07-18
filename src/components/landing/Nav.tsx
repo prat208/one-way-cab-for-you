@@ -45,11 +45,12 @@ export function Nav() {
 
           <div className="hidden items-center gap-3 md:flex">
             <a
-              href="tel:+919999999999"
+              href="tel:+918999740424"
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
             >
-              <Phone className="h-4 w-4 text-[color:var(--gold)]" /> 24×7
+              <Phone className="h-4 w-4 text-[color:var(--gold)]" /> 24×7 · 8999740424
             </a>
+
             {!loading && (user ? (
               <Link
                 to="/dashboard"
