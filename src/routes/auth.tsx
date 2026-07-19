@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { motion } from "framer-motion";
 import { ArrowLeft, Loader2, Mail, KeyRound, ArrowRight } from "lucide-react";
+import { Footer } from "@/components/landing/Sections";
 
 const searchSchema = z.object({
   redirect: z.string().optional(),
@@ -107,9 +108,9 @@ function AuthPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className="relative flex min-h-screen flex-col bg-background text-foreground">
       <div className="absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(255,200,61,0.08),transparent_60%)]" />
-      <div className="relative mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-10">
+      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-10">
         <Link to="/" className="mb-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-3.5 w-3.5" /> Back to home
         </Link>
@@ -203,6 +204,7 @@ function AuthPage() {
           </p>
         </motion.div>
       </div>
+      <Footer />
     </div>
   );
 }
