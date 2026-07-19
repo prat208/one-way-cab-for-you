@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ShieldCheck, Star, ArrowDown } from "lucide-react";
+import { ShieldCheck, Star, ArrowDown, PhoneCall } from "lucide-react";
 import { Nav } from "@/components/landing/Nav";
 import { HeroScene, HeroCar } from "@/components/landing/HeroScene";
 import { BookingWidget } from "@/components/landing/BookingWidget";
@@ -14,6 +14,7 @@ import {
   Testimonials,
   FAQ,
   Footer,
+  CareUSP,
 } from "@/components/landing/Sections";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandIntro } from "@/components/BrandIntro";
@@ -84,13 +85,28 @@ function Landing() {
               <AuthLink to="/book" className="rounded-full btn-gold px-6 py-3 text-sm font-semibold">
                 Get instant fare
               </AuthLink>
-              <AuthLink
-                to="/book"
-                className="rounded-full glass px-6 py-3 text-sm font-medium hover:bg-white/10"
+              <button
+                type="button"
+                onClick={() => window.dispatchEvent(new CustomEvent("open-call-care"))}
+                className="inline-flex items-center gap-2 rounded-full glass px-6 py-3 text-sm font-medium hover:bg-white/10"
               >
-                Talk to us · 24×7
-              </AuthLink>
+                <PhoneCall className="h-4 w-4 text-[color:var(--gold)]" /> Talk to a human · 24×7
+              </button>
             </motion.div>
+
+            <motion.a
+              href="#care"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-4 inline-flex w-fit items-center gap-2 rounded-full border border-[color:var(--gold)]/30 bg-[color:var(--gold)]/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-[color:var(--gold)] hover:bg-[color:var(--gold)]/15"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--gold)]/70 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--gold)]" />
+              </span>
+              Our USP · Real humans, personalized calls
+            </motion.a>
 
             <motion.div
               initial={{ opacity: 0 }}
@@ -138,9 +154,11 @@ function Landing() {
       </section>
 
       <Services />
+      <CareUSP />
       <Fleet />
       <WhyUs />
       <Process />
+
       <PopularRoutes />
       <Cities />
       <Testimonials />
