@@ -34,12 +34,20 @@ type Booking = {
   booking_ref: string;
   customer_name: string;
   phone: string;
+  email: string | null;
   pickup_city: string;
   drop_city: string;
   pickup_date: string;
+  pickup_time: string | null;
+  trip_type: string;
+  vehicle_name: string | null;
+  distance_km: number | null;
   status: string;
+  payment_status: string;
   driver_id: string | null;
   estimated_fare: number | null;
+  notes: string | null;
+  created_at: string;
 };
 type DriverVehicle = {
   id: string;
