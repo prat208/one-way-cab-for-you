@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
-import logoAsset from "@/assets/onewaycabs-logo.png.asset.json";
+import logoFull from "@/assets/onewaycabs-logo-clean.png";
+import logoEmblem from "@/assets/onewaycabs-emblem.png";
 
 type Props = {
   className?: string;
