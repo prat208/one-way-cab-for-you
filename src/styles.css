@@ -131,7 +131,7 @@
 }
 
 @keyframes wheel-spin {
-  to { transform: rotate(-360deg); }
+  to { transform: rotate(360deg); }
 }
 @utility wheel-spin { animation: wheel-spin 0.9s linear infinite; }
 
