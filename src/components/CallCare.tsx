@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Phone, X, Copy, Check, MessageCircle, User2 } from "lucide-react";
+import { Phone, X, Copy, Check, MessageCircle, User2, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -219,6 +219,18 @@ export function CallCare() {
                   </div>
                 </div>
               ))}
+              <a
+                href={`mailto:onewaycabsc@gmail.com?subject=${encodeURIComponent("Trip enquiry — ONE WAY CAB")}&body=${encodeURIComponent(msg)}`}
+                className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3 hover:bg-white/[0.06]"
+              >
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Email us</div>
+                  <div className="text-base font-semibold text-foreground">onewaycabsc@gmail.com</div>
+                </div>
+                <div className="inline-flex items-center gap-1.5 rounded-lg glass px-3 py-2 text-xs font-semibold">
+                  <Mail className="h-3.5 w-3.5 text-[color:var(--gold)]" /> Send
+                </div>
+              </a>
             </div>
 
             <details className="mt-4 rounded-xl border border-white/10 bg-white/[0.02] p-3 text-xs">
