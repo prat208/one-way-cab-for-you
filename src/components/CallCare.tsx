@@ -24,6 +24,12 @@ export function CallCare() {
   const [info, setInfo] = useState<Personalization>({});
 
   useEffect(() => {
+    const handler = () => setOpen(true);
+    window.addEventListener("open-call-care", handler);
+    return () => window.removeEventListener("open-call-care", handler);
+  }, []);
+
+  useEffect(() => {
     if (!user || !open) return;
     let cancelled = false;
     (async () => {
