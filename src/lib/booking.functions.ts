@@ -206,7 +206,7 @@ const BookingInput = z.object({
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
   .handler(async ({ data }) => {
-    const supabase = serverSupabase();
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const insertRow = {
       customer_name: data.customer_name,
       phone: data.phone,
@@ -221,10 +221,11 @@ export const createBooking = createServerFn({ method: "POST" })
       estimated_fare: data.estimated_fare ?? null,
       notes: data.notes || null,
       trip_type: data.trip_type,
-      status: "pending",
+      status: "pending" as const,
+      payment_status: "unpaid" as const,
       user_id: data.user_id || null,
     };
-    const { data: row, error } = await supabase
+    const { data: row, error } = await supabaseAdmin
       .from("bookings")
       .insert(insertRow)
       .select("booking_ref")
