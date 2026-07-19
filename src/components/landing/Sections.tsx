@@ -20,6 +20,10 @@ import {
 } from "lucide-react";
 import { CARE_NUMBERS } from "@/components/CallCare";
 import suvImg from "@/assets/hero-suv.png";
+import sedanAsset from "@/assets/sedan.png.asset.json";
+import suvAsset from "@/assets/suv.png.asset.json";
+import innovaAsset from "@/assets/innova.png.asset.json";
+import tempoAsset from "@/assets/tempo.png.asset.json";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandLogo } from "@/components/BrandLogo";
 
