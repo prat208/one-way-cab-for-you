@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X, Phone, LayoutDashboard, LogIn } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { AuthLink } from "@/components/AuthLink";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
@@ -19,14 +20,12 @@ export function Nav() {
     <header className="fixed inset-x-0 top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
         <div className="glass flex items-center justify-between rounded-2xl px-4 py-2.5 sm:px-5">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="grid h-9 w-9 place-items-center rounded-xl btn-gold text-base font-bold">
-              O
-            </div>
+          <Link to="/" className="flex items-center gap-2.5">
+            <BrandLogo crop className="h-11 w-11 shrink-0" />
             <div className="leading-tight">
-              <div className="text-sm font-bold tracking-wide text-foreground">ONE WAY CAB</div>
+              <div className="text-sm font-bold tracking-wide text-foreground">ONEWAYCABS</div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-                Outstation · Premium
+                Tours &amp; Travels · Kolhapur
               </div>
             </div>
           </Link>

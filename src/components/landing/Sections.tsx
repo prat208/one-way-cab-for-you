@@ -21,6 +21,7 @@ import {
 import { CARE_NUMBERS } from "@/components/CallCare";
 import suvImg from "@/assets/hero-suv.png";
 import { AuthLink } from "@/components/AuthLink";
+import { BrandLogo } from "@/components/BrandLogo";
 
 const fadeUp = {
   initial: { opacity: 0, y: 24 },
@@ -343,9 +344,12 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2">
-              <div className="grid h-9 w-9 place-items-center rounded-xl btn-gold text-base font-bold">O</div>
-              <div className="text-sm font-bold tracking-wide">ONE WAY CAB</div>
+            <div className="flex items-center gap-3">
+              <BrandLogo crop className="h-12 w-12" />
+              <div>
+                <div className="text-sm font-bold tracking-wide">ONEWAYCABS</div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Tours &amp; Travels · Kolhapur</div>
+              </div>
             </div>
             <p className="mt-4 max-w-md text-sm text-muted-foreground">
               Premium outstation travel across Maharashtra. Transparent fares. Verified chauffeurs.
