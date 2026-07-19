@@ -119,7 +119,7 @@
 
 @keyframes road-scroll {
   from { background-position: 0 0; }
-  to { background-position: -400px 0; }
+  to { background-position: 400px 0; }
 }
 @utility road-lines {
   background-image: repeating-linear-gradient(
@@ -131,7 +131,7 @@
 }
 
 @keyframes wheel-spin {
-  to { transform: rotate(360deg); }
+  to { transform: rotate(-360deg); }
 }
 @utility wheel-spin { animation: wheel-spin 0.9s linear infinite; }
 
