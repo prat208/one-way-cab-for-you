@@ -402,3 +402,90 @@ function SectionHeader({
     </div>
   );
 }
+
+export function CareUSP() {
+  const openCare = () =>
+    typeof window !== "undefined" && window.dispatchEvent(new CustomEvent("open-call-care"));
+  const perks = [
+    { icon: PhoneCall, title: "Real human, first ring", body: "No IVR mazes. A trip planner picks up in under 20 seconds — day or night." },
+    { icon: MessageCircle, title: "Personalized on call", body: "We already see your city, destination, date & coupon — no re-explaining your trip." },
+    { icon: ShieldCheck, title: "One number, end-to-end", body: "Booking, driver ETA, changes, refunds — the same person owns your ride." },
+  ];
+  return (
+    <section id="care" className="relative py-24 sm:py-32">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(255,200,61,0.10),transparent_60%)]" />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="glass relative overflow-hidden rounded-3xl border border-[color:var(--gold)]/20 p-6 sm:p-10">
+          <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[color:var(--gold)]/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-[color:var(--cyan)]/10 blur-3xl" />
+
+          <div className="grid gap-10 md:grid-cols-2 md:items-center">
+            <div>
+              <motion.div {...fadeUp} className="inline-flex items-center gap-2 rounded-full border border-[color:var(--gold)]/30 bg-[color:var(--gold)]/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[color:var(--gold)]">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--gold)]/70 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--gold)]" />
+                </span>
+                Our USP · Talk to a human, 24×7
+              </motion.div>
+
+              <motion.h2 {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="mt-4 text-3xl font-semibold sm:text-4xl md:text-5xl">
+                Every ride begins with a <span className="text-gradient-gold">real conversation</span>.
+              </motion.h2>
+              <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }} className="mt-4 max-w-lg text-sm text-muted-foreground sm:text-base">
+                Bots quote fares. Humans plan trips. Call us and a trip planner answers with your name, route, date and coupon already on screen — so you get the right car, the right price, in one call.
+              </motion.p>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button
+                  onClick={openCare}
+                  className="inline-flex items-center gap-2 rounded-full btn-gold px-5 py-3 text-sm font-semibold"
+                >
+                  <PhoneCall className="h-4 w-4" /> Speak to a planner
+                </button>
+                {CARE_NUMBERS.map((c) => (
+                  <a
+                    key={c.number}
+                    href={`tel:+91${c.number}`}
+                    className="inline-flex items-center gap-2 rounded-full glass px-4 py-2.5 text-sm hover:bg-white/10"
+                  >
+                    <Phone className="h-4 w-4 text-[color:var(--gold)]" /> +91 {c.number}
+                    <span className="hidden text-[10px] uppercase tracking-[0.16em] text-muted-foreground sm:inline">
+                      · {c.label}
+                    </span>
+                  </a>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                <span>Avg pickup: 20s</span>
+                <span>· Same agent till drop</span>
+                <span>· WhatsApp fallback</span>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              {perks.map((p, i) => (
+                <motion.div
+                  key={p.title}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: 0.08 * i }}
+                  className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+                >
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[color:var(--gold)]/15 text-[color:var(--gold)]">
+                    <p.icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-foreground">{p.title}</div>
+                    <div className="mt-1 text-xs text-muted-foreground sm:text-sm">{p.body}</div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
