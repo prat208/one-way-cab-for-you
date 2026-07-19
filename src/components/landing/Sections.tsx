@@ -376,7 +376,17 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground sm:flex-row">
-          <div>© {new Date().getFullYear()} ONE WAY CAB. All rights reserved.</div>
+          <div>
+            <Link
+              to="/admin-signup"
+              aria-label="Owner access"
+              title="Owner access"
+              className="text-muted-foreground/60 hover:text-[color:var(--gold)]"
+            >
+              ©
+            </Link>{" "}
+            {new Date().getFullYear()} ONE WAY CAB. All rights reserved.
+          </div>
           <div>Made with obsessive attention to detail.</div>
         </div>
       </div>
