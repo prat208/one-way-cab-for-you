@@ -139,9 +139,11 @@ function Landing() {
       </section>
 
       <Services />
+      <CareUSP />
       <Fleet />
       <WhyUs />
       <Process />
+
       <PopularRoutes />
       <Cities />
       <Testimonials />
