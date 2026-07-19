@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Phone, X, Copy, Check, MessageCircle, User2 } from "lucide-react";
+import { Phone, X, Copy, Check, MessageCircle, User2, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 
