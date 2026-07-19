@@ -43,10 +43,10 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
       )}
 
       <motion.img
-        src={logoAsset.url}
+        src={crop ? logoEmblem : logoFull}
         alt={alt}
         draggable={false}
-        className={`relative z-10 h-full w-full select-none object-contain ${crop ? "scale-[1.55] translate-y-[-4%]" : ""}`}
+        className={`relative z-10 h-full w-full select-none object-contain`}
         animate={shouldAnimate ? { y: [0, -3, 0] } : undefined}
         transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
         style={{
