@@ -14,7 +14,11 @@ import {
   UserRound,
   Star,
   ArrowRight,
+  Phone,
+  MessageCircle,
+  PhoneCall,
 } from "lucide-react";
+import { CARE_NUMBERS } from "@/components/CallCare";
 import suvImg from "@/assets/hero-suv.png";
 import { AuthLink } from "@/components/AuthLink";
 
