@@ -106,7 +106,7 @@ function Landing() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--gold)]" />
               </span>
               Our USP · Real humans, personalized calls
-            </motion.div>
+            </motion.a>
 
             <motion.div
               initial={{ opacity: 0 }}
