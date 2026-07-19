@@ -92,7 +92,7 @@ import suvImg from "@/assets/hero-suv.png";
 export function HeroCar() {
   return (
     <motion.div
-      initial={{ x: "-120%", opacity: 0 }}
+      initial={{ x: "120%", opacity: 0 }}
       animate={{ x: "0%", opacity: 1 }}
       transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
       className="pointer-events-none absolute bottom-[6%] left-0 right-0 z-10 mx-auto w-[92%] max-w-5xl"
