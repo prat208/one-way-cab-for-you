@@ -364,8 +364,9 @@ export function Footer() {
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Contact</div>
             <ul className="mt-3 space-y-2 text-sm">
-              <li className="text-foreground/80">24×7 helpline · +91 99999 99999</li>
-              <li className="text-foreground/80">hello@onewaycab.in</li>
+              <li><a href="tel:+918999740424" className="text-foreground/80 hover:text-foreground">24×7 helpline · +91 8999740424</a></li>
+              <li><a href="tel:+919403001415" className="text-foreground/80 hover:text-foreground">Sales · +91 9403001415</a></li>
+              <li><a href="mailto:onewaycabsc@gmail.com" className="text-foreground/80 hover:text-foreground">onewaycabsc@gmail.com</a></li>
               <li className="text-foreground/80">Pune · Mumbai · Kolhapur · Nashik</li>
             </ul>
           </div>
