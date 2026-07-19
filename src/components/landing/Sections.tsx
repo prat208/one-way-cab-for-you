@@ -67,10 +67,6 @@ export function Services() {
 
 export function Fleet() {
   const fleet = [
-    { name: "Sedan", tag: "Comfort", seats: 4, rate: "₹12/km", pts: ["AC · Music", "2 large bags", "Great for couples"] },
-    { name: "SUV", tag: "Premium", seats: 6, rate: "₹16/km", pts: ["Extra headroom", "4 large bags", "Ideal weekend trips"] },
-    { name: "Innova Crysta", tag: "Luxury", seats: 7, rate: "₹19/km", pts: ["Plush interiors", "4 large bags", "Silent cabin"] },
-  const fleet = [
     { name: "Sedan", tag: "Comfort", seats: 4, rate: "₹12/km", img: sedanAsset.url, pts: ["AC · Music", "2 large bags", "Great for couples"] },
     { name: "SUV", tag: "Premium", seats: 6, rate: "₹16/km", img: suvAsset.url, pts: ["Extra headroom", "4 large bags", "Ideal weekend trips"] },
     { name: "Innova Crysta", tag: "Luxury", seats: 7, rate: "₹19/km", img: innovaAsset.url, pts: ["Plush interiors", "4 large bags", "Silent cabin"] },
