@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CallCare } from "../components/CallCare";
+import { OwnerBadge } from "../components/OwnerBadge";
 
 
 function NotFoundComponent() {
@@ -128,6 +129,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <CallCare />
+      <OwnerBadge />
     </QueryClientProvider>
 
   );
