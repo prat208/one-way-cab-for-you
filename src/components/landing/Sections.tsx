@@ -355,6 +355,19 @@ export function Footer() {
               Premium outstation travel across Maharashtra. Transparent fares. Verified chauffeurs.
               Booked in under a minute.
             </p>
+            <address className="mt-5 not-italic text-sm text-foreground/80">
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Visit us</div>
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Tawade+hotel+near+Sai+medical+Bapat+Camp+Gandhinagar+Kolhapur+416005"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 block hover:text-[color:var(--gold)]"
+              >
+                Tawade Hotel, near Sai Medical,<br />
+                Bapat Camp, Gandhinagar,<br />
+                Kolhapur, Maharashtra 416005
+              </a>
+            </address>
           </div>
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Company</div>
