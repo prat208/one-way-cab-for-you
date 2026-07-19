@@ -14,6 +14,7 @@ import {
   Testimonials,
   FAQ,
   Footer,
+  CareUSP,
 } from "@/components/landing/Sections";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandIntro } from "@/components/BrandIntro";
