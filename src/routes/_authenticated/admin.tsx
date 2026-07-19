@@ -12,8 +12,10 @@ import {
 import {
   Car,
   Check,
+  Download,
   Loader2,
   LogOut,
+  Search,
   Shield,
   UserPlus,
   UserMinus,
@@ -32,12 +34,20 @@ type Booking = {
   booking_ref: string;
   customer_name: string;
   phone: string;
+  email: string | null;
   pickup_city: string;
   drop_city: string;
   pickup_date: string;
+  pickup_time: string | null;
+  trip_type: string;
+  vehicle_name: string | null;
+  distance_km: number | null;
   status: string;
+  payment_status: string;
   driver_id: string | null;
   estimated_fare: number | null;
+  notes: string | null;
+  created_at: string;
 };
 type DriverVehicle = {
   id: string;
@@ -130,25 +140,63 @@ function AdminConsole() {
   );
 }
 
+const BOOKING_STATUSES = ["all", "pending", "confirmed", "in-progress", "completed", "cancelled"] as const;
+
+function csvEscape(v: unknown): string {
+  if (v === null || v === undefined) return "";
+  const s = String(v);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+function downloadBookingsCSV(rows: Booking[], driverMap: Map<string, string>) {
+  const headers = [
+    "Booking Ref", "Created At", "Status", "Payment", "Trip Type",
+    "Customer", "Phone", "Email",
+    "Pickup City", "Drop City", "Pickup Date", "Pickup Time",
+    "Vehicle", "Distance (km)", "Estimated Fare (INR)",
+    "Driver", "Notes",
+  ];
+  const lines = [headers.join(",")];
+  for (const b of rows) {
+    lines.push([
+      b.booking_ref, b.created_at, b.status, b.payment_status, b.trip_type,
+      b.customer_name, b.phone, b.email ?? "",
+      b.pickup_city, b.drop_city, b.pickup_date, b.pickup_time ?? "",
+      b.vehicle_name ?? "", b.distance_km ?? "", b.estimated_fare ?? "",
+      b.driver_id ? driverMap.get(b.driver_id) ?? b.driver_id : "",
+      b.notes ?? "",
+    ].map(csvEscape).join(","));
+  }
+  const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `bookings-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function BookingsPane() {
   const assign = useServerFn(assignBookingDriver);
   const [rows, setRows] = useState<Booking[]>([]);
   const [drivers, setDrivers] = useState<{ id: string; email: string }[]>([]);
   const [busy, setBusy] = useState(true);
   const [msg, setMsg] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<(typeof BOOKING_STATUSES)[number]>("all");
 
   useEffect(() => {
     Promise.all([
       supabase
         .from("bookings")
-        .select("id,booking_ref,customer_name,phone,pickup_city,drop_city,pickup_date,status,driver_id,estimated_fare")
+        .select("id,booking_ref,customer_name,phone,email,pickup_city,drop_city,pickup_date,pickup_time,trip_type,vehicle_name,distance_km,status,payment_status,driver_id,estimated_fare,notes,created_at")
         .order("created_at", { ascending: false })
-        .limit(100),
+        .limit(500),
       supabase.from("user_roles").select("user_id").eq("role", "driver"),
     ]).then(async ([bRes, dRes]) => {
       setRows((bRes.data ?? []) as Booking[]);
       const ids = (dRes.data ?? []).map((r) => r.user_id);
-      // Fetch driver emails via profiles fallback
       if (ids.length) {
         const { data: profs } = await supabase
           .from("profiles")
@@ -161,6 +209,22 @@ function BookingsPane() {
       setBusy(false);
     });
   }, []);
+
+  const driverMap = new Map(drivers.map((d) => [d.id, d.email]));
+
+  const filtered = rows.filter((b) => {
+    if (statusFilter !== "all" && b.status !== statusFilter) return false;
+    if (!query.trim()) return true;
+    const q = query.trim().toLowerCase();
+    return (
+      b.booking_ref.toLowerCase().includes(q) ||
+      b.customer_name.toLowerCase().includes(q) ||
+      b.phone.toLowerCase().includes(q) ||
+      (b.email ?? "").toLowerCase().includes(q) ||
+      b.pickup_city.toLowerCase().includes(q) ||
+      b.drop_city.toLowerCase().includes(q)
+    );
+  });
 
   async function onAssign(booking_id: string, driver_id: string | null) {
     setMsg(null);
@@ -184,6 +248,11 @@ function BookingsPane() {
     setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status } : r)));
   }
 
+  async function updatePayment(id: string, payment_status: string) {
+    await supabase.from("bookings").update({ payment_status }).eq("id", id);
+    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, payment_status } : r)));
+  }
+
   if (busy)
     return (
       <div className="grid place-items-center py-20">
@@ -193,22 +262,74 @@ function BookingsPane() {
 
   return (
     <div className="space-y-3">
+      <div className="glass flex flex-wrap items-center gap-3 rounded-2xl p-3">
+        <div className="relative flex-1 min-w-[220px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search ref, name, phone, city…"
+            className="w-full rounded-full border border-white/10 bg-white/[0.04] px-9 py-2 text-xs outline-none"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+          className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs outline-none [color-scheme:dark]"
+        >
+          {BOOKING_STATUSES.map((s) => (
+            <option key={s} value={s}>{s === "all" ? "All statuses" : s}</option>
+          ))}
+        </select>
+        <div className="text-xs text-muted-foreground">
+          {filtered.length} of {rows.length}
+        </div>
+        <button
+          onClick={() => downloadBookingsCSV(filtered, driverMap)}
+          disabled={filtered.length === 0}
+          className="inline-flex items-center gap-1.5 rounded-full btn-gold px-4 py-2 text-xs font-semibold disabled:opacity-50"
+        >
+          <Download className="h-3.5 w-3.5" /> Export Excel (CSV)
+        </button>
+      </div>
+
       {msg && <div className="rounded-xl bg-white/10 px-4 py-2 text-xs">{msg}</div>}
-      {rows.map((b) => (
+
+      {filtered.map((b) => (
         <div key={b.id} className="glass rounded-2xl p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-xs text-muted-foreground">
-                <span className="font-mono text-[color:var(--gold)]">{b.booking_ref}</span> · {b.customer_name} · {b.phone}
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className="font-mono text-[color:var(--gold)]">{b.booking_ref}</span>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">{b.trip_type}</span>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">{b.status}</span>
+                <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-emerald-500/20 text-emerald-200" : "bg-white/10"}`}>
+                  {b.payment_status}
+                </span>
+                <span className="text-muted-foreground">
+                  {new Date(b.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                </span>
               </div>
-              <div className="mt-1 text-sm font-semibold">
+              <div className="mt-2 text-base font-semibold">
                 {b.pickup_city} → {b.drop_city}
               </div>
-              <div className="mt-1 text-xs text-muted-foreground">
-                {b.pickup_date} · ₹{b.estimated_fare?.toLocaleString("en-IN") ?? "-"}
+              <div className="mt-1 grid grid-cols-1 gap-1 text-xs text-muted-foreground sm:grid-cols-2">
+                <div><span className="text-foreground">Customer:</span> {b.customer_name}</div>
+                <div><span className="text-foreground">Phone:</span> <a href={`tel:${b.phone}`} className="text-[color:var(--cyan)] hover:underline">{b.phone}</a></div>
+                {b.email && <div><span className="text-foreground">Email:</span> {b.email}</div>}
+                <div><span className="text-foreground">Pickup:</span> {b.pickup_date}{b.pickup_time ? ` · ${b.pickup_time}` : ""}</div>
+                {b.vehicle_name && <div><span className="text-foreground">Vehicle:</span> {b.vehicle_name}</div>}
+                {b.distance_km != null && <div><span className="text-foreground">Distance:</span> {b.distance_km} km</div>}
+                <div><span className="text-foreground">Fare:</span> ₹{b.estimated_fare?.toLocaleString("en-IN") ?? "-"}</div>
+                {b.driver_id && <div><span className="text-foreground">Driver:</span> {driverMap.get(b.driver_id) ?? b.driver_id.slice(0, 8)}</div>}
               </div>
+              {b.notes && (
+                <div className="mt-2 rounded-lg bg-white/5 px-3 py-2 text-xs">
+                  <span className="text-muted-foreground">Notes: </span>{b.notes}
+                </div>
+              )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col items-end gap-2">
               <select
                 value={b.driver_id ?? ""}
                 onChange={(e) => onAssign(b.id, e.target.value || null)}
@@ -216,9 +337,7 @@ function BookingsPane() {
               >
                 <option value="">Unassigned</option>
                 {drivers.map((d) => (
-                  <option key={d.id} value={d.id}>
-                    {d.email}
-                  </option>
+                  <option key={d.id} value={d.id}>{d.email}</option>
                 ))}
               </select>
               <select
@@ -232,13 +351,23 @@ function BookingsPane() {
                 <option value="completed">completed</option>
                 <option value="cancelled">cancelled</option>
               </select>
+              <select
+                value={b.payment_status}
+                onChange={(e) => updatePayment(b.id, e.target.value)}
+                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs outline-none [color-scheme:dark]"
+              >
+                <option value="unpaid">unpaid</option>
+                <option value="paid">paid</option>
+                <option value="refunded">refunded</option>
+              </select>
             </div>
           </div>
         </div>
       ))}
-      {rows.length === 0 && (
+
+      {filtered.length === 0 && (
         <p className="rounded-2xl border border-white/10 bg-white/[0.02] p-10 text-center text-sm text-muted-foreground">
-          No bookings yet.
+          {rows.length === 0 ? "No bookings yet." : "No bookings match your filters."}
         </p>
       )}
     </div>
