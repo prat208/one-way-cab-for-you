@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ShieldCheck, Star, ArrowDown } from "lucide-react";
+import { ShieldCheck, Star, ArrowDown, PhoneCall } from "lucide-react";
 import { Nav } from "@/components/landing/Nav";
 import { HeroScene, HeroCar } from "@/components/landing/HeroScene";
 import { BookingWidget } from "@/components/landing/BookingWidget";
