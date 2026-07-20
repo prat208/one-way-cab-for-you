@@ -6,7 +6,7 @@ import { markNotificationsRead } from "@/lib/leads.functions";
 import { Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 
-type Notif = { id: string; title: string; body: string; created_at: string; read_at: string | null; lead_id: string | null };
+type Notif = { id: string; title: string; body: string; created_at: string; read_at: string | null; lead_id: string | null; kind: string | null };
 
 export function AdminBell() {
   const { user, isAdmin } = useAuth();
@@ -70,7 +70,7 @@ export function AdminBell() {
             {items.map((n) => (
               <Link
                 key={n.id}
-                to="/admin/leads"
+                to={n.kind === "booking_created" ? "/admin" : "/admin/leads"}
                 onClick={() => setOpen(false)}
                 className="block border-b border-white/5 px-3 py-2.5 hover:bg-white/[0.03]"
               >
