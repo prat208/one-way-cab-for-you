@@ -1,35 +1,39 @@
+Add a Slack notification channel so every new cab booking instantly posts full customer + trip details to an admin Slack channel, alongside the existing in-app admin bell.
 
-## Goal
-When a visitor lands on the site, play a short, premium brand-name intro animation (letters of the brand assembling with a subtle cab motion), then smoothly hand off into the landing page so the hero appears in sync with the animation's finish.
+## What we'll build
 
-## Behavior
-- Plays on first visit per session (sessionStorage flag `intro_played`), so it doesn't replay on every internal navigation.
-- Auto-skips for users who prefer reduced motion (`prefers-reduced-motion`) — instant reveal.
-- Small "Skip" button in the corner.
-- Total duration ~2.2s. Non-blocking: page is already mounted underneath, overlay fades out.
-- Only on the landing route (`/`), not on `/auth`, `/book`, admin, etc.
+1. **Slack connector setup**
+   - Link the Slack App connector to this project (opens the connector picker so you can choose/create a Slack workspace connection).
+   - After linking, the project gets `SLACK_API_KEY` and gateway access.
 
-## Animation choreography (framer-motion)
-1. 0.0–0.4s: Dark warm-sand overlay fades in with a soft vignette.
-2. 0.2–1.2s: Brand letters (e.g. "O N E W A Y C A B") stagger in — each letter slides up + fades, slight blur-to-sharp, staggered 60ms.
-3. 0.9–1.6s: A minimalist cab silhouette (SVG) drives across underlining the wordmark, headlight sweep highlights letters as it passes.
-4. 1.4–1.8s: Tagline "Trips, done right." fades in beneath.
-5. 1.8–2.2s: Whole overlay scales slightly and fades out; landing hero's existing fade-in kicks in at the same moment so the transition feels continuous (hero heading uses the same font weight/scale end-state as the wordmark for a "morph" feel).
+2. **New notification event: `booking.created`**
+   - Extend `src/lib/notify.server.ts` to support a `booking.created` event type.
+   - Payload includes: customer name, phone, email, pickup city, drop city, pickup date/time, vehicle, trip type, estimated fare, distance, booking reference, and notes.
 
-## Files to add / change
-- `src/components/BrandIntro.tsx` — new. Framer-motion overlay component with the choreography above, reduced-motion guard, session flag, skip button.
-- `src/components/CabGlyph.tsx` — new. Small inline SVG cab used inside the intro (kept local so no asset import churn).
-- `src/routes/index.tsx` — mount `<BrandIntro />` at the top of the landing route only; delay the hero's entrance by ~100ms so the handoff lines up. No business logic changes.
-- `src/styles.css` — add two small keyframes (`headlight-sweep`, `letter-rise`) and a `.brand-intro-mask` utility using existing warm-sand tokens; no new color tokens.
+3. **Slack channel implementation**
+   - Add a `slack` channel to `CHANNELS` in `src/lib/notify.server.ts`.
+   - Post a formatted message to a configurable Slack channel (default `#bookings`, overridable via `SLACK_BOOKINGS_CHANNEL` secret).
+   - Use the Lovable connector gateway: `https://connector-gateway.lovable.dev/slack/api/chat.postMessage`.
+   - Include a clean booking summary block with customer contact details and trip info.
 
-## Non-goals
-- No changes to auth, booking, admin, MCP, or data layer.
-- No new dependencies (framer-motion is already installed).
-- No route changes; intro is purely presentational.
+4. **Trigger on booking creation**
+   - In `src/lib/booking.functions.ts`, after `createBooking` succeeds, call `dispatch({ type: "booking.created", payload: { ... } })`.
+   - The dispatcher already fetches admin recipients and runs all enabled channels, so no new admin lookup logic is needed.
 
-## Verification
-- Load `/` → intro plays once, hero visible after ~2.2s.
-- Reload `/` in same tab → intro skipped (session flag).
-- Open in a new tab with reduced-motion enabled → intro instantly dismissed.
-- Navigate `/` → `/auth` → back to `/` in the same session → no replay.
-- `/auth`, `/book`, `/_authenticated/*` → intro never mounts.
+5. **Admin dashboard visibility**
+   - Ensure the existing in-app admin bell / admin notifications table still shows the booking alert, so Slack is not the only channel.
+
+6. **Testing / verification**
+   - Run a booking submission in the preview.
+   - Confirm the Slack message arrives in the chosen channel and the in-app admin notification is created.
+
+## Technical details
+
+- Gateway endpoint: `POST https://connector-gateway.lovable.dev/slack/api/chat.postMessage`
+- Required headers: `Authorization: Bearer ${LOVABLE_API_KEY}`, `X-Connection-Api-Key: ${SLACK_API_KEY}`, `Content-Type: application/json`
+- Environment variables needed: `SLACK_API_KEY` (linked automatically), optional `SLACK_BOOKINGS_CHANNEL`.
+- The Slack connector bot must be invited to the target channel if it is private; public channels are accessible by default.
+
+## User action required before implementation
+
+You need to create or link a Slack connection. During the build step I will call `standard_connectors--connect` for Slack, which opens the connector dialog for you to complete.
