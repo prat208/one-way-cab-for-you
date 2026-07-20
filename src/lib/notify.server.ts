@@ -161,13 +161,22 @@ const slackChannel: Channel = {
         headers: {
           Authorization: `Bearer ${lovableKey}`,
           "X-Connection-Api-Key": slackKey,
-          "Content-Type": "application/json",
+          "Content-Type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({ channel, text, blocks }),
       });
+      const body = await res.text();
       if (!res.ok) {
-        const body = await res.text();
         console.error(`[notify:slack] ${res.status}: ${body}`);
+        return;
+      }
+      try {
+        const result = JSON.parse(body) as { ok?: boolean; error?: string };
+        if (!result.ok) {
+          console.error(`[notify:slack] Slack rejected message for ${channel}: ${result.error || body}`);
+        }
+      } catch {
+        console.error(`[notify:slack] Unexpected Slack response: ${body}`);
       }
     } catch (e) {
       console.error("[notify:slack]", e);
