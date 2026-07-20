@@ -9,16 +9,19 @@ const SESSION_KEY = "intro_played_v4";
 export function BrandIntro() {
   const prefersReduced = useReducedMotion();
   const [show, setShow] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (prefersReduced) return;
+    const mobile = window.matchMedia("(max-width: 640px)").matches;
+    setIsMobile(mobile);
     try {
       if (sessionStorage.getItem(SESSION_KEY)) return;
       sessionStorage.setItem(SESSION_KEY, "1");
     } catch {}
     setShow(true);
-    const t = setTimeout(() => setShow(false), 4200);
+    const t = setTimeout(() => setShow(false), mobile ? 2600 : 4200);
     return () => clearTimeout(t);
   }, [prefersReduced]);
 
