@@ -7,15 +7,20 @@ const BRAND = "ONEWAYCABS";
 
 export function BrandIntro() {
   const prefersReduced = useReducedMotion();
-  const [show, setShow] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches,
+  );
+  // Start visible so the intro plays on every mount of "/" (route enter or reload).
+  const [show, setShow] = useState(true);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (prefersReduced) return;
+    if (prefersReduced) {
+      setShow(false);
+      return;
+    }
     const mobile = window.matchMedia("(max-width: 640px)").matches;
     setIsMobile(mobile);
-    setShow(true);
     const t = setTimeout(() => setShow(false), mobile ? 2600 : 4200);
     return () => clearTimeout(t);
   }, [prefersReduced]);
