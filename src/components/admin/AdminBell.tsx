@@ -6,7 +6,7 @@ import { markNotificationsRead } from "@/lib/leads.functions";
 import { Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 
-type Notif = { id: string; title: string; body: string; created_at: string; read_at: string | null; lead_id: string | null };
+type Notif = { id: string; title: string; body: string; created_at: string; read_at: string | null; lead_id: string | null; kind: string | null };
 
 export function AdminBell() {
   const { user, isAdmin } = useAuth();
