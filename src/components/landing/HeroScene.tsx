@@ -2,7 +2,10 @@ import { motion } from "framer-motion";
 
 export function HeroScene() {
   // Deterministic particle set so SSR matches CSR (no hydration diff).
-  const particles = Array.from({ length: 22 }, (_, i) => ({
+  // Fewer particles on mobile for smoother scrolling & less GPU load.
+  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches;
+  const count = isMobile ? 8 : 22;
+  const particles = Array.from({ length: count }, (_, i) => ({
     left: (i * 37) % 100,
     delay: (i * 0.7) % 12,
     duration: 10 + ((i * 3) % 14),
