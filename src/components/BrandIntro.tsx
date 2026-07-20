@@ -4,7 +4,6 @@ import logoFull from "@/assets/onewaycabs-logo-clean.png";
 import { CabGlyph } from "./CabGlyph";
 
 const BRAND = "ONEWAYCABS";
-const SESSION_KEY = "intro_played_v4";
 
 export function BrandIntro() {
   const prefersReduced = useReducedMotion();
@@ -16,10 +15,6 @@ export function BrandIntro() {
     if (prefersReduced) return;
     const mobile = window.matchMedia("(max-width: 640px)").matches;
     setIsMobile(mobile);
-    try {
-      if (sessionStorage.getItem(SESSION_KEY)) return;
-      sessionStorage.setItem(SESSION_KEY, "1");
-    } catch {}
     setShow(true);
     const t = setTimeout(() => setShow(false), mobile ? 2600 : 4200);
     return () => clearTimeout(t);
