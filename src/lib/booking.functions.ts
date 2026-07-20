@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
+import { dispatch } from "@/lib/notify.server";
 
 function serverSupabase() {
   return createClient<Database>(
@@ -228,11 +229,31 @@ export const createBooking = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("bookings")
       .insert(insertRow)
-      .select("booking_ref")
+      .select("id, booking_ref, created_at")
       .single();
     if (error) {
       console.error("createBooking error", error);
       throw new Error("Could not save your booking. Please try again.");
     }
+    await dispatch({
+      type: "booking.created",
+      payload: {
+        bookingId: row.id,
+        bookingRef: row.booking_ref,
+        customerName: data.customer_name,
+        phone: data.phone,
+        email: data.email || null,
+        pickupCity: data.pickup_city,
+        dropCity: data.drop_city,
+        pickupDate: data.pickup_date,
+        pickupTime: data.pickup_time || null,
+        vehicleName: data.vehicle_name || null,
+        tripType: data.trip_type,
+        estimatedFare: data.estimated_fare ?? null,
+        distanceKm: data.distance_km ?? null,
+        notes: data.notes || null,
+        createdAt: row.created_at,
+      },
+    }).catch((e) => console.error("[createBooking] dispatch failed", e));
     return { booking_ref: row.booking_ref };
   });
