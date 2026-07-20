@@ -27,11 +27,11 @@ function BookPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
-      <main className="mx-auto max-w-7xl px-4 pt-28 pb-16 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 pt-24 pb-28 sm:px-6 sm:pt-28 sm:pb-16">
         <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-[color:var(--gold)]">Book your ride</div>
-            <h1 className="mt-1 text-3xl font-bold sm:text-4xl">Modern booking, in five steps</h1>
+            <h1 className="mt-1 text-2xl font-bold sm:text-3xl md:text-4xl">Modern booking, in five steps</h1>
             <p className="mt-1 max-w-xl text-sm text-muted-foreground">
               Fill the wizard on the left, or ask <b>Aura</b> — our AI concierge — on the right to price your trip or pick the best cab.
             </p>
