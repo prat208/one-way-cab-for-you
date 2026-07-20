@@ -70,7 +70,7 @@ function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.7 }}
-              className="mt-6 max-w-lg text-base text-muted-foreground sm:text-lg"
+              className="mt-4 max-w-lg text-sm text-muted-foreground sm:mt-6 sm:text-lg"
             >
               Door-to-door outstation rides from Pune, Mumbai, Kolhapur & Nashik. Transparent fares,
               verified chauffeurs, plush cars — booked in under a minute.
