@@ -59,7 +59,7 @@ function Landing() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-5 text-4xl font-semibold leading-[1.05] sm:text-5xl md:text-6xl lg:text-7xl"
+              className="mt-4 text-[2rem] font-semibold leading-[1.05] sm:mt-5 sm:text-5xl md:text-6xl lg:text-7xl"
             >
               Outstation cabs,
               <br />
