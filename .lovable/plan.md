@@ -1,39 +1,49 @@
-Add a Slack notification channel so every new cab booking instantly posts full customer + trip details to an admin Slack channel, alongside the existing in-app admin bell.
+## Plan: WhatsApp booking notifications via Meta Cloud API
 
-## What we'll build
+### What we will build
+1. Add a **WhatsApp Cloud API channel** to `src/lib/notify.server.ts` that sends a new-booking alert to the admin WhatsApp number `9699025918` (formatted as `919699025918`).
+2. Add three new project secrets to hold the client's WhatsApp credentials.
+3. Create a standalone **WHATSAPP_SETUP.md** guide that the client can follow to get their own credentials.
+4. Test the end-to-end booking notification flow after the client has entered their credentials.
 
-1. **Slack connector setup**
-   - Link the Slack App connector to this project (opens the connector picker so you can choose/create a Slack workspace connection).
-   - After linking, the project gets `SLACK_API_KEY` and gateway access.
+### Why Meta Cloud API is the right "direct" option
+- It is WhatsApp's official API, not a third-party BSP.
+- The first 1,000 business-initiated conversations per month are free.
+- It only needs a phone number, a Meta Business account, and an access token.
+- No per-message cost for the small volume of cab-booking alerts this app generates.
 
-2. **New notification event: `booking.created`**
-   - Extend `src/lib/notify.server.ts` to support a `booking.created` event type.
-   - Payload includes: customer name, phone, email, pickup city, drop city, pickup date/time, vehicle, trip type, estimated fare, distance, booking reference, and notes.
+### Credentials needed (all belonging to the client)
+| Secret | Where it comes from | Format |
+|--------|--------------------|--------|
+| `WHATSAPP_PHONE_NUMBER_ID` | WhatsApp Business Account → API Setup → Phone Number ID | Numeric string, e.g. `123456789012345` |
+| `WHATSAPP_ACCESS_TOKEN` | Meta Business Settings → System Users → WhatsApp Business Management API token | Long token starting with `EAAG...` |
+| `WHATSAPP_ADMIN_RECIPIENT` | The admin mobile number that should receive alerts | E.164, e.g. `919699025918` |
 
-3. **Slack channel implementation**
-   - Add a `slack` channel to `CHANNELS` in `src/lib/notify.server.ts`.
-   - Post a formatted message to a configurable Slack channel (default `#bookings`, overridable via `SLACK_BOOKINGS_CHANNEL` secret).
-   - Use the Lovable connector gateway: `https://connector-gateway.lovable.dev/slack/api/chat.postMessage`.
-   - Include a clean booking summary block with customer contact details and trip info.
+### Implementation details
+- Add a new `whatsappChannel` in `src/lib/notify.server.ts` next to Slack/Telegram.
+- Send to `https://graph.facebook.com/v18.0/{PHONE_NUMBER_ID}/messages`.
+- Use a **pre-approved template message** (`new_booking_alert`) to avoid the 24-hour session window.
+- The template will include variables: customer name, booking reference, route, phone, and pickup date.
+- The channel will only fire when `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`, and `WHATSAPP_ADMIN_RECIPIENT` are all set.
+- Keep existing Slack and in-app channels untouched; WhatsApp becomes an additional channel.
 
-4. **Trigger on booking creation**
-   - In `src/lib/booking.functions.ts`, after `createBooking` succeeds, call `dispatch({ type: "booking.created", payload: { ... } })`.
-   - The dispatcher already fetches admin recipients and runs all enabled channels, so no new admin lookup logic is needed.
+### Client setup guide (WHATSAPP_SETUP.md)
+The guide will cover:
+1. Creating a Meta Business Account.
+2. Adding a WhatsApp Business Account and verifying the phone number.
+3. Creating a Meta Business System User and generating a permanent access token.
+4. Copying the **Phone Number ID** and the **Access Token** into the project secrets.
+5. Creating a WhatsApp message template (`new_booking_alert`) with the required variables and submitting it for Meta approval.
+6. Setting the admin recipient number.
+7. Testing by creating a booking.
 
-5. **Admin dashboard visibility**
-   - Ensure the existing in-app admin bell / admin notifications table still shows the booking alert, so Slack is not the only channel.
+### Testing plan
+1. After secrets are set, create a booking on `/book`.
+2. Verify the server logs show the WhatsApp API response.
+3. Confirm the admin receives the WhatsApp message.
+4. If Meta rejects the template, fall back to in-app + Slack alerts until the template is approved.
 
-6. **Testing / verification**
-   - Run a booking submission in the preview.
-   - Confirm the Slack message arrives in the chosen channel and the in-app admin notification is created.
-
-## Technical details
-
-- Gateway endpoint: `POST https://connector-gateway.lovable.dev/slack/api/chat.postMessage`
-- Required headers: `Authorization: Bearer ${LOVABLE_API_KEY}`, `X-Connection-Api-Key: ${SLACK_API_KEY}`, `Content-Type: application/json`
-- Environment variables needed: `SLACK_API_KEY` (linked automatically), optional `SLACK_BOOKINGS_CHANNEL`.
-- The Slack connector bot must be invited to the target channel if it is private; public channels are accessible by default.
-
-## User action required before implementation
-
-You need to create or link a Slack connection. During the build step I will call `standard_connectors--connect` for Slack, which opens the connector dialog for you to complete.
+### Notes
+- A WhatsApp Cloud API template must be approved before it can be used outside the 24-hour session window.
+- The template creation step is the only part that requires Meta review (usually minutes to a few hours).
+- The app will not crash if WhatsApp credentials are missing; it will simply skip the WhatsApp channel and keep using Slack/in-app notifications.

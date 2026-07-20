@@ -210,7 +210,89 @@ const telegramChannel: Channel = {
   },
 };
 
-const CHANNELS: Channel[] = [inAppChannel, emailChannel, slackChannel, telegramChannel];
+// WhatsApp Cloud API: official Meta API for admin booking alerts.
+// Requires a pre-approved template named "new_booking_alert" with 5 body variables.
+const whatsappChannel: Channel = {
+  id: "whatsapp",
+  isEnabled: () =>
+    Boolean(
+      process.env.WHATSAPP_PHONE_NUMBER_ID &&
+        process.env.WHATSAPP_ACCESS_TOKEN &&
+        process.env.WHATSAPP_ADMIN_RECIPIENT,
+    ),
+  async send(event) {
+    if (event.type !== "booking.created") return;
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID!;
+    const token = process.env.WHATSAPP_ACCESS_TOKEN!;
+    const to = process.env.WHATSAPP_ADMIN_RECIPIENT!;
+    const p = event.payload;
+    const route = `${p.pickupCity} → ${p.dropCity}`;
+
+    const body = {
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to,
+      type: "template",
+      template: {
+        name: "new_booking_alert",
+        language: { code: "en" },
+        components: [
+          {
+            type: "body",
+            parameters: [
+              { type: "text", text: p.customerName },
+              { type: "text", text: p.bookingRef },
+              { type: "text", text: route },
+              { type: "text", text: p.phone },
+              { type: "text", text: p.pickupDate },
+            ],
+          },
+        ],
+      },
+    };
+
+    try {
+      const res = await fetch(`https://graph.facebook.com/v18.0/${phoneNumberId}/messages`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      const responseText = await res.text();
+      if (!res.ok) {
+        console.error(`[notify:whatsapp] ${res.status}: ${responseText}`);
+        return;
+      }
+      try {
+        const result = JSON.parse(responseText) as {
+          messages?: [{ id?: string }];
+          error?: { message?: string; error_user_msg?: string };
+        };
+        if (result.error) {
+          console.error(
+            `[notify:whatsapp] Meta rejected message: ${result.error.message || responseText}`,
+          );
+        } else {
+          console.log(`[notify:whatsapp] sent message id ${result.messages?.[0]?.id}`);
+        }
+      } catch {
+        console.error(`[notify:whatsapp] Unexpected Meta response: ${responseText}`);
+      }
+    } catch (e) {
+      console.error("[notify:whatsapp]", e);
+    }
+  },
+};
+
+const CHANNELS: Channel[] = [
+  inAppChannel,
+  emailChannel,
+  slackChannel,
+  telegramChannel,
+  whatsappChannel,
+];
 
 export async function dispatch(event: NotificationEvent): Promise<void> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
