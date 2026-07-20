@@ -39,11 +39,11 @@ function Landing() {
       <Nav />
 
       {/* HERO */}
-      <section className="relative min-h-[100svh] w-full overflow-hidden pt-24">
+      <section className="relative min-h-[100svh] w-full overflow-hidden pt-20 sm:pt-24">
         <HeroScene />
         <HeroCar />
 
-        <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-32 pt-6 sm:px-6 md:grid-cols-2 md:gap-12 md:pt-14">
+        <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 pb-24 pt-4 sm:gap-10 sm:px-6 sm:pb-32 md:grid-cols-2 md:gap-12 md:pt-14">
           <div className="flex flex-col justify-start">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
