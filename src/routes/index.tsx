@@ -39,11 +39,11 @@ function Landing() {
       <Nav />
 
       {/* HERO */}
-      <section className="relative min-h-[100svh] w-full overflow-hidden pt-24">
+      <section className="relative min-h-[100svh] w-full overflow-hidden pt-20 sm:pt-24">
         <HeroScene />
         <HeroCar />
 
-        <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-32 pt-6 sm:px-6 md:grid-cols-2 md:gap-12 md:pt-14">
+        <div className="relative z-20 mx-auto grid max-w-7xl grid-cols-1 gap-8 px-4 pb-24 pt-4 sm:gap-10 sm:px-6 sm:pb-32 md:grid-cols-2 md:gap-12 md:pt-14">
           <div className="flex flex-col justify-start">
             <motion.div
               initial={{ opacity: 0, y: 12 }}
@@ -59,7 +59,7 @@ function Landing() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-5 text-4xl font-semibold leading-[1.05] sm:text-5xl md:text-6xl lg:text-7xl"
+              className="mt-4 text-[2rem] font-semibold leading-[1.05] sm:mt-5 sm:text-5xl md:text-6xl lg:text-7xl"
             >
               Outstation cabs,
               <br />
@@ -70,7 +70,7 @@ function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.7 }}
-              className="mt-6 max-w-lg text-base text-muted-foreground sm:text-lg"
+              className="mt-4 max-w-lg text-sm text-muted-foreground sm:mt-6 sm:text-lg"
             >
               Door-to-door outstation rides from Pune, Mumbai, Kolhapur & Nashik. Transparent fares,
               verified chauffeurs, plush cars — booked in under a minute.

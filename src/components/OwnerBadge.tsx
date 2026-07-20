@@ -11,16 +11,16 @@ export function OwnerBadge() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-24 left-4 z-40 flex items-center gap-2 sm:bottom-6">
+    <div className="fixed bottom-5 left-4 z-40 flex items-center gap-2 sm:bottom-6">
       <motion.button
         type="button"
         aria-label="Owner access"
         onClick={() => setOpen((v) => !v)}
         whileTap={{ scale: 0.92 }}
         whileHover={{ scale: 1.05 }}
-        className="relative grid h-11 w-11 place-items-center rounded-full border border-primary/40 bg-background/80 text-primary shadow-lg backdrop-blur transition hover:border-primary hover:bg-primary/10"
+        className="relative grid h-10 w-10 place-items-center rounded-full border border-primary/40 bg-background/80 text-primary shadow-lg backdrop-blur transition hover:border-primary hover:bg-primary/10 sm:h-11 sm:w-11"
       >
-        <UserRound className="h-5 w-5" />
+        <UserRound className="h-4 w-4 sm:h-5 sm:w-5" />
         <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-primary/20 animate-ping" />
       </motion.button>
 

@@ -42,7 +42,7 @@ export function Services() {
     { icon: Building2, title: "Corporate Travel", body: "Monthly billing, professional chauffeurs, dedicated account manager." },
   ];
   return (
-    <section id="services" className="relative py-24 sm:py-32">
+    <section id="services" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader eyebrow="Services" title={<>Every trip, <span className="text-gradient-gold">handled</span>.</>} sub="One platform for your outstation, airport and corporate rides." />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -73,7 +73,7 @@ export function Fleet() {
     { name: "Tempo Traveller", tag: "Group", seats: 12, rate: "₹26/km", img: tempoAsset.url, pts: ["Reclining seats", "8 large bags", "Group outings"] },
   ];
   return (
-    <section id="fleet" className="relative py-24 sm:py-32">
+    <section id="fleet" className="relative py-16 sm:py-24 md:py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(255,200,61,0.08),transparent_60%)]" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader eyebrow="Fleet" title={<>Cars you'd want to <span className="text-gradient-gold">be seen in</span>.</>} sub="Late-model, deep-cleaned, and driven by verified chauffeurs." />
@@ -132,7 +132,7 @@ export function WhyUs() {
     { icon: MapPin, title: "Door-to-door", body: "Pickup from your gate, drop at your destination — nothing in between." },
   ];
   return (
-    <section id="why" className="relative py-24 sm:py-32">
+    <section id="why" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader eyebrow="Why ONE WAY CAB" title={<>Built for people who <span className="text-gradient-gold">value their time</span>.</>} sub="Six reasons customers refer us to their friends and family." />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -162,7 +162,7 @@ export function Process() {
     { n: "04", title: "Ride and relax", body: "Verified chauffeur, door-to-door, pay after ride." },
   ];
   return (
-    <section id="how" className="relative py-24 sm:py-32">
+    <section id="how" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader eyebrow="How it works" title={<>Booked in under a <span className="text-gradient-gold">minute</span>.</>} sub="No app to download. No signup. No back-and-forth." />
         <div className="relative mt-16 grid gap-6 md:grid-cols-4">
@@ -197,7 +197,7 @@ export function PopularRoutes() {
     { from: "Mumbai", to: "Pune", km: 150, price: 2300 },
   ];
   return (
-    <section id="routes" className="relative py-24 sm:py-32">
+    <section id="routes" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader eyebrow="Popular routes" title={<>Most-loved <span className="text-gradient-gold">outstation trips</span>.</>} sub="Fares below are indicative sedan one-way rates." />
         <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -239,7 +239,7 @@ export function Cities() {
     { slug: "nashik", name: "Nashik", tag: "Shirdi · Wine country" },
   ];
   return (
-    <section id="cities" className="relative py-24 sm:py-32">
+    <section id="cities" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Cities we serve"
@@ -278,7 +278,7 @@ export function Testimonials() {
     { n: "Neha K.", city: "Pune → Mahabaleshwar", body: "Loved the Innova. Kids slept the whole way. Driver stopped at a great tea break spot without me asking.", rating: 5 },
   ];
   return (
-    <section className="relative py-24 sm:py-32">
+    <section className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader eyebrow="Loved by travellers" title={<>What our <span className="text-gradient-gold">riders say</span>.</>} sub="A snapshot of thousands of 5-star reviews." />
         <div className="mt-14 grid gap-5 md:grid-cols-3">
@@ -321,7 +321,7 @@ export function FAQ() {
     { q: "Which cars do you offer?", a: "Sedan, SUV, Innova Crysta and Tempo Traveller — all late-model, sanitised and AC." },
   ];
   return (
-    <section id="faq" className="relative py-24 sm:py-32">
+    <section id="faq" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <SectionHeader eyebrow="FAQ" title={<>Answers, before you <span className="text-gradient-gold">ask</span>.</>} sub="Everything you need to know before you book." />
         <div className="mt-12 divide-y divide-white/10 rounded-2xl glass">
@@ -444,7 +444,7 @@ export function CareUSP() {
     { icon: ShieldCheck, title: "One number, end-to-end", body: "Booking, driver ETA, changes, refunds — the same person owns your ride." },
   ];
   return (
-    <section id="care" className="relative py-24 sm:py-32">
+    <section id="care" className="relative py-16 sm:py-24 md:py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(255,200,61,0.10),transparent_60%)]" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="glass relative overflow-hidden rounded-3xl border border-[color:var(--gold)]/20 p-6 sm:p-10">
