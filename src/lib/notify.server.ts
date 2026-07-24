@@ -286,12 +286,47 @@ const whatsappChannel: Channel = {
   },
 };
 
+// Generic webhook: POSTs the full event as JSON to BOOKING_WEBHOOK_URL.
+// Ideal for n8n, Zapier, Make, or any custom HTTP endpoint.
+const webhookChannel: Channel = {
+  id: "webhook",
+  isEnabled: () => Boolean(process.env.BOOKING_WEBHOOK_URL),
+  async send(event) {
+    const url = process.env.BOOKING_WEBHOOK_URL!;
+    const secret = process.env.BOOKING_WEBHOOK_SECRET;
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent": "OneWayCabs-Webhook/1.0",
+          ...(secret ? { "X-Webhook-Secret": secret } : {}),
+        },
+        body: JSON.stringify({
+          event: event.type,
+          sentAt: new Date().toISOString(),
+          data: event.payload,
+        }),
+      });
+      const text = await res.text();
+      if (!res.ok) {
+        console.error(`[notify:webhook] ${res.status}: ${text}`);
+      } else {
+        console.log(`[notify:webhook] delivered ${event.type} → ${res.status}`);
+      }
+    } catch (e) {
+      console.error("[notify:webhook]", e);
+    }
+  },
+};
+
 const CHANNELS: Channel[] = [
   inAppChannel,
   emailChannel,
   slackChannel,
   telegramChannel,
   whatsappChannel,
+  webhookChannel,
 ];
 
 export async function dispatch(event: NotificationEvent): Promise<void> {
