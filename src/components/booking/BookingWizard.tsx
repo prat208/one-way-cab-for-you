@@ -255,18 +255,31 @@ export function BookingWizard({
               )}
 
               {step === 1 && (
-                <StepPane title="Where & when?" hint="Pickup, destination and travel date">
+                <StepPane title="Where & when?" hint="Type any city, town or landmark">
+                  <datalist id="city-suggestions">
+                    {cityList.map((c) => <option key={c} value={c} />)}
+                  </datalist>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup city">
-                      <select value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full bg-transparent text-sm outline-none">
-                        {cityList.map((c) => <option key={c} value={c} className="bg-[#0a0f24]">{c}</option>)}
-                      </select>
+                    <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup location">
+                      <input
+                        list="city-suggestions"
+                        value={pickup}
+                        onChange={(e) => setPickup(e.target.value)}
+                        placeholder="e.g. Kolhapur, Mahabaleshwar, Airport…"
+                        className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                        autoComplete="off"
+                      />
                     </Field>
                     {tripType !== "local" && (
                       <Field icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />} label="Destination">
-                        <select value={drop} onChange={(e) => setDrop(e.target.value)} className="w-full bg-transparent text-sm outline-none">
-                          {cityList.map((c) => <option key={c} value={c} className="bg-[#0a0f24]">{c}</option>)}
-                        </select>
+                        <input
+                          list="city-suggestions"
+                          value={drop}
+                          onChange={(e) => setDrop(e.target.value)}
+                          placeholder="e.g. Pune, Mumbai, Panhala Fort…"
+                          className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                          autoComplete="off"
+                        />
                       </Field>
                     )}
                     <Field icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup date">
@@ -281,8 +294,18 @@ export function BookingWizard({
                       </Field>
                     )}
                   </div>
+                  {tripType !== "local" && (
+                    <RouteMap
+                      polyline={polyline}
+                      origin={routeOrigin}
+                      destination={routeDest}
+                      distanceKm={distance}
+                      durationHours={duration}
+                    />
+                  )}
                 </StepPane>
               )}
+
 
               {step === 2 && (
                 <StepPane title="Choose your cab" hint={busy ? "Calculating live fares…" : `${estimates.length} options available`}>
