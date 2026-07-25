@@ -8,6 +8,8 @@ import {
 import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
+import { RouteMap } from "./RouteMap";
+
 
 type Estimate = {
   vehicle_id: string;
@@ -61,10 +63,14 @@ export function BookingWizard({
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [distance, setDistance] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
+  const [polyline, setPolyline] = useState<string | null>(null);
+  const [routeOrigin, setRouteOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [routeDest, setRouteDest] = useState<{ lat: number; lng: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
+
 
   useEffect(() => {
     runGetCatalog({ data: {} }).then((c) => setCities(c.cities)).catch(() => {});
@@ -85,26 +91,35 @@ export function BookingWizard({
 
   useEffect(() => {
     if (tripType !== "local" && (!pickup || !drop || pickup === drop)) {
-      setEstimates([]); setDistance(null); setDuration(null); setSelected(null); return;
+      setEstimates([]); setDistance(null); setDuration(null); setSelected(null);
+      setPolyline(null); setRouteOrigin(null); setRouteDest(null);
+      return;
     }
     setBusy(true); setError(null);
-    runEstimate({
-      data: {
-        pickup_city: pickup,
-        drop_city: tripType === "local" ? pickup : drop,
-        trip_type: tripType,
-        local_package: tripType === "local" ? localPackage : null,
-      },
-    })
-      .then((r) => {
-        setEstimates(r.estimates);
-        setDistance(Number(r.distance_km));
-        setDuration(Number(r.duration_hours));
-        setSelected((prev) => r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null);
+    const handle = setTimeout(() => {
+      runEstimate({
+        data: {
+          pickup_city: pickup,
+          drop_city: tripType === "local" ? pickup : drop,
+          trip_type: tripType,
+          local_package: tripType === "local" ? localPackage : null,
+        },
       })
-      .catch(() => setError("Couldn't compute fare. Try again."))
-      .finally(() => setBusy(false));
+        .then((r) => {
+          setEstimates(r.estimates);
+          setDistance(Number(r.distance_km));
+          setDuration(Number(r.duration_hours));
+          setPolyline(("polyline" in r ? r.polyline : null) ?? null);
+          setRouteOrigin(("origin" in r ? r.origin : null) ?? null);
+          setRouteDest(("destination" in r ? r.destination : null) ?? null);
+          setSelected((prev) => r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null);
+        })
+        .catch((err) => setError(err instanceof Error ? err.message : "Couldn't compute fare. Try again."))
+        .finally(() => setBusy(false));
+    }, 400);
+    return () => clearTimeout(handle);
   }, [pickup, drop, tripType, localPackage, runEstimate]);
+
 
   const cityList = cities.length ? cities.map((c) => c.name) : ["Pune", "Mumbai", "Kolhapur", "Nashik", "Shirdi", "Lonavala", "Mahabaleshwar"];
 
@@ -240,18 +255,31 @@ export function BookingWizard({
               )}
 
               {step === 1 && (
-                <StepPane title="Where & when?" hint="Pickup, destination and travel date">
+                <StepPane title="Where & when?" hint="Type any city, town or landmark">
+                  <datalist id="city-suggestions">
+                    {cityList.map((c) => <option key={c} value={c} />)}
+                  </datalist>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup city">
-                      <select value={pickup} onChange={(e) => setPickup(e.target.value)} className="w-full bg-transparent text-sm outline-none">
-                        {cityList.map((c) => <option key={c} value={c} className="bg-[#0a0f24]">{c}</option>)}
-                      </select>
+                    <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup location">
+                      <input
+                        list="city-suggestions"
+                        value={pickup}
+                        onChange={(e) => setPickup(e.target.value)}
+                        placeholder="e.g. Kolhapur, Mahabaleshwar, Airport…"
+                        className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                        autoComplete="off"
+                      />
                     </Field>
                     {tripType !== "local" && (
                       <Field icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />} label="Destination">
-                        <select value={drop} onChange={(e) => setDrop(e.target.value)} className="w-full bg-transparent text-sm outline-none">
-                          {cityList.map((c) => <option key={c} value={c} className="bg-[#0a0f24]">{c}</option>)}
-                        </select>
+                        <input
+                          list="city-suggestions"
+                          value={drop}
+                          onChange={(e) => setDrop(e.target.value)}
+                          placeholder="e.g. Pune, Mumbai, Panhala Fort…"
+                          className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                          autoComplete="off"
+                        />
                       </Field>
                     )}
                     <Field icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup date">
@@ -266,8 +294,18 @@ export function BookingWizard({
                       </Field>
                     )}
                   </div>
+                  {tripType !== "local" && (
+                    <RouteMap
+                      polyline={polyline}
+                      origin={routeOrigin}
+                      destination={routeDest}
+                      distanceKm={distance}
+                      durationHours={duration}
+                    />
+                  )}
                 </StepPane>
               )}
+
 
               {step === 2 && (
                 <StepPane title="Choose your cab" hint={busy ? "Calculating live fares…" : `${estimates.length} options available`}>

@@ -158,14 +158,40 @@ export const estimateFare = createServerFn({ method: "POST" })
       supabase.from("vehicles").select("*").eq("is_active", true).order("sort_order"),
     ]);
 
-    const oneWayDistance = routeRes.data?.distance_km ?? 200;
-    const oneWayDuration = routeRes.data?.duration_hours ?? Number(oneWayDistance) / 55;
+    let oneWayDistance: number | null = routeRes.data?.distance_km
+      ? Number(routeRes.data.distance_km)
+      : null;
+    let oneWayDuration: number | null = routeRes.data?.duration_hours
+      ? Number(routeRes.data.duration_hours)
+      : null;
+    let polyline: string | null = null;
+    let originLatLng: { lat: number; lng: number } | null = null;
+    let destinationLatLng: { lat: number; lng: number } | null = null;
+    let originLabel: string | null = null;
+    let destinationLabel: string | null = null;
+
+    if (oneWayDistance == null) {
+      const live = await googleRoute(data.pickup_city, data.drop_city);
+      if (!live) {
+        throw new Error(
+          `Couldn't find a driving route between "${data.pickup_city}" and "${data.drop_city}". Please refine the location names.`,
+        );
+      }
+      oneWayDistance = live.distanceKm;
+      oneWayDuration = live.durationHours;
+      polyline = live.polyline;
+      originLatLng = live.origin;
+      destinationLatLng = live.destination;
+      originLabel = live.originLabel;
+      destinationLabel = live.destinationLabel;
+    }
+
     const vehicles = vehiclesRes.data ?? [];
 
     // ROUND TRIP: charge for return distance too, plus a small driver allowance
     const multiplier = data.trip_type === "round-trip" ? 2 : 1;
-    const distance = Number(oneWayDistance) * multiplier;
-    const duration = Number(oneWayDuration) * multiplier;
+    const distance = oneWayDistance * multiplier;
+    const duration = (oneWayDuration ?? oneWayDistance / 55) * multiplier;
     const driverAllowance = data.trip_type === "round-trip" ? 300 : 0;
 
     const estimates = vehicles.map((v) => ({
@@ -184,8 +210,126 @@ export const estimateFare = createServerFn({ method: "POST" })
       duration_hours: duration,
       estimates,
       trip_type: data.trip_type,
+      polyline,
+      origin: originLatLng,
+      destination: destinationLatLng,
+      origin_label: originLabel,
+      destination_label: destinationLabel,
     };
   });
+
+// ---------- Google Maps helpers (gateway) ----------
+const GMAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
+
+async function gmapsHeaders() {
+  const lovableKey = process.env.LOVABLE_API_KEY;
+  const gmapsKey = process.env.GOOGLE_MAPS_API_KEY;
+  if (!lovableKey || !gmapsKey) {
+    throw new Error("Google Maps connector is not configured on the server.");
+  }
+  return {
+    Authorization: `Bearer ${lovableKey}`,
+    "X-Connection-Api-Key": gmapsKey,
+  } as Record<string, string>;
+}
+
+async function geocodeOne(q: string): Promise<
+  { lat: number; lng: number; label: string } | null
+> {
+  const headers = await gmapsHeaders();
+  const url = `${GMAPS_GATEWAY}/maps/api/geocode/json?address=${encodeURIComponent(
+    q + ", India",
+  )}&region=in`;
+  const r = await fetch(url, { headers });
+  if (!r.ok) return null;
+  const j = (await r.json()) as {
+    status?: string;
+    results?: Array<{
+      formatted_address: string;
+      geometry: { location: { lat: number; lng: number } };
+    }>;
+  };
+  const first = j.results?.[0];
+  if (!first) return null;
+  return {
+    lat: first.geometry.location.lat,
+    lng: first.geometry.location.lng,
+    label: first.formatted_address,
+  };
+}
+
+async function googleRoute(from: string, to: string): Promise<
+  | {
+      distanceKm: number;
+      durationHours: number;
+      polyline: string;
+      origin: { lat: number; lng: number };
+      destination: { lat: number; lng: number };
+      originLabel: string;
+      destinationLabel: string;
+    }
+  | null
+> {
+  const [a, b] = await Promise.all([geocodeOne(from), geocodeOne(to)]);
+  if (!a || !b) return null;
+  const headers = {
+    ...(await gmapsHeaders()),
+    "Content-Type": "application/json",
+    "X-Goog-FieldMask":
+      "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
+  };
+  const body = JSON.stringify({
+    origin: { location: { latLng: { latitude: a.lat, longitude: a.lng } } },
+    destination: { location: { latLng: { latitude: b.lat, longitude: b.lng } } },
+    travelMode: "DRIVE",
+    routingPreference: "TRAFFIC_UNAWARE",
+    polylineEncoding: "ENCODED_POLYLINE",
+  });
+  const r = await fetch(`${GMAPS_GATEWAY}/routes/directions/v2:computeRoutes`, {
+    method: "POST",
+    headers,
+    body,
+  });
+  if (!r.ok) {
+    if (r.status === 403) {
+      const t = await r.text();
+      const reason =
+        (JSON.parse(t)?.error?.details ?? []).find((d: { reason?: string }) => d.reason)
+          ?.reason ?? "";
+      if (reason === "API_KEY_HTTP_REFERRER_BLOCKED") {
+        throw new Error(
+          'Google Maps server key is referrer-restricted. Set restrictions to "None" or "IP addresses" in Google Cloud Console.',
+        );
+      }
+      if (reason === "API_KEY_SERVICE_BLOCKED") {
+        throw new Error(
+          "Google Maps server key does not allow the Routes API. Enable it for the server key in Google Cloud Console.",
+        );
+      }
+    }
+    return null;
+  }
+  const j = (await r.json()) as {
+    routes?: Array<{
+      distanceMeters?: number;
+      duration?: string;
+      polyline?: { encodedPolyline?: string };
+    }>;
+  };
+  const route = j.routes?.[0];
+  if (!route?.distanceMeters) return null;
+  const durationSec = route.duration ? parseInt(route.duration.replace("s", ""), 10) : 0;
+  return {
+    distanceKm: route.distanceMeters / 1000,
+    durationHours: durationSec ? durationSec / 3600 : route.distanceMeters / 1000 / 55,
+    polyline: route.polyline?.encodedPolyline ?? "",
+    origin: { lat: a.lat, lng: a.lng },
+    destination: { lat: b.lat, lng: b.lng },
+    originLabel: a.label,
+    destinationLabel: b.label,
+  };
+}
+
 
 const BookingInput = z.object({
   customer_name: z.string().trim().min(2).max(80),
