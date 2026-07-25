@@ -8,6 +8,8 @@ import {
 import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
+import { RouteMap } from "./RouteMap";
+
 
 type Estimate = {
   vehicle_id: string;
