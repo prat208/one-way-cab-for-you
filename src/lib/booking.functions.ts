@@ -369,6 +369,29 @@ export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Derive user_id from a verified session token only. Never trust the
+    // client-supplied user_id — otherwise anyone could attach bookings to
+    // any account.
+    let verifiedUserId: string | null = null;
+    try {
+      const { getRequest } = await import("@tanstack/react-start/server");
+      const req = getRequest();
+      const authHeader = req?.headers?.get("authorization") ?? "";
+      if (authHeader.startsWith("Bearer ")) {
+        const token = authHeader.slice(7).trim();
+        if (token && token.split(".").length === 3) {
+          const { data: claimsData } = await supabaseAdmin.auth.getClaims(token);
+          if (claimsData?.claims?.sub) {
+            verifiedUserId = claimsData.claims.sub as string;
+          }
+        }
+      }
+    } catch (e) {
+      console.error("[createBooking] token verification failed", e);
+      verifiedUserId = null;
+    }
+
     const insertRow = {
       customer_name: data.customer_name,
       phone: data.phone,
@@ -385,8 +408,9 @@ export const createBooking = createServerFn({ method: "POST" })
       trip_type: data.trip_type,
       status: "pending" as const,
       payment_status: "unpaid" as const,
-      user_id: data.user_id || null,
+      user_id: verifiedUserId,
     };
+
     const { data: row, error } = await supabaseAdmin
       .from("bookings")
       .insert(insertRow)
