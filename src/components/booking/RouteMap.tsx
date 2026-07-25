@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import { useEffect, useRef } from "react";
 
 declare global {
@@ -7,6 +8,7 @@ declare global {
     __gmapsReady?: Promise<void>;
   }
 }
+
 
 const KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as
   | string
