@@ -12,7 +12,7 @@ export function Nav() {
     { href: "/#services", label: "Services" },
     { href: "/#fleet", label: "Fleet" },
     { href: "/#cities", label: "Cities" },
-    { href: "/#routes", label: "Routes" },
+    { href: "/rates", label: "Fares" },
     { href: "/#faq", label: "FAQ" },
     { href: "/driver/signup", label: "Drive with us" },
   ];
