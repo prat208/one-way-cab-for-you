@@ -91,26 +91,35 @@ export function BookingWizard({
 
   useEffect(() => {
     if (tripType !== "local" && (!pickup || !drop || pickup === drop)) {
-      setEstimates([]); setDistance(null); setDuration(null); setSelected(null); return;
+      setEstimates([]); setDistance(null); setDuration(null); setSelected(null);
+      setPolyline(null); setRouteOrigin(null); setRouteDest(null);
+      return;
     }
     setBusy(true); setError(null);
-    runEstimate({
-      data: {
-        pickup_city: pickup,
-        drop_city: tripType === "local" ? pickup : drop,
-        trip_type: tripType,
-        local_package: tripType === "local" ? localPackage : null,
-      },
-    })
-      .then((r) => {
-        setEstimates(r.estimates);
-        setDistance(Number(r.distance_km));
-        setDuration(Number(r.duration_hours));
-        setSelected((prev) => r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null);
+    const handle = setTimeout(() => {
+      runEstimate({
+        data: {
+          pickup_city: pickup,
+          drop_city: tripType === "local" ? pickup : drop,
+          trip_type: tripType,
+          local_package: tripType === "local" ? localPackage : null,
+        },
       })
-      .catch(() => setError("Couldn't compute fare. Try again."))
-      .finally(() => setBusy(false));
+        .then((r) => {
+          setEstimates(r.estimates);
+          setDistance(Number(r.distance_km));
+          setDuration(Number(r.duration_hours));
+          setPolyline(("polyline" in r ? r.polyline : null) ?? null);
+          setRouteOrigin(("origin" in r ? r.origin : null) ?? null);
+          setRouteDest(("destination" in r ? r.destination : null) ?? null);
+          setSelected((prev) => r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null);
+        })
+        .catch((err) => setError(err instanceof Error ? err.message : "Couldn't compute fare. Try again."))
+        .finally(() => setBusy(false));
+    }, 400);
+    return () => clearTimeout(handle);
   }, [pickup, drop, tripType, localPackage, runEstimate]);
+
 
   const cityList = cities.length ? cities.map((c) => c.name) : ["Pune", "Mumbai", "Kolhapur", "Nashik", "Shirdi", "Lonavala", "Mahabaleshwar"];
 
