@@ -20,6 +20,52 @@ import { AuthLink } from "@/components/AuthLink";
 import { BrandIntro } from "@/components/BrandIntro";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
+      { name: "description", content: "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support and instant WhatsApp booking." },
+      { property: "og:title", content: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
+      { property: "og:description", content: "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support." },
+      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/" },
+      { property: "og:type", content: "website" },
+    ],
+    links: [{ rel: "canonical", href: "https://one-way-cab-for-you.lovable.app/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: "ONE WAY CAB",
+          url: "https://one-way-cab-for-you.lovable.app/",
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: [
+            {
+              "@type": "Question",
+              name: "Do you offer one-way outstation cabs?",
+              acceptedAnswer: { "@type": "Answer", text: "Yes. We offer transparent one-way fares across Maharashtra with no return-trip charges." },
+            },
+            {
+              "@type": "Question",
+              name: "Are your chauffeurs verified?",
+              acceptedAnswer: { "@type": "Answer", text: "Every chauffeur is background-checked, licensed and trained for long-distance outstation travel." },
+            },
+            {
+              "@type": "Question",
+              name: "How do I get a fare estimate?",
+              acceptedAnswer: { "@type": "Answer", text: "Use the live fare calculator on the Rates page or start a booking on the Book page for an instant quote." },
+            },
+          ],
+        }),
+      },
+    ],
+  }),
   component: Landing,
 });
 

@@ -12,10 +12,11 @@ export const Route = createFileRoute("/city/$slug")({
     if (!data) throw notFound();
     return data;
   },
-  head: ({ loaderData }) => {
+  head: ({ params, loaderData }) => {
     if (!loaderData) return { meta: [{ title: "City not found — ONE WAY CAB" }] };
     const title = `${loaderData.name} Outstation Cabs — ONE WAY CAB`;
     const description = `Book premium outstation cabs from ${loaderData.name}. Transparent one-way fares, verified chauffeurs, 24×7 support. ${loaderData.routes.length}+ popular routes.`;
+    const url = `https://one-way-cab-for-you.lovable.app/city/${params.slug}`;
     return {
       meta: [
         { title },
@@ -23,8 +24,25 @@ export const Route = createFileRoute("/city/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
+        { property: "og:url", content: url },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Service",
+            serviceType: "Outstation cab service",
+            provider: { "@type": "Organization", name: "ONE WAY CAB" },
+            areaServed: { "@type": "City", name: loaderData.name, addressRegion: loaderData.state, addressCountry: "IN" },
+            name: `Outstation cabs from ${loaderData.name}`,
+            description,
+            url,
+          }),
+        },
       ],
     };
   },

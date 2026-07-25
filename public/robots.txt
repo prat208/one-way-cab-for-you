@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /admin
+Disallow: /admin-signup
+Disallow: /dashboard
+Disallow: /track/
+Disallow: /coupon
+Disallow: /lead
+
+Sitemap: https://one-way-cab-for-you.lovable.app/sitemap.xml

@@ -67,10 +67,10 @@ export function Services() {
 
 export function Fleet() {
   const fleet = [
-    { name: "Sedan", tag: "Comfort", seats: 4, rate: "₹12/km", img: sedanAsset.url, pts: ["AC · Music", "2 large bags", "Great for couples"] },
-    { name: "SUV", tag: "Premium", seats: 6, rate: "₹16/km", img: suvAsset.url, pts: ["Extra headroom", "4 large bags", "Ideal weekend trips"] },
-    { name: "Innova Crysta", tag: "Luxury", seats: 7, rate: "₹19/km", img: innovaAsset.url, pts: ["Plush interiors", "4 large bags", "Silent cabin"] },
-    { name: "Tempo Traveller", tag: "Group", seats: 12, rate: "₹26/km", img: tempoAsset.url, pts: ["Reclining seats", "8 large bags", "Group outings"] },
+    { name: "Sedan", alt: "Premium sedan cab for outstation travel", tag: "Comfort", seats: 4, rate: "₹12/km", img: sedanAsset.url, pts: ["AC · Music", "2 large bags", "Great for couples"] },
+    { name: "SUV", alt: "Luxury SUV cab for outstation trips", tag: "Premium", seats: 6, rate: "₹16/km", img: suvAsset.url, pts: ["Extra headroom", "4 large bags", "Ideal weekend trips"] },
+    { name: "Innova Crysta", alt: "Toyota Innova Crysta luxury MPV cab", tag: "Luxury", seats: 7, rate: "₹19/km", img: innovaAsset.url, pts: ["Plush interiors", "4 large bags", "Silent cabin"] },
+    { name: "Tempo Traveller", alt: "Tempo Traveller minibus for group outstation travel", tag: "Group", seats: 12, rate: "₹26/km", img: tempoAsset.url, pts: ["Reclining seats", "8 large bags", "Group outings"] },
   ];
   return (
     <section id="fleet" className="relative py-16 sm:py-24 md:py-32">
@@ -88,7 +88,7 @@ export function Fleet() {
               <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1030] to-[#050816]">
                 <img
                   src={f.img}
-                  alt={f.name}
+                  alt={f.alt}
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105"
                 />

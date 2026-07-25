@@ -17,7 +17,10 @@ export const Route = createFileRoute("/book")({
       { name: "description", content: "Book outstation, round trip or local cabs across Maharashtra. Live fares, best cab picker, and an AI concierge to help you plan." },
       { property: "og:title", content: "Book a cab — ONE WAY CAB" },
       { property: "og:description", content: "Live fares, modern booking, AI concierge." },
+      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/book" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://one-way-cab-for-you.lovable.app/book" }],
   }),
   component: BookPage,
 });
