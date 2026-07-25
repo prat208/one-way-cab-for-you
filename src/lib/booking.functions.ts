@@ -346,7 +346,15 @@ const BookingInput = z.object({
   notes: z.string().max(500).optional().or(z.literal("")),
   trip_type: z.enum(["one-way", "round-trip", "local"]).default("one-way"),
   user_id: z.string().uuid().optional().nullable(),
+  origin_lat: z.number().optional().nullable(),
+  origin_lng: z.number().optional().nullable(),
+  destination_lat: z.number().optional().nullable(),
+  destination_lng: z.number().optional().nullable(),
+  origin_label: z.string().max(200).optional().nullable(),
+  destination_label: z.string().max(200).optional().nullable(),
+  polyline: z.string().max(8000).optional().nullable(),
 });
+
 
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
