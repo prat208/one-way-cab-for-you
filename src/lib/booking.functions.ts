@@ -346,7 +346,15 @@ const BookingInput = z.object({
   notes: z.string().max(500).optional().or(z.literal("")),
   trip_type: z.enum(["one-way", "round-trip", "local"]).default("one-way"),
   user_id: z.string().uuid().optional().nullable(),
+  origin_lat: z.number().optional().nullable(),
+  origin_lng: z.number().optional().nullable(),
+  destination_lat: z.number().optional().nullable(),
+  destination_lng: z.number().optional().nullable(),
+  origin_label: z.string().max(200).optional().nullable(),
+  destination_label: z.string().max(200).optional().nullable(),
+  polyline: z.string().max(8000).optional().nullable(),
 });
+
 
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
@@ -379,6 +387,18 @@ export const createBooking = createServerFn({ method: "POST" })
       console.error("createBooking error", error);
       throw new Error("Could not save your booking. Please try again.");
     }
+    const hasCoords =
+      data.origin_lat != null &&
+      data.origin_lng != null &&
+      data.destination_lat != null &&
+      data.destination_lng != null;
+    const mapUrl = hasCoords
+      ? `https://www.google.com/maps/dir/?api=1&origin=${data.origin_lat},${data.origin_lng}&destination=${data.destination_lat},${data.destination_lng}&travelmode=driving`
+      : `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(data.pickup_city)}&destination=${encodeURIComponent(data.drop_city)}&travelmode=driving`;
+    const staticMapUrl = hasCoords && data.polyline
+      ? `https://maps.googleapis.com/maps/api/staticmap?size=640x360&scale=2&maptype=roadmap&markers=color:green%7Clabel:A%7C${data.origin_lat},${data.origin_lng}&markers=color:red%7Clabel:B%7C${data.destination_lat},${data.destination_lng}&path=weight:4%7Ccolor:0x1a73e8ff%7Cenc:${encodeURIComponent(data.polyline)}&key=${process.env.GOOGLE_MAPS_BROWSER_KEY ?? ""}`
+      : null;
+
     await dispatch({
       type: "booking.created",
       payload: {
@@ -397,7 +417,17 @@ export const createBooking = createServerFn({ method: "POST" })
         distanceKm: data.distance_km ?? null,
         notes: data.notes || null,
         createdAt: row.created_at,
+        originLabel: data.origin_label ?? null,
+        destinationLabel: data.destination_label ?? null,
+        originLat: data.origin_lat ?? null,
+        originLng: data.origin_lng ?? null,
+        destinationLat: data.destination_lat ?? null,
+        destinationLng: data.destination_lng ?? null,
+        polyline: data.polyline ?? null,
+        mapUrl,
+        staticMapUrl,
       },
     }).catch((e) => console.error("[createBooking] dispatch failed", e));
     return { booking_ref: row.booking_ref };
   });
+
