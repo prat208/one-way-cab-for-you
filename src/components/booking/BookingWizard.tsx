@@ -155,7 +155,13 @@ export function BookingWizard({
           trip_type: tripType,
           notes: notesParts.join(" · "),
           user_id: sess.session?.user.id ?? null,
+          origin_lat: routeOrigin?.lat ?? null,
+          origin_lng: routeOrigin?.lng ?? null,
+          destination_lat: routeDest?.lat ?? null,
+          destination_lng: routeDest?.lng ?? null,
+          polyline: polyline ?? null,
         },
+
       });
       setBookingRef(res.booking_ref);
     } catch (err) {
