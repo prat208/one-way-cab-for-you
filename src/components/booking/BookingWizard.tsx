@@ -90,9 +90,12 @@ export function BookingWizard({
   }, []);
 
   useEffect(() => {
-    if (tripType !== "local" && (!pickup || !drop || pickup === drop)) {
+    const pickOk = pickup.trim().length >= 3;
+    const dropOk = drop.trim().length >= 3;
+    if (tripType === "local" ? !pickOk : (!pickOk || !dropOk || pickup.trim().toLowerCase() === drop.trim().toLowerCase())) {
       setEstimates([]); setDistance(null); setDuration(null); setSelected(null);
       setPolyline(null); setRouteOrigin(null); setRouteDest(null);
+      setBusy(false); setError(null);
       return;
     }
     setBusy(true); setError(null);
