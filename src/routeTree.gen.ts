@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RatesRouteImport } from './routes/rates'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as BookRouteImport } from './routes/book'
@@ -32,6 +33,11 @@ import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authentic
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RatesRoute = RatesRouteImport.update({
   id: '/rates',
   path: '/rates',
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/book': typeof BookRoute
   '/mcp': typeof McpRoute
   '/rates': typeof RatesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -175,6 +182,7 @@ export interface FileRoutesByTo {
   '/book': typeof BookRoute
   '/mcp': typeof McpRoute
   '/rates': typeof RatesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -200,6 +208,7 @@ export interface FileRoutesById {
   '/book': typeof BookRoute
   '/mcp': typeof McpRoute
   '/rates': typeof RatesRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -225,6 +234,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/mcp'
     | '/rates'
+    | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/mcp'
     | '/rates'
+    | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/admin'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/book'
     | '/mcp'
     | '/rates'
+    | '/sitemap.xml'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/_authenticated/admin'
@@ -297,6 +309,7 @@ export interface RootRouteChildren {
   BookRoute: typeof BookRoute
   McpRoute: typeof McpRoute
   RatesRoute: typeof RatesRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -309,6 +322,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/rates': {
       id: '/rates'
       path: '/rates'
@@ -506,6 +526,7 @@ const rootRouteChildren: RootRouteChildren = {
   BookRoute: BookRoute,
   McpRoute: McpRoute,
   RatesRoute: RatesRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,

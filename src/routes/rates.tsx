@@ -11,7 +11,10 @@ export const Route = createFileRoute("/rates")({
       { name: "description", content: "Live fare calculator for any Maharashtra route. Fixed rates for 9 popular routes, per-km pricing for all others. Sedan, Ertiga, Innova, Kia & Mini Bus." },
       { property: "og:title", content: "Fare Calculator — ONE WAY CAB" },
       { property: "og:description", content: "Estimate outstation cab fare across Maharashtra instantly." },
+      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/rates" },
+      { property: "og:type", content: "website" },
     ],
+    links: [{ rel: "canonical", href: "https://one-way-cab-for-you.lovable.app/rates" }],
   }),
   component: RatesPage,
 });
