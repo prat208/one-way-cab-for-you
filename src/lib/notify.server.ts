@@ -30,6 +30,16 @@ export type BookingCreatedPayload = {
   distanceKm: number | null;
   notes: string | null;
   createdAt: string;
+  originLabel?: string | null;
+  destinationLabel?: string | null;
+  originLat?: number | null;
+  originLng?: number | null;
+  destinationLat?: number | null;
+  destinationLng?: number | null;
+  polyline?: string | null;
+  mapUrl?: string | null;
+  staticMapUrl?: string | null;
+
 };
 
 export type NotificationEvent =
