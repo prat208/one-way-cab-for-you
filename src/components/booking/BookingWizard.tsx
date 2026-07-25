@@ -63,10 +63,14 @@ export function BookingWizard({
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [distance, setDistance] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
+  const [polyline, setPolyline] = useState<string | null>(null);
+  const [routeOrigin, setRouteOrigin] = useState<{ lat: number; lng: number } | null>(null);
+  const [routeDest, setRouteDest] = useState<{ lat: number; lng: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
+
 
   useEffect(() => {
     runGetCatalog({ data: {} }).then((c) => setCities(c.cities)).catch(() => {});
