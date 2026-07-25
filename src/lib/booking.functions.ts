@@ -173,9 +173,18 @@ export const estimateFare = createServerFn({ method: "POST" })
     if (oneWayDistance == null) {
       const live = await googleRoute(data.pickup_city, data.drop_city);
       if (!live) {
-        throw new Error(
-          `Couldn't find a driving route between "${data.pickup_city}" and "${data.drop_city}". Please refine the location names.`,
-        );
+        return {
+          estimates: [],
+          distance_km: 0,
+          duration_hours: 0,
+          polyline: null,
+          origin: null,
+          destination: null,
+          origin_label: null,
+          destination_label: null,
+          no_route: true as const,
+          message: `Couldn't find a driving route between "${data.pickup_city}" and "${data.drop_city}". Please refine the location names.`,
+        };
       }
       oneWayDistance = live.distanceKm;
       oneWayDuration = live.durationHours;
