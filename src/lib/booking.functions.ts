@@ -361,7 +361,7 @@ const BookingInput = z.object({
   destination_lng: z.number().optional().nullable(),
   origin_label: z.string().max(200).optional().nullable(),
   destination_label: z.string().max(200).optional().nullable(),
-  polyline: z.string().max(8000).optional().nullable(),
+  polyline: z.string().max(60000).optional().nullable(),
 });
 
 
