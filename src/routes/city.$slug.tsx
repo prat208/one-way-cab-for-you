@@ -4,6 +4,7 @@ import { ArrowRight, MapPin, Clock, ShieldCheck, Star, Phone } from "lucide-reac
 import { Nav } from "@/components/landing/Nav";
 import { BookingWidget } from "@/components/landing/BookingWidget";
 import { Footer, FAQ } from "@/components/landing/Sections";
+import { BackHome } from "@/components/BackHome";
 import { getCityPage, listCitySlugs } from "@/lib/booking.functions";
 
 export const Route = createFileRoute("/city/$slug")({

@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { submitLead, getMyLead } from "@/lib/leads.functions";
+import { BackHome } from "@/components/BackHome";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/lead")({

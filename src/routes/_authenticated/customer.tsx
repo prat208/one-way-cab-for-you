@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Nav } from "@/components/landing/Nav";
 import { BookingWizard } from "@/components/booking/BookingWizard";
 import { AssistantPanel } from "@/components/chat/AssistantPanel";
+import { BackHome } from "@/components/BackHome";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyLead } from "@/lib/leads.functions";
 import { MapPin, Calendar, IndianRupee, PlusCircle, Ticket, ArrowRight } from "lucide-react";

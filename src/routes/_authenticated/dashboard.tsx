@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BackHome } from "@/components/BackHome";
 import { Loader2, LogOut, Shield, Car, User as UserIcon, MapPin, Calendar, IndianRupee } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({

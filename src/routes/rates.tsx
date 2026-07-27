@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Sections";
+import { BackHome } from "@/components/BackHome";
 import { Loader2, MapPin, ArrowRight, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/rates")({

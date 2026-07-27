@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BackHome } from "@/components/BackHome";
 import { Car, Loader2, LogOut, MapPin, PlusCircle, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/driver")({
