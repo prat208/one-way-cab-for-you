@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BackHome } from "@/components/BackHome";
 import { Loader2, LogOut, Shield, Car, User as UserIcon, MapPin, Calendar, IndianRupee } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -96,6 +97,7 @@ function Dashboard() {
             <span className="text-sm font-semibold tracking-wide">ONE WAY CAB</span>
           </Link>
           <div className="flex items-center gap-3">
+            <BackHome />
             <div className={`inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-xs ${roleBadge.color}`}>
               <RoleIcon className="h-3.5 w-3.5" /> {roleBadge.label}
             </div>

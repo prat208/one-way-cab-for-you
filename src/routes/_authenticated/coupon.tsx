@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { getMyLead } from "@/lib/leads.functions";
 import { CouponCard } from "@/components/coupon/CouponCard";
+import { BackHome } from "@/components/BackHome";
 import { ArrowRight, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/coupon")({
@@ -35,6 +36,9 @@ function CouponPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-10">
       <div className="mx-auto w-full max-w-3xl">
+        <div className="mb-4">
+          <BackHome />
+        </div>
         <p className="text-xs uppercase tracking-wider text-[color:var(--gold)]">You're set</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">
           Here's your coupon, {data.lead.name.split(" ")[0]}

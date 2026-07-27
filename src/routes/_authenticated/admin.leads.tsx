@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BackHome } from "@/components/BackHome";
 import {
   listLeads,
   updateLead,
@@ -111,6 +112,9 @@ function LeadsAdmin() {
   return (
     <div className="min-h-screen bg-background px-4 py-8 text-foreground">
       <div className="mx-auto max-w-7xl">
+        <div className="mb-4">
+          <BackHome />
+        </div>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">Leads</h1>

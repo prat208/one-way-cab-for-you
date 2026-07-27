@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { BackHome } from "@/components/BackHome";
 import { Car, Loader2, LogOut, MapPin, PlusCircle, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/driver")({
@@ -129,6 +130,7 @@ function DriverHub() {
               <span className={`h-1.5 w-1.5 rounded-full ${online ? "bg-emerald-400" : "bg-muted-foreground"}`} />
               {online ? "Online" : "Offline"}
             </button>
+            <BackHome />
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
             <button
               onClick={handleSignOut}

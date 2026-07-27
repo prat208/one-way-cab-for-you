@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Sections";
+import { BackHome } from "@/components/BackHome";
 import { Loader2, MapPin, ArrowRight, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/rates")({
@@ -173,6 +174,9 @@ function RatesPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <main className="mx-auto max-w-6xl px-4 pt-24 pb-20 sm:px-6 sm:pt-28">
+        <div className="mb-4">
+          <BackHome />
+        </div>
         <header className="mb-8">
           <div className="text-xs uppercase tracking-[0.18em] text-[color:var(--gold)]">
             Rate card & calculator

@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { submitLead, getMyLead } from "@/lib/leads.functions";
+import { BackHome } from "@/components/BackHome";
 import { Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/lead")({
@@ -69,6 +70,9 @@ function LeadPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-12">
       <div className="mx-auto w-full max-w-lg">
+        <div className="mb-4">
+          <BackHome />
+        </div>
         <p className="text-xs uppercase tracking-wider text-[color:var(--gold)]">Almost there</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">Tell us a bit about you</h1>
         <p className="mt-2 text-sm text-muted-foreground">

@@ -4,6 +4,7 @@ import { ArrowRight, MapPin, Clock, ShieldCheck, Star, Phone } from "lucide-reac
 import { Nav } from "@/components/landing/Nav";
 import { BookingWidget } from "@/components/landing/BookingWidget";
 import { Footer, FAQ } from "@/components/landing/Sections";
+import { BackHome } from "@/components/BackHome";
 import { getCityPage, listCitySlugs } from "@/lib/booking.functions";
 
 export const Route = createFileRoute("/city/$slug")({
@@ -85,6 +86,9 @@ function CityPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(60%_50%_at_50%_0%,rgba(255,200,61,0.10),transparent_60%)]" />
         <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 pb-16 sm:px-6 md:grid-cols-2 md:gap-14 md:pb-24">
           <div>
+            <div className="mb-4">
+              <BackHome />
+            </div>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}

@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AdminBell } from "@/components/admin/AdminBell";
+import { BackHome } from "@/components/BackHome";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -107,6 +108,7 @@ function AdminConsole() {
               Leads
             </Link>
             <AdminBell />
+            <BackHome />
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
             <button
               onClick={handleSignOut}
