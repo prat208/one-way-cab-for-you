@@ -97,6 +97,7 @@ function Dashboard() {
             <span className="text-sm font-semibold tracking-wide">ONE WAY CAB</span>
           </Link>
           <div className="flex items-center gap-3">
+            <BackHome />
             <div className={`inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-xs ${roleBadge.color}`}>
               <RoleIcon className="h-3.5 w-3.5" /> {roleBadge.label}
             </div>

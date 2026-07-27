@@ -70,6 +70,9 @@ function LeadPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-12">
       <div className="mx-auto w-full max-w-lg">
+        <div className="mb-4">
+          <BackHome />
+        </div>
         <p className="text-xs uppercase tracking-wider text-[color:var(--gold)]">Almost there</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">Tell us a bit about you</h1>
         <p className="mt-2 text-sm text-muted-foreground">

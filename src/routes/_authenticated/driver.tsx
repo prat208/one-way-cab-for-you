@@ -130,6 +130,7 @@ function DriverHub() {
               <span className={`h-1.5 w-1.5 rounded-full ${online ? "bg-emerald-400" : "bg-muted-foreground"}`} />
               {online ? "Online" : "Offline"}
             </button>
+            <BackHome />
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
             <button
               onClick={handleSignOut}

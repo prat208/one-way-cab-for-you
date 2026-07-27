@@ -108,6 +108,7 @@ function AdminConsole() {
               Leads
             </Link>
             <AdminBell />
+            <BackHome />
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
             <button
               onClick={handleSignOut}

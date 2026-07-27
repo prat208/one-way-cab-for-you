@@ -41,6 +41,9 @@ function CustomerHub() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <main className="mx-auto max-w-7xl px-4 pt-28 pb-16 sm:px-6">
+        <div className="mb-4">
+          <BackHome />
+        </div>
         <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-[color:var(--gold)]">Customer hub</div>
