@@ -89,21 +89,30 @@ export const getCityPage = createServerFn({ method: "GET" })
         .limit(1),
     ]);
     const cheapest = vehiclesRes.data?.[0];
-    const routes = (routesRes.data ?? []).map((r) => {
-      const other = r.from_city === meta.name ? r.to_city : r.from_city;
-      const distance = Number(r.distance_km);
-      const fare = cheapest
-        ? Math.round(Number(cheapest.base_fare) + Number(cheapest.per_km_rate) * distance)
-        : null;
-      return {
-        to: other,
-        distance_km: distance,
-        duration_hours: r.duration_hours ? Number(r.duration_hours) : Math.round(distance / 55),
-        fare_from: fare,
-      };
-    });
+    const seen = new Set<string>();
+    const routes = (routesRes.data ?? [])
+      .map((r) => {
+        const other = r.from_city === meta.name ? r.to_city : r.from_city;
+        const distance = Number(r.distance_km);
+        const fare = cheapest
+          ? Math.round(Number(cheapest.base_fare) + Number(cheapest.per_km_rate) * distance)
+          : null;
+        return {
+          to: other,
+          distance_km: distance,
+          duration_hours: r.duration_hours ? Number(r.duration_hours) : Math.round(distance / 55),
+          fare_from: fare,
+        };
+      })
+      .filter((r) => {
+        const k = r.to.toLowerCase();
+        if (!r.to || k === meta.name.toLowerCase() || seen.has(k)) return false;
+        seen.add(k);
+        return true;
+      });
     return { slug, ...meta, routes };
   });
+
 
 const EstimateInput = z.object({
   pickup_city: z.string().min(1),
