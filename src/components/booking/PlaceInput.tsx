@@ -46,11 +46,18 @@ export function PlaceInput({
           const list = r.suggestions.length
             ? r.suggestions
             : fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-          setItems(list);
+          setItems(Array.from(new Set(list)));
         })
         .catch(() =>
-          setItems(fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8)),
+          setItems(
+            Array.from(
+              new Set(
+                fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8),
+              ),
+            ),
+          ),
         );
+
     }, 250);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
