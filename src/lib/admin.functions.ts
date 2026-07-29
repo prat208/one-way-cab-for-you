@@ -6,18 +6,14 @@ import { z } from "zod";
 // to the currently signed-in user.
 export const claimAdminWithPasscode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) =>
-    z.object({ passcode: z.string().min(4).max(200) }).parse(input),
-  )
+  .inputValidator((input) => z.object({ passcode: z.string().min(4).max(200) }).parse(input))
   .handler(async ({ data, context }) => {
     const expected = process.env.ADMIN_SIGNUP_PASSCODE;
     if (!expected) throw new Error("Admin signup is not configured.");
     if (data.passcode !== expected) {
       return { ok: false as const, error: "Invalid passcode" };
     }
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin
       .from("user_roles")
       .upsert({ user_id: context.userId, role: "admin" }, { onConflict: "user_id,role" });
@@ -99,17 +95,13 @@ export const setUserRole = createServerFn({ method: "POST" })
       _role: "admin",
     });
     if (!isAdmin) throw new Error("Forbidden");
-    const { supabaseAdmin } = await import(
-      "@/integrations/supabase/client.server"
-    );
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: list, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
       page: 1,
       perPage: 200,
     });
     if (listErr) throw new Error(listErr.message);
-    const target = list.users.find(
-      (u) => u.email?.toLowerCase() === data.email.toLowerCase(),
-    );
+    const target = list.users.find((u) => u.email?.toLowerCase() === data.email.toLowerCase());
     if (!target) return { ok: false as const, error: "User not found" };
     if (data.action === "grant") {
       const { error } = await supabaseAdmin

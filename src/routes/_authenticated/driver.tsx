@@ -54,7 +54,9 @@ function DriverHub() {
     Promise.all([
       supabase
         .from("bookings")
-        .select("id,booking_ref,pickup_city,drop_city,pickup_date,pickup_time,status,estimated_fare,customer_name,phone")
+        .select(
+          "id,booking_ref,pickup_city,drop_city,pickup_date,pickup_time,status,estimated_fare,customer_name,phone",
+        )
         .eq("driver_id", user.id)
         .order("pickup_date", { ascending: false })
         .limit(50),
@@ -102,7 +104,8 @@ function DriverHub() {
       <div className="min-h-screen bg-background px-4 py-20 text-center text-foreground">
         <h1 className="text-xl font-semibold">Driver access required</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your account role is {roles.join(", ") || "customer"}. Register as a driver to access this page.
+          Your account role is {roles.join(", ") || "customer"}. Register as a driver to access this
+          page.
         </p>
         <Link
           to="/driver/signup"
@@ -119,7 +122,9 @@ function DriverHub() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <div className="grid h-8 w-8 place-items-center rounded-lg btn-gold text-sm font-bold">O</div>
+            <div className="grid h-8 w-8 place-items-center rounded-lg btn-gold text-sm font-bold">
+              O
+            </div>
             <span className="text-sm font-semibold">ONE WAY CAB</span>
           </Link>
           <div className="flex items-center gap-3">
@@ -127,7 +132,9 @@ function DriverHub() {
               onClick={toggleOnline}
               className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs ${online ? "border-emerald-400/40 bg-emerald-400/10 text-emerald-300" : "border-white/10 bg-white/[0.03] text-muted-foreground"}`}
             >
-              <span className={`h-1.5 w-1.5 rounded-full ${online ? "bg-emerald-400" : "bg-muted-foreground"}`} />
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${online ? "bg-emerald-400" : "bg-muted-foreground"}`}
+              />
               {online ? "Online" : "Offline"}
             </button>
             <BackHome />
@@ -174,7 +181,8 @@ function DriverHub() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="text-xs text-muted-foreground">
-                        <span className="font-mono text-[color:var(--gold)]">{t.booking_ref}</span> · {t.customer_name} · {t.phone}
+                        <span className="font-mono text-[color:var(--gold)]">{t.booking_ref}</span>{" "}
+                        · {t.customer_name} · {t.phone}
                       </div>
                       <div className="mt-1.5 flex items-center gap-2 text-sm font-semibold">
                         <MapPin className="h-4 w-4 text-[color:var(--gold)]" />
@@ -262,7 +270,16 @@ function CabsTab({
     }
     onChanged([data as Vehicle, ...cabs]);
     setShowForm(false);
-    setForm({ make: "", model: "", year: "", plate: "", seats: "4", category: "sedan", color: "", license_number: "" });
+    setForm({
+      make: "",
+      model: "",
+      year: "",
+      plate: "",
+      seats: "4",
+      category: "sedan",
+      color: "",
+      license_number: "",
+    });
   }
 
   return (
@@ -282,13 +299,34 @@ function CabsTab({
 
       {showForm && (
         <form onSubmit={submit} className="glass grid grid-cols-2 gap-3 rounded-2xl p-4">
-          <Input label="Make" value={form.make} onChange={(v) => setForm({ ...form, make: v })} required />
-          <Input label="Model" value={form.model} onChange={(v) => setForm({ ...form, model: v })} required />
+          <Input
+            label="Make"
+            value={form.make}
+            onChange={(v) => setForm({ ...form, make: v })}
+            required
+          />
+          <Input
+            label="Model"
+            value={form.model}
+            onChange={(v) => setForm({ ...form, model: v })}
+            required
+          />
           <Input label="Year" value={form.year} onChange={(v) => setForm({ ...form, year: v })} />
-          <Input label="Plate" value={form.plate} onChange={(v) => setForm({ ...form, plate: v })} required />
-          <Input label="Seats" value={form.seats} onChange={(v) => setForm({ ...form, seats: v })} />
+          <Input
+            label="Plate"
+            value={form.plate}
+            onChange={(v) => setForm({ ...form, plate: v })}
+            required
+          />
+          <Input
+            label="Seats"
+            value={form.seats}
+            onChange={(v) => setForm({ ...form, seats: v })}
+          />
           <div>
-            <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted-foreground">Category</label>
+            <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted-foreground">
+              Category
+            </label>
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
@@ -300,9 +338,17 @@ function CabsTab({
               <option value="tempo">Tempo Traveller</option>
             </select>
           </div>
-          <Input label="Color" value={form.color} onChange={(v) => setForm({ ...form, color: v })} />
+          <Input
+            label="Color"
+            value={form.color}
+            onChange={(v) => setForm({ ...form, color: v })}
+          />
           <div className="col-span-2">
-            <Input label="Driving licence #" value={form.license_number} onChange={(v) => setForm({ ...form, license_number: v })} />
+            <Input
+              label="Driving licence #"
+              value={form.license_number}
+              onChange={(v) => setForm({ ...form, license_number: v })}
+            />
           </div>
           {error && <p className="col-span-2 text-xs text-red-400">{error}</p>}
           <button
@@ -320,7 +366,10 @@ function CabsTab({
         </p>
       ) : (
         cabs.map((c) => (
-          <div key={c.id} className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
+          <div
+            key={c.id}
+            className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4"
+          >
             <div className="flex items-center gap-3">
               <Car className="h-5 w-5 text-[color:var(--cyan)]" />
               <div>

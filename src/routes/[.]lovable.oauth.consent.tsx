@@ -16,15 +16,11 @@ type OAuthNamespace = {
   getAuthorizationDetails: (
     id: string,
   ) => Promise<{ data: AuthorizationDetails; error: { message: string } | null }>;
-  approveAuthorization: (
-    id: string,
-  ) => Promise<{
+  approveAuthorization: (id: string) => Promise<{
     data: { redirect_url?: string; redirect_to?: string } | null;
     error: { message: string } | null;
   }>;
-  denyAuthorization: (
-    id: string,
-  ) => Promise<{
+  denyAuthorization: (id: string) => Promise<{
     data: { redirect_url?: string; redirect_to?: string } | null;
     error: { message: string } | null;
   }>;
@@ -48,9 +44,7 @@ export const Route = createFileRoute("/.lovable/oauth/consent")({
     }
   },
   loader: async ({ location }) => {
-    const authorizationId = new URLSearchParams(location.search).get(
-      "authorization_id",
-    )!;
+    const authorizationId = new URLSearchParams(location.search).get("authorization_id")!;
     const { data, error } = await oauth().getAuthorizationDetails(authorizationId);
     if (error) throw new Error(error.message);
     const immediate = data?.redirect_url ?? data?.redirect_to;
@@ -112,12 +106,10 @@ function Consent() {
           <div className="flex items-center gap-2 text-xs uppercase tracking-[0.18em] text-[color:var(--gold)]">
             <ShieldCheck className="h-4 w-4" /> Authorize access
           </div>
-          <h1 className="mt-2 text-2xl font-semibold">
-            Connect {clientName} to ONE WAY CAB
-          </h1>
+          <h1 className="mt-2 text-2xl font-semibold">Connect {clientName} to ONE WAY CAB</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            This lets {clientName} use ONE WAY CAB as you. It does not bypass
-            this app's permissions or backend policies.
+            This lets {clientName} use ONE WAY CAB as you. It does not bypass this app's permissions
+            or backend policies.
           </p>
 
           <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm">

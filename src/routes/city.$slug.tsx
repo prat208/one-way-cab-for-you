@@ -38,7 +38,12 @@ export const Route = createFileRoute("/city/$slug")({
             "@type": "Service",
             serviceType: "Outstation cab service",
             provider: { "@type": "Organization", name: "ONE WAY CAB" },
-            areaServed: { "@type": "City", name: loaderData.name, addressRegion: loaderData.state, addressCountry: "IN" },
+            areaServed: {
+              "@type": "City",
+              name: loaderData.name,
+              addressRegion: loaderData.state,
+              addressCountry: "IN",
+            },
             name: `Outstation cabs from ${loaderData.name}`,
             description,
             url,
@@ -56,7 +61,11 @@ export const Route = createFileRoute("/city/$slug")({
           {listCitySlugs().map((s, i) => (
             <span key={s}>
               {i > 0 && ", "}
-              <Link to="/city/$slug" params={{ slug: s }} className="text-[color:var(--gold)] hover:underline capitalize">
+              <Link
+                to="/city/$slug"
+                params={{ slug: s }}
+                className="text-[color:var(--gold)] hover:underline capitalize"
+              >
                 {s}
               </Link>
             </span>
@@ -103,8 +112,7 @@ function CityPage() {
               transition={{ delay: 0.1 }}
               className="mt-4 text-4xl font-semibold leading-[1.05] sm:text-5xl md:text-6xl"
             >
-              Outstation cabs from{" "}
-              <span className="text-gradient-gold">{city.name}</span>
+              Outstation cabs from <span className="text-gradient-gold">{city.name}</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -127,7 +135,10 @@ function CityPage() {
             </div>
             <div className="mt-8 flex flex-wrap gap-2">
               {city.landmarks.map((l: string) => (
-                <span key={l} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted-foreground">
+                <span
+                  key={l}
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted-foreground"
+                >
                   {l}
                 </span>
               ))}
@@ -143,10 +154,11 @@ function CityPage() {
       <section className="relative py-20 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <div className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">Popular routes</div>
+            <div className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
+              Popular routes
+            </div>
             <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">
-              From {city.name} to{" "}
-              <span className="text-gradient-gold">anywhere you love</span>
+              From {city.name} to <span className="text-gradient-gold">anywhere you love</span>
             </h2>
             <p className="mt-3 text-sm text-muted-foreground sm:text-base">
               Sedan one-way fares, indicative. SUV and Innova also available.
@@ -158,32 +170,41 @@ function CityPage() {
                 Route data will appear here once loaded.
               </p>
             )}
-            {city.routes.map((r: { to: string; distance_km: number; duration_hours: number; fare_from: number | null }) => (
-              <a
-                key={r.to}
-                href="#book"
-                className="glass group flex items-center justify-between rounded-2xl p-4 transition-transform hover:-translate-y-0.5"
-              >
-                <div>
-                  <div className="text-xs text-muted-foreground">{city.name}</div>
-                  <div className="flex items-center gap-1.5 text-base font-semibold">
-                    <ArrowRight className="h-3.5 w-3.5 text-[color:var(--gold)]" /> {r.to}
-                  </div>
-                  <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
-                    <span>{r.distance_km} km</span>
-                    <span className="inline-flex items-center gap-1"><Clock className="h-3 w-3" /> ~{r.duration_hours}h</span>
-                  </div>
-                </div>
-                {r.fare_from != null && (
-                  <div className="text-right">
-                    <div className="text-[10px] text-muted-foreground">from</div>
-                    <div className="text-base font-bold text-gradient-gold">
-                      ₹{r.fare_from.toLocaleString("en-IN")}
+            {city.routes.map(
+              (r: {
+                to: string;
+                distance_km: number;
+                duration_hours: number;
+                fare_from: number | null;
+              }) => (
+                <a
+                  key={r.to}
+                  href="#book"
+                  className="glass group flex items-center justify-between rounded-2xl p-4 transition-transform hover:-translate-y-0.5"
+                >
+                  <div>
+                    <div className="text-xs text-muted-foreground">{city.name}</div>
+                    <div className="flex items-center gap-1.5 text-base font-semibold">
+                      <ArrowRight className="h-3.5 w-3.5 text-[color:var(--gold)]" /> {r.to}
+                    </div>
+                    <div className="mt-1 flex items-center gap-3 text-[11px] text-muted-foreground">
+                      <span>{r.distance_km} km</span>
+                      <span className="inline-flex items-center gap-1">
+                        <Clock className="h-3 w-3" /> ~{r.duration_hours}h
+                      </span>
                     </div>
                   </div>
-                )}
-              </a>
-            ))}
+                  {r.fare_from != null && (
+                    <div className="text-right">
+                      <div className="text-[10px] text-muted-foreground">from</div>
+                      <div className="text-base font-bold text-gradient-gold">
+                        ₹{r.fare_from.toLocaleString("en-IN")}
+                      </div>
+                    </div>
+                  )}
+                </a>
+              ),
+            )}
           </div>
         </div>
       </section>

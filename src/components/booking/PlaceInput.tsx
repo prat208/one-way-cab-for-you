@@ -107,7 +107,9 @@ export function PlaceInput({
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => pick(s)}
                 className={`block w-full rounded-lg px-3 py-2 text-left text-xs leading-snug transition-colors ${
-                  i === active ? "bg-white/10 text-foreground" : "text-muted-foreground hover:bg-white/5"
+                  i === active
+                    ? "bg-white/10 text-foreground"
+                    : "text-muted-foreground hover:bg-white/5"
                 }`}
               >
                 {s}

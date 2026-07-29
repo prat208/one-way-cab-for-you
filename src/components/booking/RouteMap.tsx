@@ -9,10 +9,7 @@ declare global {
   }
 }
 
-
-const KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as
-  | string
-  | undefined;
+const KEY = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY as string | undefined;
 const CHANNEL = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID as
   | string
   | undefined;
@@ -133,11 +130,7 @@ export function RouteMap(props: Props) {
 
   return (
     <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/30">
-      <div
-        ref={mapRef}
-        className="h-64 w-full sm:h-72"
-        aria-label="Route preview map"
-      />
+      <div ref={mapRef} className="h-64 w-full sm:h-72" aria-label="Route preview map" />
       <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-xs text-muted-foreground">
         {hasRoute ? (
           <>

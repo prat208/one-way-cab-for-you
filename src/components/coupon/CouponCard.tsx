@@ -60,10 +60,24 @@ export function CouponCard({ code, customerName, discountPct, validUntil }: Prop
           </linearGradient>
         </defs>
         <rect width="1200" height="630" fill="url(#bg)" />
-        <text x="60" y="90" fontFamily="Outfit, sans-serif" fontSize="28" fill="#c9b99a" letterSpacing="4">
+        <text
+          x="60"
+          y="90"
+          fontFamily="Outfit, sans-serif"
+          fontSize="28"
+          fill="#c9b99a"
+          letterSpacing="4"
+        >
           ONE WAY CAB
         </text>
-        <text x="60" y="180" fontFamily="Outfit, sans-serif" fontSize="64" fontWeight="700" fill="#faf8f5">
+        <text
+          x="60"
+          y="180"
+          fontFamily="Outfit, sans-serif"
+          fontSize="64"
+          fontWeight="700"
+          fill="#faf8f5"
+        >
           {discountPct}% off your ride
         </text>
         <text x="60" y="230" fontFamily="Figtree, sans-serif" fontSize="24" fill="#c9b99a">

@@ -5,11 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import {
-  assignBookingDriver,
-  setDriverVehicleStatus,
-  setUserRole,
-} from "@/lib/admin.functions";
+import { assignBookingDriver, setDriverVehicleStatus, setUserRole } from "@/lib/admin.functions";
 import {
   Car,
   Check,
@@ -83,7 +79,10 @@ function AdminConsole() {
         <p className="mt-2 text-sm text-muted-foreground">
           Your account doesn't have admin privileges.
         </p>
-        <Link to="/admin-signup" className="mt-4 inline-block text-xs text-[color:var(--gold)] hover:underline">
+        <Link
+          to="/admin-signup"
+          className="mt-4 inline-block text-xs text-[color:var(--gold)] hover:underline"
+        >
           Have a passcode? Claim admin →
         </Link>
       </div>
@@ -100,11 +99,16 @@ function AdminConsole() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <div className="grid h-8 w-8 place-items-center rounded-lg btn-gold text-sm font-bold">O</div>
+            <div className="grid h-8 w-8 place-items-center rounded-lg btn-gold text-sm font-bold">
+              O
+            </div>
             <span className="text-sm font-semibold">Admin</span>
           </Link>
           <div className="flex items-center gap-3">
-            <Link to="/admin/leads" className="rounded-full glass px-3 py-1.5 text-xs font-semibold hover:bg-white/10">
+            <Link
+              to="/admin/leads"
+              className="rounded-full glass px-3 py-1.5 text-xs font-semibold hover:bg-white/10"
+            >
               Leads
             </Link>
             <AdminBell />
@@ -142,7 +146,14 @@ function AdminConsole() {
   );
 }
 
-const BOOKING_STATUSES = ["all", "pending", "confirmed", "in-progress", "completed", "cancelled"] as const;
+const BOOKING_STATUSES = [
+  "all",
+  "pending",
+  "confirmed",
+  "in-progress",
+  "completed",
+  "cancelled",
+] as const;
 
 function csvEscape(v: unknown): string {
   if (v === null || v === undefined) return "";
@@ -153,22 +164,49 @@ function csvEscape(v: unknown): string {
 
 function downloadBookingsCSV(rows: Booking[], driverMap: Map<string, string>) {
   const headers = [
-    "Booking Ref", "Created At", "Status", "Payment", "Trip Type",
-    "Customer", "Phone", "Email",
-    "Pickup City", "Drop City", "Pickup Date", "Pickup Time",
-    "Vehicle", "Distance (km)", "Estimated Fare (INR)",
-    "Driver", "Notes",
+    "Booking Ref",
+    "Created At",
+    "Status",
+    "Payment",
+    "Trip Type",
+    "Customer",
+    "Phone",
+    "Email",
+    "Pickup City",
+    "Drop City",
+    "Pickup Date",
+    "Pickup Time",
+    "Vehicle",
+    "Distance (km)",
+    "Estimated Fare (INR)",
+    "Driver",
+    "Notes",
   ];
   const lines = [headers.join(",")];
   for (const b of rows) {
-    lines.push([
-      b.booking_ref, b.created_at, b.status, b.payment_status, b.trip_type,
-      b.customer_name, b.phone, b.email ?? "",
-      b.pickup_city, b.drop_city, b.pickup_date, b.pickup_time ?? "",
-      b.vehicle_name ?? "", b.distance_km ?? "", b.estimated_fare ?? "",
-      b.driver_id ? driverMap.get(b.driver_id) ?? b.driver_id : "",
-      b.notes ?? "",
-    ].map(csvEscape).join(","));
+    lines.push(
+      [
+        b.booking_ref,
+        b.created_at,
+        b.status,
+        b.payment_status,
+        b.trip_type,
+        b.customer_name,
+        b.phone,
+        b.email ?? "",
+        b.pickup_city,
+        b.drop_city,
+        b.pickup_date,
+        b.pickup_time ?? "",
+        b.vehicle_name ?? "",
+        b.distance_km ?? "",
+        b.estimated_fare ?? "",
+        b.driver_id ? (driverMap.get(b.driver_id) ?? b.driver_id) : "",
+        b.notes ?? "",
+      ]
+        .map(csvEscape)
+        .join(","),
+    );
   }
   const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -192,7 +230,9 @@ function BookingsPane() {
     Promise.all([
       supabase
         .from("bookings")
-        .select("id,booking_ref,customer_name,phone,email,pickup_city,drop_city,pickup_date,pickup_time,trip_type,vehicle_name,distance_km,status,payment_status,driver_id,estimated_fare,notes,created_at")
+        .select(
+          "id,booking_ref,customer_name,phone,email,pickup_city,drop_city,pickup_date,pickup_time,trip_type,vehicle_name,distance_km,status,payment_status,driver_id,estimated_fare,notes,created_at",
+        )
         .order("created_at", { ascending: false })
         .limit(500),
       supabase.from("user_roles").select("user_id").eq("role", "driver"),
@@ -280,7 +320,9 @@ function BookingsPane() {
           className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-xs outline-none [color-scheme:dark]"
         >
           {BOOKING_STATUSES.map((s) => (
-            <option key={s} value={s}>{s === "all" ? "All statuses" : s}</option>
+            <option key={s} value={s}>
+              {s === "all" ? "All statuses" : s}
+            </option>
           ))}
         </select>
         <div className="text-xs text-muted-foreground">
@@ -303,31 +345,71 @@ function BookingsPane() {
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2 text-xs">
                 <span className="font-mono text-[color:var(--gold)]">{b.booking_ref}</span>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">{b.trip_type}</span>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">{b.status}</span>
-                <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-emerald-500/20 text-emerald-200" : "bg-white/10"}`}>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                  {b.trip_type}
+                </span>
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                  {b.status}
+                </span>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${b.payment_status === "paid" ? "bg-emerald-500/20 text-emerald-200" : "bg-white/10"}`}
+                >
                   {b.payment_status}
                 </span>
                 <span className="text-muted-foreground">
-                  {new Date(b.created_at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                  {new Date(b.created_at).toLocaleString("en-IN", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
                 </span>
               </div>
               <div className="mt-2 text-base font-semibold">
                 {b.pickup_city} → {b.drop_city}
               </div>
               <div className="mt-1 grid grid-cols-1 gap-1 text-xs text-muted-foreground sm:grid-cols-2">
-                <div><span className="text-foreground">Customer:</span> {b.customer_name}</div>
-                <div><span className="text-foreground">Phone:</span> <a href={`tel:${b.phone}`} className="text-[color:var(--cyan)] hover:underline">{b.phone}</a></div>
-                {b.email && <div><span className="text-foreground">Email:</span> {b.email}</div>}
-                <div><span className="text-foreground">Pickup:</span> {b.pickup_date}{b.pickup_time ? ` · ${b.pickup_time}` : ""}</div>
-                {b.vehicle_name && <div><span className="text-foreground">Vehicle:</span> {b.vehicle_name}</div>}
-                {b.distance_km != null && <div><span className="text-foreground">Distance:</span> {b.distance_km} km</div>}
-                <div><span className="text-foreground">Fare:</span> ₹{b.estimated_fare?.toLocaleString("en-IN") ?? "-"}</div>
-                {b.driver_id && <div><span className="text-foreground">Driver:</span> {driverMap.get(b.driver_id) ?? b.driver_id.slice(0, 8)}</div>}
+                <div>
+                  <span className="text-foreground">Customer:</span> {b.customer_name}
+                </div>
+                <div>
+                  <span className="text-foreground">Phone:</span>{" "}
+                  <a href={`tel:${b.phone}`} className="text-[color:var(--cyan)] hover:underline">
+                    {b.phone}
+                  </a>
+                </div>
+                {b.email && (
+                  <div>
+                    <span className="text-foreground">Email:</span> {b.email}
+                  </div>
+                )}
+                <div>
+                  <span className="text-foreground">Pickup:</span> {b.pickup_date}
+                  {b.pickup_time ? ` · ${b.pickup_time}` : ""}
+                </div>
+                {b.vehicle_name && (
+                  <div>
+                    <span className="text-foreground">Vehicle:</span> {b.vehicle_name}
+                  </div>
+                )}
+                {b.distance_km != null && (
+                  <div>
+                    <span className="text-foreground">Distance:</span> {b.distance_km} km
+                  </div>
+                )}
+                <div>
+                  <span className="text-foreground">Fare:</span> ₹
+                  {b.estimated_fare?.toLocaleString("en-IN") ?? "-"}
+                </div>
+                {b.driver_id && (
+                  <div>
+                    <span className="text-foreground">Driver:</span>{" "}
+                    {driverMap.get(b.driver_id) ?? b.driver_id.slice(0, 8)}
+                  </div>
+                )}
               </div>
               {b.notes && (
                 <div className="mt-2 rounded-lg bg-white/5 px-3 py-2 text-xs">
-                  <span className="text-muted-foreground">Notes: </span>{b.notes}
+                  <span className="text-muted-foreground">Notes: </span>
+                  {b.notes}
                 </div>
               )}
             </div>
@@ -339,7 +421,9 @@ function BookingsPane() {
               >
                 <option value="">Unassigned</option>
                 {drivers.map((d) => (
-                  <option key={d.id} value={d.id}>{d.email}</option>
+                  <option key={d.id} value={d.id}>
+                    {d.email}
+                  </option>
                 ))}
               </select>
               <select
@@ -407,7 +491,10 @@ function DriversPane() {
   return (
     <div className="space-y-3">
       {rows.map((v) => (
-        <div key={v.id} className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
+        <div
+          key={v.id}
+          className="glass flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4"
+        >
           <div className="flex items-center gap-3">
             <Car className="h-5 w-5 text-[color:var(--cyan)]" />
             <div>
@@ -415,9 +502,12 @@ function DriversPane() {
                 {v.make} {v.model} · {v.plate}
               </div>
               <div className="text-xs text-muted-foreground">
-                {v.category} · {v.seats} seats {v.color ? `· ${v.color}` : ""} {v.license_number ? `· DL ${v.license_number}` : ""}
+                {v.category} · {v.seats} seats {v.color ? `· ${v.color}` : ""}{" "}
+                {v.license_number ? `· DL ${v.license_number}` : ""}
               </div>
-              <div className="mt-1 font-mono text-[10px] text-muted-foreground">driver {v.driver_id.slice(0, 8)}</div>
+              <div className="mt-1 font-mono text-[10px] text-muted-foreground">
+                driver {v.driver_id.slice(0, 8)}
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -460,7 +550,11 @@ function UsersPane() {
     setMsg(null);
     try {
       const res = await change({ data: { email: email.trim(), role, action } });
-      setMsg(res.ok ? `${action === "grant" ? "Granted" : "Revoked"} ${role} for ${email}` : res.error ?? "Failed");
+      setMsg(
+        res.ok
+          ? `${action === "grant" ? "Granted" : "Revoked"} ${role} for ${email}`
+          : (res.error ?? "Failed"),
+      );
     } catch (e) {
       setMsg(e instanceof Error ? e.message : "Failed");
     } finally {

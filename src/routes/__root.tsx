@@ -14,7 +14,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CallCare } from "../components/CallCare";
 import { OwnerBadge } from "../components/OwnerBadge";
 
-
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -81,18 +80,38 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
-      { name: "description", content: "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support." },
+      {
+        name: "description",
+        content:
+          "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support.",
+      },
       { name: "author", content: "ONE WAY CAB" },
       { property: "og:site_name", content: "ONE WAY CAB" },
       { property: "og:title", content: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
-      { property: "og:description", content: "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support." },
+      {
+        property: "og:description",
+        content:
+          "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
-      { name: "twitter:description", content: "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db677a9f-0e05-49d3-a55e-5ff360f4c45f/id-preview-614ac969--152ec04e-fb58-4dbe-b4ce-d724cbfe7d4b.lovable.app-1783002700397.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db677a9f-0e05-49d3-a55e-5ff360f4c45f/id-preview-614ac969--152ec04e-fb58-4dbe-b4ce-d724cbfe7d4b.lovable.app-1783002700397.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db677a9f-0e05-49d3-a55e-5ff360f4c45f/id-preview-614ac969--152ec04e-fb58-4dbe-b4ce-d724cbfe7d4b.lovable.app-1783002700397.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db677a9f-0e05-49d3-a55e-5ff360f4c45f/id-preview-614ac969--152ec04e-fb58-4dbe-b4ce-d724cbfe7d4b.lovable.app-1783002700397.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -150,6 +169,5 @@ function RootComponent() {
       <CallCare />
       <OwnerBadge />
     </QueryClientProvider>
-
   );
 }

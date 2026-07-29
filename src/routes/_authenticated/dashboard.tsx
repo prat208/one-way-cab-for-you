@@ -3,10 +3,21 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { BackHome } from "@/components/BackHome";
-import { Loader2, LogOut, Shield, Car, User as UserIcon, MapPin, Calendar, IndianRupee } from "lucide-react";
+import {
+  Loader2,
+  LogOut,
+  Shield,
+  Car,
+  User as UserIcon,
+  MapPin,
+  Calendar,
+  IndianRupee,
+} from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Dashboard — ONE WAY CAB" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Dashboard — ONE WAY CAB" }, { name: "robots", content: "noindex" }],
+  }),
   component: Dashboard,
 });
 
@@ -33,7 +44,11 @@ function Dashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [busy, setBusy] = useState(true);
 
-  const activeRole: "admin" | "driver" | "customer" = isAdmin ? "admin" : isDriver ? "driver" : "customer";
+  const activeRole: "admin" | "driver" | "customer" = isAdmin
+    ? "admin"
+    : isDriver
+      ? "driver"
+      : "customer";
 
   useEffect(() => {
     if (loading || !user) return;
@@ -93,12 +108,16 @@ function Dashboard() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <div className="grid h-8 w-8 place-items-center rounded-lg btn-gold text-sm font-bold">O</div>
+            <div className="grid h-8 w-8 place-items-center rounded-lg btn-gold text-sm font-bold">
+              O
+            </div>
             <span className="text-sm font-semibold tracking-wide">ONE WAY CAB</span>
           </Link>
           <div className="flex items-center gap-3">
             <BackHome />
-            <div className={`inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-xs ${roleBadge.color}`}>
+            <div
+              className={`inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1 text-xs ${roleBadge.color}`}
+            >
               <RoleIcon className="h-3.5 w-3.5" /> {roleBadge.label}
             </div>
             <span className="hidden text-xs text-muted-foreground sm:inline">{user?.email}</span>
@@ -173,7 +192,9 @@ function Dashboard() {
                         </span>
                       )}
                       {activeRole !== "customer" && (
-                        <span>· {b.customer_name} · {b.phone}</span>
+                        <span>
+                          · {b.customer_name} · {b.phone}
+                        </span>
                       )}
                     </div>
                   </div>
@@ -210,7 +231,9 @@ function StatusPill({ status }: { status: string }) {
     cancelled: "bg-red-500/15 text-red-300",
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${styles[status] ?? "bg-white/10 text-muted-foreground"}`}>
+    <span
+      className={`rounded-full px-2 py-0.5 text-[10px] uppercase tracking-wider ${styles[status] ?? "bg-white/10 text-muted-foreground"}`}
+    >
       {status}
     </span>
   );

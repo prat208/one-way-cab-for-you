@@ -1,7 +1,17 @@
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
-import { Send, Loader2, Sparkles, Bot, User as UserIcon, IndianRupee, MapPin, CheckCircle2, XCircle } from "lucide-react";
+import {
+  Send,
+  Loader2,
+  Sparkles,
+  Bot,
+  User as UserIcon,
+  IndianRupee,
+  MapPin,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 
 const QUICK = [
   "Estimate fare Pune to Mumbai",
@@ -45,9 +55,14 @@ export function AssistantPanel() {
         </div>
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold">
-            Aura <span className="rounded-full bg-[color:var(--gold)]/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-[color:var(--gold)]">AI concierge</span>
+            Aura{" "}
+            <span className="rounded-full bg-[color:var(--gold)]/15 px-2 py-0.5 text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
+              AI concierge
+            </span>
           </div>
-          <div className="text-[11px] text-muted-foreground">Ask for fares, best cab, or trip status</div>
+          <div className="text-[11px] text-muted-foreground">
+            Ask for fares, best cab, or trip status
+          </div>
         </div>
       </div>
 
@@ -130,7 +145,9 @@ function MessageBubble({ message }: { message: UIMessage }) {
   const isUser = message.role === "user";
   return (
     <div className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : ""}`}>
-      <div className={`grid h-7 w-7 flex-none place-items-center rounded-full ${isUser ? "bg-white/10" : "bg-gradient-to-br from-[color:var(--gold)] to-[color:var(--cyan)] text-black"}`}>
+      <div
+        className={`grid h-7 w-7 flex-none place-items-center rounded-full ${isUser ? "bg-white/10" : "bg-gradient-to-br from-[color:var(--gold)] to-[color:var(--cyan)] text-black"}`}
+      >
         {isUser ? <UserIcon className="h-3.5 w-3.5" /> : <Bot className="h-3.5 w-3.5" />}
       </div>
       <div className={`min-w-0 max-w-[85%] space-y-2 ${isUser ? "text-right" : ""}`}>
@@ -177,15 +194,20 @@ function ToolCard({ part }: { part: any }) {
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-left">
         <div className="mb-2 flex items-center justify-between text-[11px] text-muted-foreground">
           <span className="uppercase tracking-wider">Fare estimate</span>
-          <span>{output.distance_km} km · {Math.round(Number(output.duration_hours))}h</span>
+          <span>
+            {output.distance_km} km · {Math.round(Number(output.duration_hours))}h
+          </span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
           {output.estimates.map((e: any) => (
             <div key={e.name} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{e.category} · {e.seats} seats</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {e.category} · {e.seats} seats
+              </div>
               <div className="text-sm font-semibold">{e.name}</div>
               <div className="mt-0.5 flex items-center text-sm font-bold text-[color:var(--gold)]">
-                <IndianRupee className="h-3 w-3" />{e.fare.toLocaleString("en-IN")}
+                <IndianRupee className="h-3 w-3" />
+                {e.fare.toLocaleString("en-IN")}
               </div>
             </div>
           ))}
@@ -197,9 +219,14 @@ function ToolCard({ part }: { part: any }) {
   if (name === "recommend_vehicle" && output?.recommended) {
     return (
       <div className="rounded-2xl border border-[color:var(--gold)]/40 bg-[color:var(--gold)]/5 p-3 text-left">
-        <div className="text-[10px] uppercase tracking-wider text-[color:var(--gold)]">Best pick</div>
+        <div className="text-[10px] uppercase tracking-wider text-[color:var(--gold)]">
+          Best pick
+        </div>
         <div className="mt-1 text-base font-semibold">{output.recommended.name}</div>
-        <div className="text-xs text-muted-foreground">{output.recommended.category} · {output.recommended.seats} seats · ₹{output.recommended.per_km_rate}/km</div>
+        <div className="text-xs text-muted-foreground">
+          {output.recommended.category} · {output.recommended.seats} seats · ₹
+          {output.recommended.per_km_rate}/km
+        </div>
         <div className="mt-1 text-xs text-foreground/80">{output.reason}</div>
       </div>
     );
@@ -209,7 +236,8 @@ function ToolCard({ part }: { part: any }) {
     if (!output?.found) {
       return (
         <div className="inline-flex items-center gap-2 rounded-xl border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs">
-          <XCircle className="h-3.5 w-3.5 text-red-400" /> No booking found for {output?.booking_ref}
+          <XCircle className="h-3.5 w-3.5 text-red-400" /> No booking found for{" "}
+          {output?.booking_ref}
         </div>
       );
     }
@@ -218,14 +246,17 @@ function ToolCard({ part }: { part: any }) {
         <div className="flex items-center gap-2 text-xs">
           <CheckCircle2 className="h-3.5 w-3.5 text-[color:var(--gold)]" />
           <span className="font-mono text-[color:var(--gold)]">{output.booking_ref}</span>
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">{output.status}</span>
+          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">
+            {output.status}
+          </span>
         </div>
         <div className="mt-1.5 flex items-center gap-1.5 text-sm">
           <MapPin className="h-3.5 w-3.5 text-[color:var(--gold)]" />
           {output.pickup_city} → {output.drop_city}
         </div>
         <div className="mt-0.5 text-xs text-muted-foreground">
-          {output.pickup_date} {output.pickup_time ?? ""} · {output.vehicle_name ?? "vehicle TBD"} · {output.trip_type}
+          {output.pickup_date} {output.pickup_time ?? ""} · {output.vehicle_name ?? "vehicle TBD"} ·{" "}
+          {output.trip_type}
         </div>
       </div>
     );
@@ -234,11 +265,15 @@ function ToolCard({ part }: { part: any }) {
   if (name === "list_popular_routes" && output?.routes) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3 text-left">
-        <div className="mb-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">Popular routes</div>
+        <div className="mb-1.5 text-[11px] uppercase tracking-wider text-muted-foreground">
+          Popular routes
+        </div>
         <ul className="space-y-1 text-xs">
           {output.routes.slice(0, 8).map((r: any, i: number) => (
             <li key={i} className="flex items-center justify-between">
-              <span>{r.from_city} → {r.to_city}</span>
+              <span>
+                {r.from_city} → {r.to_city}
+              </span>
               <span className="text-muted-foreground">{r.distance_km} km</span>
             </li>
           ))}
@@ -252,11 +287,13 @@ function ToolCard({ part }: { part: any }) {
 
 function labelFor(name: string) {
   return (
-    {
-      estimate_fare: "Estimating fare…",
-      recommend_vehicle: "Choosing best cab…",
-      get_booking_status: "Looking up booking…",
-      list_popular_routes: "Fetching routes…",
-    } as Record<string, string>
-  )[name] ?? "Working…";
+    (
+      {
+        estimate_fare: "Estimating fare…",
+        recommend_vehicle: "Choosing best cab…",
+        get_booking_status: "Looking up booking…",
+        list_popular_routes: "Fetching routes…",
+      } as Record<string, string>
+    )[name] ?? "Working…"
+  );
 }

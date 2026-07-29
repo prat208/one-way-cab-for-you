@@ -5,11 +5,9 @@ import type { Database } from "@/integrations/supabase/types";
 import { dispatch } from "@/lib/notify.server";
 
 function serverSupabase() {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_PUBLISHABLE_KEY!,
-    { auth: { storage: undefined, persistSession: false, autoRefreshToken: false } },
-  );
+  return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+  });
 }
 
 const CatalogInput = z.object({}).optional();
@@ -32,29 +30,36 @@ export const getCatalog = createServerFn({ method: "GET" })
 
 const CityInput = z.object({ slug: z.string().min(1).max(80) });
 
-const CITY_META: Record<string, { name: string; state: string; blurb: string; landmarks: string[] }> = {
+const CITY_META: Record<
+  string,
+  { name: string; state: string; blurb: string; landmarks: string[] }
+> = {
   pune: {
     name: "Pune",
     state: "Maharashtra",
-    blurb: "Outstation cabs from Pune to every corner of Maharashtra and beyond — door-to-door, verified chauffeurs, transparent one-way fares.",
+    blurb:
+      "Outstation cabs from Pune to every corner of Maharashtra and beyond — door-to-door, verified chauffeurs, transparent one-way fares.",
     landmarks: ["Pune Airport (PNQ)", "Shivajinagar", "Hinjewadi", "Kharadi", "Kothrud", "Baner"],
   },
   mumbai: {
     name: "Mumbai",
     state: "Maharashtra",
-    blurb: "Premium outstation rides from Mumbai to Pune, Nashik, Lonavala, Shirdi and beyond. Airport pickups tracked to your flight.",
+    blurb:
+      "Premium outstation rides from Mumbai to Pune, Nashik, Lonavala, Shirdi and beyond. Airport pickups tracked to your flight.",
     landmarks: ["CSMT Airport (BOM)", "Andheri", "Bandra", "Powai", "Thane", "Navi Mumbai"],
   },
   kolhapur: {
     name: "Kolhapur",
     state: "Maharashtra",
-    blurb: "Reliable one-way and round-trip cabs from Kolhapur to Pune, Mumbai, Goa and Konkan destinations. Locally owned fleet.",
+    blurb:
+      "Reliable one-way and round-trip cabs from Kolhapur to Pune, Mumbai, Goa and Konkan destinations. Locally owned fleet.",
     landmarks: ["Kolhapur Airport (KLH)", "Mahadwar Road", "Rajarampuri", "Shahupuri"],
   },
   nashik: {
     name: "Nashik",
     state: "Maharashtra",
-    blurb: "Comfortable outstation travel from Nashik — Shirdi darshan trips, Mumbai airport transfers, Pune day trips, and more.",
+    blurb:
+      "Comfortable outstation travel from Nashik — Shirdi darshan trips, Mumbai airport transfers, Pune day trips, and more.",
     landmarks: ["Nashik Road", "College Road", "Panchavati", "Ozar Airport (ISK)"],
   },
 };
@@ -135,9 +140,7 @@ export const estimateFare = createServerFn({ method: "POST" })
         category: v.category,
         seats: v.seats,
         per_km_rate: Number(v.per_km_rate),
-        fare: Math.round(
-          Number(v.base_fare) + Number(v.per_km_rate) * pkg.km + 150 * pkg.hours,
-        ),
+        fare: Math.round(Number(v.base_fare) + Number(v.per_km_rate) * pkg.km + 150 * pkg.hours),
       }));
       return {
         distance_km: pkg.km,
@@ -209,9 +212,7 @@ export const estimateFare = createServerFn({ method: "POST" })
       category: v.category,
       seats: v.seats,
       per_km_rate: Number(v.per_km_rate),
-      fare: Math.round(
-        Number(v.base_fare) + Number(v.per_km_rate) * distance + driverAllowance,
-      ),
+      fare: Math.round(Number(v.base_fare) + Number(v.per_km_rate) * distance + driverAllowance),
     }));
 
     return {
@@ -242,9 +243,7 @@ async function gmapsHeaders() {
   } as Record<string, string>;
 }
 
-async function geocodeOne(q: string): Promise<
-  { lat: number; lng: number; label: string } | null
-> {
+async function geocodeOne(q: string): Promise<{ lat: number; lng: number; label: string } | null> {
   const headers = await gmapsHeaders();
   const url = `${GMAPS_GATEWAY}/maps/api/geocode/json?address=${encodeURIComponent(
     q + ", India",
@@ -267,25 +266,24 @@ async function geocodeOne(q: string): Promise<
   };
 }
 
-async function googleRoute(from: string, to: string): Promise<
-  | {
-      distanceKm: number;
-      durationHours: number;
-      polyline: string;
-      origin: { lat: number; lng: number };
-      destination: { lat: number; lng: number };
-      originLabel: string;
-      destinationLabel: string;
-    }
-  | null
-> {
+async function googleRoute(
+  from: string,
+  to: string,
+): Promise<{
+  distanceKm: number;
+  durationHours: number;
+  polyline: string;
+  origin: { lat: number; lng: number };
+  destination: { lat: number; lng: number };
+  originLabel: string;
+  destinationLabel: string;
+} | null> {
   const [a, b] = await Promise.all([geocodeOne(from), geocodeOne(to)]);
   if (!a || !b) return null;
   const headers = {
     ...(await gmapsHeaders()),
     "Content-Type": "application/json",
-    "X-Goog-FieldMask":
-      "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
+    "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
   };
   const body = JSON.stringify({
     origin: { location: { latLng: { latitude: a.lat, longitude: a.lng } } },
@@ -303,8 +301,8 @@ async function googleRoute(from: string, to: string): Promise<
     if (r.status === 403) {
       const t = await r.text();
       const reason =
-        (JSON.parse(t)?.error?.details ?? []).find((d: { reason?: string }) => d.reason)
-          ?.reason ?? "";
+        (JSON.parse(t)?.error?.details ?? []).find((d: { reason?: string }) => d.reason)?.reason ??
+        "";
       if (reason === "API_KEY_HTTP_REFERRER_BLOCKED") {
         throw new Error(
           'Google Maps server key is referrer-restricted. Set restrictions to "None" or "IP addresses" in Google Cloud Console.',
@@ -339,10 +337,12 @@ async function googleRoute(from: string, to: string): Promise<
   };
 }
 
-
 const BookingInput = z.object({
   customer_name: z.string().trim().min(2).max(80),
-  phone: z.string().trim().regex(/^[+0-9\s-]{7,20}$/, "Enter a valid phone number"),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^[+0-9\s-]{7,20}$/, "Enter a valid phone number"),
   email: z.string().trim().email().max(200).optional().or(z.literal("")),
   pickup_city: z.string().min(1).max(80),
   drop_city: z.string().min(1).max(80),
@@ -363,7 +363,6 @@ const BookingInput = z.object({
   destination_label: z.string().max(200).optional().nullable(),
   polyline: z.string().max(60000).optional().nullable(),
 });
-
 
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
@@ -428,9 +427,10 @@ export const createBooking = createServerFn({ method: "POST" })
     const mapUrl = hasCoords
       ? `https://www.google.com/maps/dir/?api=1&origin=${data.origin_lat},${data.origin_lng}&destination=${data.destination_lat},${data.destination_lng}&travelmode=driving`
       : `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(data.pickup_city)}&destination=${encodeURIComponent(data.drop_city)}&travelmode=driving`;
-    const staticMapUrl = hasCoords && data.polyline
-      ? `https://maps.googleapis.com/maps/api/staticmap?size=640x360&scale=2&maptype=roadmap&markers=color:green%7Clabel:A%7C${data.origin_lat},${data.origin_lng}&markers=color:red%7Clabel:B%7C${data.destination_lat},${data.destination_lng}&path=weight:4%7Ccolor:0x1a73e8ff%7Cenc:${encodeURIComponent(data.polyline)}&key=${process.env.GOOGLE_MAPS_BROWSER_KEY ?? ""}`
-      : null;
+    const staticMapUrl =
+      hasCoords && data.polyline
+        ? `https://maps.googleapis.com/maps/api/staticmap?size=640x360&scale=2&maptype=roadmap&markers=color:green%7Clabel:A%7C${data.origin_lat},${data.origin_lng}&markers=color:red%7Clabel:B%7C${data.destination_lat},${data.destination_lng}&path=weight:4%7Ccolor:0x1a73e8ff%7Cenc:${encodeURIComponent(data.polyline)}&key=${process.env.GOOGLE_MAPS_BROWSER_KEY ?? ""}`
+        : null;
 
     await dispatch({
       type: "booking.created",
@@ -463,7 +463,6 @@ export const createBooking = createServerFn({ method: "POST" })
     }).catch((e) => console.error("[createBooking] dispatch failed", e));
     return { booking_ref: row.booking_ref };
   });
-
 
 // ---------- Place autocomplete (Google Places API New, via gateway) ----------
 export const suggestPlaces = createServerFn({ method: "POST" })

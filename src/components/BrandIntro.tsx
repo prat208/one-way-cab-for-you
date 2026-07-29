@@ -52,7 +52,11 @@ export function BrandIntro() {
             }}
             initial={{ scaleX: 0, opacity: 0 }}
             animate={{ scaleX: 1, opacity: [0, 1, 0.6, 0] }}
-            transition={{ duration: isMobile ? 1.0 : 1.6, times: [0, 0.3, 0.7, 1], ease: "easeInOut" }}
+            transition={{
+              duration: isMobile ? 1.0 : 1.6,
+              times: [0, 0.3, 0.7, 1],
+              ease: "easeInOut",
+            }}
           />
 
           {/* Driving cab silhouette that sweeps in from left, settles into logo */}
@@ -61,7 +65,11 @@ export function BrandIntro() {
             className="pointer-events-none absolute top-1/2 -translate-y-1/2 text-[color:var(--gold,#f5c66b)]"
             initial={{ x: "-40vw", opacity: 0 }}
             animate={{ x: ["-40vw", "0vw", "0vw"], opacity: [0, 1, 0] }}
-            transition={{ duration: isMobile ? 1.1 : 1.8, times: [0, 0.75, 1], ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{
+              duration: isMobile ? 1.1 : 1.8,
+              times: [0, 0.75, 1],
+              ease: [0.2, 0.7, 0.2, 1],
+            }}
             style={{ filter: "drop-shadow(0 0 18px rgba(245,198,107,0.7))" }}
           >
             <CabGlyph className="w-32 sm:w-56" />
@@ -78,7 +86,12 @@ export function BrandIntro() {
               }}
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: [0, 0.95, 0.75], scale: [0.5, 1.05, 1] }}
-              transition={{ duration: isMobile ? 1.0 : 1.6, delay: isMobile ? 0.9 : 1.4, ease: "easeOut", times: [0, 0.6, 1] }}
+              transition={{
+                duration: isMobile ? 1.0 : 1.6,
+                delay: isMobile ? 0.9 : 1.4,
+                ease: "easeOut",
+                times: [0, 0.6, 1],
+              }}
             />
 
             {/* Golden ring sweeping around — desktop only (expensive layer) */}
@@ -96,7 +109,11 @@ export function BrandIntro() {
             <motion.div
               initial={{ opacity: 0, scale: 0.6, filter: "blur(18px)" }}
               animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-              transition={{ duration: isMobile ? 0.7 : 1.1, delay: isMobile ? 0.9 : 1.4, ease: [0.2, 0.7, 0.2, 1] }}
+              transition={{
+                duration: isMobile ? 0.7 : 1.1,
+                delay: isMobile ? 0.9 : 1.4,
+                ease: [0.2, 0.7, 0.2, 1],
+              }}
               className="relative"
             >
               <motion.img
@@ -115,7 +132,11 @@ export function BrandIntro() {
                 className="pointer-events-none absolute inset-0 z-20 bg-black"
                 initial={{ clipPath: "inset(0% 0% 0% 0%)" }}
                 animate={{ clipPath: "inset(0% 0% 100% 0%)" }}
-                transition={{ duration: isMobile ? 0.9 : 1.5, delay: isMobile ? 1.0 : 1.5, ease: [0.65, 0, 0.35, 1] }}
+                transition={{
+                  duration: isMobile ? 0.9 : 1.5,
+                  delay: isMobile ? 1.0 : 1.5,
+                  ease: [0.65, 0, 0.35, 1],
+                }}
               />
 
               {/* Shine sweep across logo after reveal */}
@@ -132,7 +153,11 @@ export function BrandIntro() {
                   }}
                   initial={{ x: "0%" }}
                   animate={{ x: ["0%", "420%"] }}
-                  transition={{ duration: isMobile ? 1.0 : 1.5, delay: isMobile ? 1.8 : 3.0, ease: "easeInOut" }}
+                  transition={{
+                    duration: isMobile ? 1.0 : 1.5,
+                    delay: isMobile ? 1.8 : 3.0,
+                    ease: "easeInOut",
+                  }}
                 />
               </motion.span>
             </motion.div>
@@ -144,7 +169,11 @@ export function BrandIntro() {
                   key={i}
                   initial={{ y: 22, opacity: 0, filter: "blur(8px)" }}
                   animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                  transition={{ delay: (isMobile ? 1.6 : 2.6) + i * (isMobile ? 0.035 : 0.06), duration: isMobile ? 0.35 : 0.5, ease: [0.2, 0.7, 0.2, 1] }}
+                  transition={{
+                    delay: (isMobile ? 1.6 : 2.6) + i * (isMobile ? 0.035 : 0.06),
+                    duration: isMobile ? 0.35 : 0.5,
+                    ease: [0.2, 0.7, 0.2, 1],
+                  }}
                   className="inline-block bg-gradient-to-b from-[#fff8e1] via-[#f5c66b] to-[#b8862b] bg-clip-text text-transparent"
                 >
                   {ch}
@@ -153,7 +182,11 @@ export function BrandIntro() {
               <motion.span
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ delay: isMobile ? 2.1 : 3.4, duration: isMobile ? 0.5 : 0.7, ease: "easeInOut" }}
+                transition={{
+                  delay: isMobile ? 2.1 : 3.4,
+                  duration: isMobile ? 0.5 : 0.7,
+                  ease: "easeInOut",
+                }}
                 style={{ transformOrigin: "left" }}
                 className="absolute -bottom-3 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-[color:var(--gold,#f5c66b)] to-transparent"
               />

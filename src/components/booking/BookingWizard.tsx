@@ -2,15 +2,27 @@ import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MapPin, Calendar, Clock, Phone, User as UserIcon, ArrowRight, ArrowLeft,
-  Loader2, CheckCircle2, Check, Car, IndianRupee, Sparkles, MessageSquare, PartyPopper,
+  MapPin,
+  Calendar,
+  Clock,
+  Phone,
+  User as UserIcon,
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  CheckCircle2,
+  Check,
+  Car,
+  IndianRupee,
+  Sparkles,
+  MessageSquare,
+  PartyPopper,
 } from "lucide-react";
 import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
 import { PlaceInput } from "@/components/booking/PlaceInput";
 import { RouteMap } from "./RouteMap";
-
 
 type Estimate = {
   vehicle_id: string;
@@ -72,9 +84,10 @@ export function BookingWizard({
   const [error, setError] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
 
-
   useEffect(() => {
-    runGetCatalog({ data: {} }).then((c) => setCities(c.cities)).catch(() => {});
+    runGetCatalog({ data: {} })
+      .then((c) => setCities(c.cities))
+      .catch(() => {});
   }, [runGetCatalog]);
 
   useEffect(() => {
@@ -82,10 +95,15 @@ export function BookingWizard({
       const u = data.session?.user;
       if (u) {
         setEmail((prev) => prev || u.email || "");
-        supabase.from("profiles").select("full_name,phone").eq("id", u.id).maybeSingle().then(({ data: p }) => {
-          if (p?.full_name) setName((prev) => prev || p.full_name || "");
-          if (p?.phone) setPhone((prev) => prev || p.phone || "");
-        });
+        supabase
+          .from("profiles")
+          .select("full_name,phone")
+          .eq("id", u.id)
+          .maybeSingle()
+          .then(({ data: p }) => {
+            if (p?.full_name) setName((prev) => prev || p.full_name || "");
+            if (p?.phone) setPhone((prev) => prev || p.phone || "");
+          });
       }
     });
   }, []);
@@ -93,13 +111,24 @@ export function BookingWizard({
   useEffect(() => {
     const pickOk = pickup.trim().length >= 3;
     const dropOk = drop.trim().length >= 3;
-    if (tripType === "local" ? !pickOk : (!pickOk || !dropOk || pickup.trim().toLowerCase() === drop.trim().toLowerCase())) {
-      setEstimates([]); setDistance(null); setDuration(null); setSelected(null);
-      setPolyline(null); setRouteOrigin(null); setRouteDest(null);
-      setBusy(false); setError(null);
+    if (
+      tripType === "local"
+        ? !pickOk
+        : !pickOk || !dropOk || pickup.trim().toLowerCase() === drop.trim().toLowerCase()
+    ) {
+      setEstimates([]);
+      setDistance(null);
+      setDuration(null);
+      setSelected(null);
+      setPolyline(null);
+      setRouteOrigin(null);
+      setRouteDest(null);
+      setBusy(false);
+      setError(null);
       return;
     }
-    setBusy(true); setError(null);
+    setBusy(true);
+    setError(null);
     const handle = setTimeout(() => {
       runEstimate({
         data: {
@@ -116,27 +145,35 @@ export function BookingWizard({
           setPolyline(("polyline" in r ? r.polyline : null) ?? null);
           setRouteOrigin(("origin" in r ? r.origin : null) ?? null);
           setRouteDest(("destination" in r ? r.destination : null) ?? null);
-          setSelected((prev) => r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null);
+          setSelected(
+            (prev) =>
+              r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null,
+          );
         })
-        .catch((err) => setError(err instanceof Error ? err.message : "Couldn't compute fare. Try again."))
+        .catch((err) =>
+          setError(err instanceof Error ? err.message : "Couldn't compute fare. Try again."),
+        )
         .finally(() => setBusy(false));
     }, 400);
     return () => clearTimeout(handle);
   }, [pickup, drop, tripType, localPackage, runEstimate]);
 
-
-  const cityList = cities.length ? cities.map((c) => c.name) : ["Pune", "Mumbai", "Kolhapur", "Nashik", "Shirdi", "Lonavala", "Mahabaleshwar"];
+  const cityList = cities.length
+    ? cities.map((c) => c.name)
+    : ["Pune", "Mumbai", "Kolhapur", "Nashik", "Shirdi", "Lonavala", "Mahabaleshwar"];
 
   function canProceed(s: number) {
     if (s === 0) return true;
-    if (s === 1) return tripType === "local" ? !!pickup : pickup && drop && pickup !== drop && !!date;
+    if (s === 1)
+      return tripType === "local" ? !!pickup : pickup && drop && pickup !== drop && !!date;
     if (s === 2) return !!selected;
     if (s === 3) return name.trim().length >= 2 && /^[+0-9\s-]{7,20}$/.test(phone);
     return true;
   }
 
   async function confirm() {
-    setError(null); setSubmitting(true);
+    setError(null);
+    setSubmitting(true);
     try {
       const notesParts: string[] = [];
       if (tripType === "round-trip") notesParts.push(`Return: ${returnDate}`);
@@ -165,7 +202,6 @@ export function BookingWizard({
           destination_lng: routeDest?.lng ?? null,
           polyline: polyline ?? null,
         },
-
       });
       setBookingRef(res.booking_ref);
     } catch (err) {
@@ -177,7 +213,11 @@ export function BookingWizard({
 
   if (bookingRef) {
     return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-8 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="glass rounded-3xl p-8 text-center"
+      >
         <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-gradient-to-br from-[color:var(--gold)] to-[color:var(--cyan)]">
           <PartyPopper className="h-8 w-8 text-black" />
         </div>
@@ -186,14 +226,35 @@ export function BookingWizard({
           Booking reference <span className="font-mono text-[color:var(--gold)]">{bookingRef}</span>
         </p>
         <div className="mt-6 space-y-1 text-sm">
-          <div className="text-foreground/80">{pickup} → {tripType === "local" ? pickup : drop}</div>
-          <div className="text-muted-foreground">{date} {time} · {selected?.name} · ₹{selected?.fare.toLocaleString("en-IN")}</div>
+          <div className="text-foreground/80">
+            {pickup} → {tripType === "local" ? pickup : drop}
+          </div>
+          <div className="text-muted-foreground">
+            {date} {time} · {selected?.name} · ₹{selected?.fare.toLocaleString("en-IN")}
+          </div>
         </div>
-        <p className="mt-5 text-xs text-muted-foreground">Our team will call {phone} within minutes to confirm.</p>
+        <p className="mt-5 text-xs text-muted-foreground">
+          Our team will call {phone} within minutes to confirm.
+        </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <a href={`tel:+919999999999`} className="rounded-full glass px-4 py-2 text-xs hover:bg-white/10">Call support</a>
-          <Link to="/customer" className="rounded-full btn-gold px-4 py-2 text-xs font-semibold">View my trips</Link>
-          <button onClick={() => { setBookingRef(null); setStep(0); }} className="rounded-full glass px-4 py-2 text-xs hover:bg-white/10">Book another</button>
+          <a
+            href={`tel:+919999999999`}
+            className="rounded-full glass px-4 py-2 text-xs hover:bg-white/10"
+          >
+            Call support
+          </a>
+          <Link to="/customer" className="rounded-full btn-gold px-4 py-2 text-xs font-semibold">
+            View my trips
+          </Link>
+          <button
+            onClick={() => {
+              setBookingRef(null);
+              setStep(0);
+            }}
+            className="rounded-full glass px-4 py-2 text-xs hover:bg-white/10"
+          >
+            Book another
+          </button>
         </div>
       </motion.div>
     );
@@ -210,14 +271,28 @@ export function BookingWizard({
             return (
               <div key={label} className="flex flex-1 items-center">
                 <div className="flex items-center gap-2">
-                  <div className={`grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-semibold transition-colors ${
-                    done ? "bg-[color:var(--gold)] text-black" : active ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] ring-1 ring-[color:var(--gold)]/50" : "bg-white/5 text-muted-foreground"
-                  }`}>
+                  <div
+                    className={`grid h-7 w-7 flex-none place-items-center rounded-full text-[11px] font-semibold transition-colors ${
+                      done
+                        ? "bg-[color:var(--gold)] text-black"
+                        : active
+                          ? "bg-[color:var(--gold)]/15 text-[color:var(--gold)] ring-1 ring-[color:var(--gold)]/50"
+                          : "bg-white/5 text-muted-foreground"
+                    }`}
+                  >
                     {done ? <Check className="h-3.5 w-3.5" /> : i + 1}
                   </div>
-                  <span className={`hidden text-xs sm:inline ${active ? "text-foreground" : "text-muted-foreground"}`}>{label}</span>
+                  <span
+                    className={`hidden text-xs sm:inline ${active ? "text-foreground" : "text-muted-foreground"}`}
+                  >
+                    {label}
+                  </span>
                 </div>
-                {i < STEPS.length - 1 && <div className={`mx-2 h-px flex-1 ${done ? "bg-[color:var(--gold)]/60" : "bg-white/10"}`} />}
+                {i < STEPS.length - 1 && (
+                  <div
+                    className={`mx-2 h-px flex-1 ${done ? "bg-[color:var(--gold)]/60" : "bg-white/10"}`}
+                  />
+                )}
               </div>
             );
           })}
@@ -228,15 +303,25 @@ export function BookingWizard({
         {/* Step content */}
         <div className="p-5 sm:p-6 min-h-[420px]">
           <AnimatePresence mode="wait">
-            <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.2 }}>
+            <motion.div
+              key={step}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+            >
               {step === 0 && (
                 <StepPane title="What kind of trip?" hint="Pick how you want to travel">
                   <div className="grid gap-3 sm:grid-cols-3">
                     {TRIPS.map((t) => {
                       const active = tripType === t.id;
                       return (
-                        <button key={t.id} type="button" onClick={() => setTripType(t.id)}
-                          className={`rounded-2xl border p-4 text-left transition-all ${active ? "border-[color:var(--gold)]/60 bg-[color:var(--gold)]/10" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setTripType(t.id)}
+                          className={`rounded-2xl border p-4 text-left transition-all ${active ? "border-[color:var(--gold)]/60 bg-[color:var(--gold)]/10" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}
+                        >
                           <div className="text-2xl">{t.icon}</div>
                           <div className="mt-2 text-sm font-semibold">{t.label}</div>
                           <div className="text-[11px] text-muted-foreground">{t.hint}</div>
@@ -246,13 +331,19 @@ export function BookingWizard({
                   </div>
                   {tripType === "local" && (
                     <div className="mt-6">
-                      <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">Choose a package</div>
+                      <div className="mb-2 text-xs uppercase tracking-wider text-muted-foreground">
+                        Choose a package
+                      </div>
                       <div className="grid gap-2 sm:grid-cols-3">
                         {PACKAGES.map((p) => {
                           const active = localPackage === p.id;
                           return (
-                            <button key={p.id} type="button" onClick={() => setLocalPackage(p.id)}
-                              className={`rounded-xl border p-3 text-center transition-all ${active ? "border-[color:var(--gold)]/60 bg-[color:var(--gold)]/10" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => setLocalPackage(p.id)}
+                              className={`rounded-xl border p-3 text-center transition-all ${active ? "border-[color:var(--gold)]/60 bg-[color:var(--gold)]/10" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}
+                            >
                               <div className="text-sm font-semibold">{p.label}</div>
                               <div className="text-[11px] text-muted-foreground">{p.sub}</div>
                             </button>
@@ -267,23 +358,65 @@ export function BookingWizard({
               {step === 1 && (
                 <StepPane title="Where & when?" hint="Type any city, town or landmark">
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup location">
-                      <PlaceInput value={pickup} onChange={setPickup} fallback={cityList} placeholder="e.g. Kolhapur, Mahabaleshwar, Airport…" />
+                    <Field
+                      icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />}
+                      label="Pickup location"
+                    >
+                      <PlaceInput
+                        value={pickup}
+                        onChange={setPickup}
+                        fallback={cityList}
+                        placeholder="e.g. Kolhapur, Mahabaleshwar, Airport…"
+                      />
                     </Field>
                     {tripType !== "local" && (
-                      <Field icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />} label="Destination">
-                        <PlaceInput value={drop} onChange={setDrop} fallback={cityList} placeholder="e.g. Pune, Mumbai, Panhala Fort…" />
+                      <Field
+                        icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />}
+                        label="Destination"
+                      >
+                        <PlaceInput
+                          value={drop}
+                          onChange={setDrop}
+                          fallback={cityList}
+                          placeholder="e.g. Pune, Mumbai, Panhala Fort…"
+                        />
                       </Field>
                     )}
-                    <Field icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup date">
-                      <input type="date" min={today} value={date} onChange={(e) => setDate(e.target.value)} className="w-full bg-transparent text-sm outline-none [color-scheme:dark]" />
+                    <Field
+                      icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />}
+                      label="Pickup date"
+                    >
+                      <input
+                        type="date"
+                        min={today}
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="w-full bg-transparent text-sm outline-none [color-scheme:dark]"
+                      />
                     </Field>
-                    <Field icon={<Clock className="h-4 w-4 text-[color:var(--cyan)]" />} label="Pickup time">
-                      <input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-full bg-transparent text-sm outline-none [color-scheme:dark]" />
+                    <Field
+                      icon={<Clock className="h-4 w-4 text-[color:var(--cyan)]" />}
+                      label="Pickup time"
+                    >
+                      <input
+                        type="time"
+                        value={time}
+                        onChange={(e) => setTime(e.target.value)}
+                        className="w-full bg-transparent text-sm outline-none [color-scheme:dark]"
+                      />
                     </Field>
                     {tripType === "round-trip" && (
-                      <Field icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />} label="Return date">
-                        <input type="date" min={date} value={returnDate} onChange={(e) => setReturnDate(e.target.value)} className="w-full bg-transparent text-sm outline-none [color-scheme:dark]" />
+                      <Field
+                        icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />}
+                        label="Return date"
+                      >
+                        <input
+                          type="date"
+                          min={date}
+                          value={returnDate}
+                          onChange={(e) => setReturnDate(e.target.value)}
+                          className="w-full bg-transparent text-sm outline-none [color-scheme:dark]"
+                        />
                       </Field>
                     )}
                   </div>
@@ -299,22 +432,37 @@ export function BookingWizard({
                 </StepPane>
               )}
 
-
               {step === 2 && (
-                <StepPane title="Choose your cab" hint={busy ? "Calculating live fares…" : `${estimates.length} options available`}>
+                <StepPane
+                  title="Choose your cab"
+                  hint={busy ? "Calculating live fares…" : `${estimates.length} options available`}
+                >
                   {busy ? (
-                    <div className="grid place-items-center py-16"><Loader2 className="h-6 w-6 animate-spin text-[color:var(--gold)]" /></div>
+                    <div className="grid place-items-center py-16">
+                      <Loader2 className="h-6 w-6 animate-spin text-[color:var(--gold)]" />
+                    </div>
                   ) : (
                     <div className="grid gap-2 sm:grid-cols-2">
                       {estimates.map((e, i) => {
                         const active = selected?.vehicle_id === e.vehicle_id;
-                        const badge = i === 0 ? "Best value" : i === estimates.length - 1 ? "Most premium" : null;
+                        const badge =
+                          i === 0
+                            ? "Best value"
+                            : i === estimates.length - 1
+                              ? "Most premium"
+                              : null;
                         return (
-                          <button key={e.vehicle_id} type="button" onClick={() => setSelected(e)}
-                            className={`rounded-2xl border p-4 text-left transition-all ${active ? "border-[color:var(--gold)]/60 bg-[color:var(--gold)]/10 ring-1 ring-[color:var(--gold)]/40" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}>
+                          <button
+                            key={e.vehicle_id}
+                            type="button"
+                            onClick={() => setSelected(e)}
+                            className={`rounded-2xl border p-4 text-left transition-all ${active ? "border-[color:var(--gold)]/60 bg-[color:var(--gold)]/10 ring-1 ring-[color:var(--gold)]/40" : "border-white/10 bg-white/[0.02] hover:border-white/20"}`}
+                          >
                             <div className="flex items-center justify-between">
                               <div>
-                                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{e.category} · {e.seats} seats</div>
+                                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                                  {e.category} · {e.seats} seats
+                                </div>
                                 <div className="mt-0.5 text-base font-semibold">{e.name}</div>
                               </div>
                               <Car className="h-5 w-5 text-[color:var(--gold)]" />
@@ -322,11 +470,18 @@ export function BookingWizard({
                             <div className="mt-3 flex items-end justify-between">
                               <div>
                                 <div className="flex items-center text-xl font-bold text-[color:var(--gold)]">
-                                  <IndianRupee className="h-4 w-4" />{e.fare.toLocaleString("en-IN")}
+                                  <IndianRupee className="h-4 w-4" />
+                                  {e.fare.toLocaleString("en-IN")}
                                 </div>
-                                <div className="text-[11px] text-muted-foreground">₹{e.per_km_rate}/km · all incl.</div>
+                                <div className="text-[11px] text-muted-foreground">
+                                  ₹{e.per_km_rate}/km · all incl.
+                                </div>
                               </div>
-                              {badge && <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">{badge}</span>}
+                              {badge && (
+                                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                                  {badge}
+                                </span>
+                              )}
                             </div>
                           </button>
                         );
@@ -339,20 +494,55 @@ export function BookingWizard({
               {step === 3 && (
                 <StepPane title="Your details" hint="We'll call you to confirm">
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <Field icon={<UserIcon className="h-4 w-4 text-[color:var(--gold)]" />} label="Full name">
-                      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Rahul Sharma" className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60" />
+                    <Field
+                      icon={<UserIcon className="h-4 w-4 text-[color:var(--gold)]" />}
+                      label="Full name"
+                    >
+                      <input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Rahul Sharma"
+                        className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                      />
                     </Field>
-                    <Field icon={<Phone className="h-4 w-4 text-[color:var(--cyan)]" />} label="Mobile">
-                      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="98XXXXXXXX" className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60" />
+                    <Field
+                      icon={<Phone className="h-4 w-4 text-[color:var(--cyan)]" />}
+                      label="Mobile"
+                    >
+                      <input
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        placeholder="98XXXXXXXX"
+                        className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                      />
                     </Field>
                     <div className="sm:col-span-2">
-                      <Field icon={<MessageSquare className="h-4 w-4 text-[color:var(--gold)]" />} label="Email (optional)">
-                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@email.com" className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60" />
+                      <Field
+                        icon={<MessageSquare className="h-4 w-4 text-[color:var(--gold)]" />}
+                        label="Email (optional)"
+                      >
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="you@email.com"
+                          className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                        />
                       </Field>
                     </div>
                     <div className="sm:col-span-2">
-                      <Field icon={<Sparkles className="h-4 w-4 text-[color:var(--cyan)]" />} label="Notes (optional)">
-                        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Child seat, extra luggage, pickup point details…" className="w-full resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground/60" />
+                      <Field
+                        icon={<Sparkles className="h-4 w-4 text-[color:var(--cyan)]" />}
+                        label="Notes (optional)"
+                      >
+                        <textarea
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          rows={2}
+                          placeholder="Child seat, extra luggage, pickup point details…"
+                          className="w-full resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
+                        />
                       </Field>
                     </div>
                   </div>
@@ -363,18 +553,34 @@ export function BookingWizard({
                 <StepPane title="Review & confirm" hint="Verify your trip details">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3 text-sm">
                     <Row label="Trip">
-                      <span className="capitalize">{tripType}</span>{tripType === "local" ? ` · ${localPackage}` : ""}
+                      <span className="capitalize">{tripType}</span>
+                      {tripType === "local" ? ` · ${localPackage}` : ""}
                     </Row>
                     <Row label="Route">
-                      <span className="font-semibold">{pickup}</span> {tripType !== "local" && <>→ <span className="font-semibold">{drop}</span></>}
+                      <span className="font-semibold">{pickup}</span>{" "}
+                      {tripType !== "local" && (
+                        <>
+                          → <span className="font-semibold">{drop}</span>
+                        </>
+                      )}
                     </Row>
-                    <Row label="When">{date} · {time}{tripType === "round-trip" && ` · returns ${returnDate}`}</Row>
-                    <Row label="Cab">{selected?.name} · {selected?.seats} seats</Row>
-                    <Row label="Passenger">{name} · {phone}</Row>
+                    <Row label="When">
+                      {date} · {time}
+                      {tripType === "round-trip" && ` · returns ${returnDate}`}
+                    </Row>
+                    <Row label="Cab">
+                      {selected?.name} · {selected?.seats} seats
+                    </Row>
+                    <Row label="Passenger">
+                      {name} · {phone}
+                    </Row>
                     <div className="border-t border-white/10 pt-3 flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground">Estimated fare (pay after ride)</span>
+                      <span className="text-xs text-muted-foreground">
+                        Estimated fare (pay after ride)
+                      </span>
                       <span className="flex items-center text-xl font-bold text-[color:var(--gold)]">
-                        <IndianRupee className="h-4 w-4" />{selected?.fare.toLocaleString("en-IN")}
+                        <IndianRupee className="h-4 w-4" />
+                        {selected?.fare.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -383,23 +589,43 @@ export function BookingWizard({
             </motion.div>
           </AnimatePresence>
 
-          {error && <p className="mt-3 text-sm text-red-400" role="alert">{error}</p>}
+          {error && (
+            <p className="mt-3 text-sm text-red-400" role="alert">
+              {error}
+            </p>
+          )}
 
           {/* Nav buttons */}
           <div className="mt-6 flex items-center justify-between">
-            <button type="button" onClick={() => setStep((s) => Math.max(0, s - 1))} disabled={step === 0}
-              className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs disabled:opacity-40">
+            <button
+              type="button"
+              onClick={() => setStep((s) => Math.max(0, s - 1))}
+              disabled={step === 0}
+              className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-xs disabled:opacity-40"
+            >
               <ArrowLeft className="h-3.5 w-3.5" /> Back
             </button>
             {step < STEPS.length - 1 ? (
-              <button type="button" disabled={!canProceed(step)} onClick={() => setStep((s) => s + 1)}
-                className="inline-flex items-center gap-1.5 rounded-full btn-gold px-5 py-2 text-xs font-semibold disabled:opacity-40">
+              <button
+                type="button"
+                disabled={!canProceed(step)}
+                onClick={() => setStep((s) => s + 1)}
+                className="inline-flex items-center gap-1.5 rounded-full btn-gold px-5 py-2 text-xs font-semibold disabled:opacity-40"
+              >
                 Continue <ArrowRight className="h-3.5 w-3.5" />
               </button>
             ) : (
-              <button type="button" disabled={submitting || !selected} onClick={confirm}
-                className="inline-flex items-center gap-1.5 rounded-full btn-gold px-5 py-2 text-xs font-semibold disabled:opacity-40">
-                {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+              <button
+                type="button"
+                disabled={submitting || !selected}
+                onClick={confirm}
+                className="inline-flex items-center gap-1.5 rounded-full btn-gold px-5 py-2 text-xs font-semibold disabled:opacity-40"
+              >
+                {submitting ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                )}
                 {submitting ? "Booking…" : "Confirm booking"}
               </button>
             )}
@@ -408,14 +634,23 @@ export function BookingWizard({
 
         {/* Live summary */}
         <aside className="border-t border-white/10 bg-white/[0.02] p-5 md:border-l md:border-t-0">
-          <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--gold)]">Trip summary</div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--gold)]">
+            Trip summary
+          </div>
           <div className="mt-3 space-y-2 text-sm">
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-[color:var(--gold)]" />
-              <span className="font-semibold">{pickup}{tripType !== "local" && ` → ${drop}`}</span>
+              <span className="font-semibold">
+                {pickup}
+                {tripType !== "local" && ` → ${drop}`}
+              </span>
             </div>
             <div className="text-xs text-muted-foreground">
-              {tripType === "local" ? `Local · ${localPackage}` : distance ? `${distance} km · ~${Math.round(duration ?? 0)}h` : "Enter cities"}
+              {tripType === "local"
+                ? `Local · ${localPackage}`
+                : distance
+                  ? `${distance} km · ~${Math.round(duration ?? 0)}h`
+                  : "Enter cities"}
             </div>
             <div className="text-xs text-muted-foreground flex items-center gap-1.5">
               <Calendar className="h-3.5 w-3.5" /> {date} · {time}
@@ -423,21 +658,32 @@ export function BookingWizard({
           </div>
           {selected && (
             <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
-              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{selected.category}</div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {selected.category}
+              </div>
               <div className="text-sm font-semibold">{selected.name}</div>
               <div className="mt-2 flex items-baseline justify-between">
                 <span className="text-[11px] text-muted-foreground">Estimated fare</span>
                 <span className="flex items-center text-lg font-bold text-[color:var(--gold)]">
-                  <IndianRupee className="h-4 w-4" />{selected.fare.toLocaleString("en-IN")}
+                  <IndianRupee className="h-4 w-4" />
+                  {selected.fare.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>
           )}
           <ul className="mt-5 space-y-1.5 text-[11px] text-muted-foreground">
-            <li className="flex gap-1.5"><Check className="h-3 w-3 text-[color:var(--gold)]" /> Pay after ride</li>
-            <li className="flex gap-1.5"><Check className="h-3 w-3 text-[color:var(--gold)]" /> Free cancellation up to 12h</li>
-            <li className="flex gap-1.5"><Check className="h-3 w-3 text-[color:var(--gold)]" /> Verified chauffeurs</li>
-            <li className="flex gap-1.5"><Check className="h-3 w-3 text-[color:var(--gold)]" /> 24×7 support</li>
+            <li className="flex gap-1.5">
+              <Check className="h-3 w-3 text-[color:var(--gold)]" /> Pay after ride
+            </li>
+            <li className="flex gap-1.5">
+              <Check className="h-3 w-3 text-[color:var(--gold)]" /> Free cancellation up to 12h
+            </li>
+            <li className="flex gap-1.5">
+              <Check className="h-3 w-3 text-[color:var(--gold)]" /> Verified chauffeurs
+            </li>
+            <li className="flex gap-1.5">
+              <Check className="h-3 w-3 text-[color:var(--gold)]" /> 24×7 support
+            </li>
           </ul>
         </aside>
       </div>
@@ -445,7 +691,15 @@ export function BookingWizard({
   );
 }
 
-function StepPane({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function StepPane({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div>
       <div className="text-[10px] uppercase tracking-[0.18em] text-[color:var(--gold)]">Step</div>
@@ -456,10 +710,21 @@ function StepPane({ title, hint, children }: { title: string; hint?: string; chi
   );
 }
 
-function Field({ icon, label, children }: { icon: React.ReactNode; label: string; children: React.ReactNode }) {
+function Field({
+  icon,
+  label,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  children: React.ReactNode;
+}) {
   return (
     <label className="block rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 focus-within:border-[color:var(--gold)]/50 hover:border-white/20">
-      <div className="mb-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">{icon}{label}</div>
+      <div className="mb-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+        {icon}
+        {label}
+      </div>
       {children}
     </label>
   );

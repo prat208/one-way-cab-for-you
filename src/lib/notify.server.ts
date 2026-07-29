@@ -39,7 +39,6 @@ export type BookingCreatedPayload = {
   polyline?: string | null;
   mapUrl?: string | null;
   staticMapUrl?: string | null;
-
 };
 
 export type NotificationEvent =
@@ -123,7 +122,11 @@ const slackChannel: Channel = {
         ? [
             {
               type: "header",
-              text: { type: "plain_text", text: `🚕 New booking ${event.payload.bookingRef}`, emoji: true },
+              text: {
+                type: "plain_text",
+                text: `🚕 New booking ${event.payload.bookingRef}`,
+                emoji: true,
+              },
             },
             {
               type: "section",
@@ -132,34 +135,48 @@ const slackChannel: Channel = {
                 { type: "mrkdwn", text: `*Phone:*\n${event.payload.phone}` },
                 { type: "mrkdwn", text: `*Email:*\n${event.payload.email || "—"}` },
                 { type: "mrkdwn", text: `*Trip:*\n${event.payload.tripType}` },
-                { type: "mrkdwn", text: `*Route:*\n${event.payload.pickupCity} → ${event.payload.dropCity}` },
-                { type: "mrkdwn", text: `*Date:*\n${event.payload.pickupDate}${event.payload.pickupTime ? ` at ${event.payload.pickupTime}` : ""}` },
+                {
+                  type: "mrkdwn",
+                  text: `*Route:*\n${event.payload.pickupCity} → ${event.payload.dropCity}`,
+                },
+                {
+                  type: "mrkdwn",
+                  text: `*Date:*\n${event.payload.pickupDate}${event.payload.pickupTime ? ` at ${event.payload.pickupTime}` : ""}`,
+                },
                 { type: "mrkdwn", text: `*Vehicle:*\n${event.payload.vehicleName || "—"}` },
                 {
                   type: "mrkdwn",
                   text: `*Fare:*\n${event.payload.estimatedFare != null ? `₹${Number(event.payload.estimatedFare).toLocaleString("en-IN")}` : "—"}`,
                 },
-                { type: "mrkdwn", text: `*Distance:*\n${event.payload.distanceKm != null ? `${event.payload.distanceKm} km` : "—"}` },
+                {
+                  type: "mrkdwn",
+                  text: `*Distance:*\n${event.payload.distanceKm != null ? `${event.payload.distanceKm} km` : "—"}`,
+                },
               ],
             },
             {
               type: "context",
-              elements: [
-                { type: "mrkdwn", text: `Notes: ${event.payload.notes || "—"}` },
-              ],
+              elements: [{ type: "mrkdwn", text: `Notes: ${event.payload.notes || "—"}` }],
             },
           ]
         : [
             {
               type: "header",
-              text: { type: "plain_text", text: `🚕 New lead — ${event.payload.name}`, emoji: true },
+              text: {
+                type: "plain_text",
+                text: `🚕 New lead — ${event.payload.name}`,
+                emoji: true,
+              },
             },
             {
               type: "section",
               fields: [
                 { type: "mrkdwn", text: `*Phone:*\n${event.payload.phone}` },
                 { type: "mrkdwn", text: `*Email:*\n${event.payload.email}` },
-                { type: "mrkdwn", text: `*City:*\n${event.payload.city}${event.payload.state ? `, ${event.payload.state}` : ""}` },
+                {
+                  type: "mrkdwn",
+                  text: `*City:*\n${event.payload.city}${event.payload.state ? `, ${event.payload.state}` : ""}`,
+                },
                 { type: "mrkdwn", text: `*Coupon:*\n${event.payload.couponCode}` },
               ],
             },
@@ -183,7 +200,9 @@ const slackChannel: Channel = {
       try {
         const result = JSON.parse(body) as { ok?: boolean; error?: string };
         if (!result.ok) {
-          console.error(`[notify:slack] Slack rejected message for ${channel}: ${result.error || body}`);
+          console.error(
+            `[notify:slack] Slack rejected message for ${channel}: ${result.error || body}`,
+          );
         }
       } catch {
         console.error(`[notify:slack] Unexpected Slack response: ${body}`);
@@ -197,8 +216,7 @@ const slackChannel: Channel = {
 // Telegram: placeholder — enable by setting TELEGRAM_BOT_TOKEN + TELEGRAM_ADMIN_CHAT_ID.
 const telegramChannel: Channel = {
   id: "telegram",
-  isEnabled: () =>
-    Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_ADMIN_CHAT_ID),
+  isEnabled: () => Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_ADMIN_CHAT_ID),
   async send(event) {
     if (event.type !== "lead.created") return;
     const token = process.env.TELEGRAM_BOT_TOKEN!;
@@ -227,8 +245,8 @@ const whatsappChannel: Channel = {
   isEnabled: () =>
     Boolean(
       process.env.WHATSAPP_PHONE_NUMBER_ID &&
-        process.env.WHATSAPP_ACCESS_TOKEN &&
-        process.env.WHATSAPP_ADMIN_RECIPIENT,
+      process.env.WHATSAPP_ACCESS_TOKEN &&
+      process.env.WHATSAPP_ADMIN_RECIPIENT,
     ),
   async send(event) {
     if (event.type !== "booking.created") return;

@@ -6,7 +6,15 @@ import { markNotificationsRead } from "@/lib/leads.functions";
 import { Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 
-type Notif = { id: string; title: string; body: string; created_at: string; read_at: string | null; lead_id: string | null; kind: string | null };
+type Notif = {
+  id: string;
+  title: string;
+  body: string;
+  created_at: string;
+  read_at: string | null;
+  lead_id: string | null;
+  kind: string | null;
+};
 
 export function AdminBell() {
   const { user, isAdmin } = useAuth();
@@ -27,7 +35,12 @@ export function AdminBell() {
       .channel(`notif-${user.id}`)
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "admin_notifications", filter: `recipient_id=eq.${user.id}` },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "admin_notifications",
+          filter: `recipient_id=eq.${user.id}`,
+        },
         (payload) => setItems((prev) => [payload.new as Notif, ...prev].slice(0, 20)),
       )
       .subscribe();
@@ -47,7 +60,9 @@ export function AdminBell() {
           setOpen(next);
           if (next && unread > 0) {
             await markRead();
-            setItems((prev) => prev.map((n) => ({ ...n, read_at: n.read_at ?? new Date().toISOString() })));
+            setItems((prev) =>
+              prev.map((n) => ({ ...n, read_at: n.read_at ?? new Date().toISOString() })),
+            );
           }
         }}
         className="relative rounded-lg border border-white/10 p-2 text-foreground hover:bg-white/[0.05]"
@@ -66,7 +81,11 @@ export function AdminBell() {
             Notifications
           </div>
           <div className="max-h-96 overflow-y-auto">
-            {items.length === 0 && <p className="px-3 py-6 text-center text-xs text-muted-foreground">You're all caught up.</p>}
+            {items.length === 0 && (
+              <p className="px-3 py-6 text-center text-xs text-muted-foreground">
+                You're all caught up.
+              </p>
+            )}
             {items.map((n) => (
               <Link
                 key={n.id}
@@ -76,7 +95,9 @@ export function AdminBell() {
               >
                 <div className="text-sm font-medium text-foreground">{n.title}</div>
                 <div className="mt-0.5 text-xs text-muted-foreground">{n.body}</div>
-                <div className="mt-1 text-[10px] text-muted-foreground">{new Date(n.created_at).toLocaleString()}</div>
+                <div className="mt-1 text-[10px] text-muted-foreground">
+                  {new Date(n.created_at).toLocaleString()}
+                </div>
               </Link>
             ))}
           </div>

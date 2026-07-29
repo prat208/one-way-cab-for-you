@@ -80,8 +80,8 @@ function DriverSignup() {
           </div>
           <h1 className="text-2xl font-semibold">Drive with ONE WAY CAB</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create your driver account. Add your cab on the next step — an admin
-            will review and approve it.
+            Create your driver account. Add your cab on the next step — an admin will review and
+            approve it.
           </p>
           <form onSubmit={submit} className="mt-6 space-y-3">
             <input
