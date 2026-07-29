@@ -238,7 +238,7 @@ export function BookingWizard({
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <a
-            href={`tel:+919999999999`}
+            href={`tel:+918999740424`}
             className="rounded-full glass px-4 py-2 text-xs hover:bg-white/10"
           >
             Call support
