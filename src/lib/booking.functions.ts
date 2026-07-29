@@ -464,3 +464,44 @@ export const createBooking = createServerFn({ method: "POST" })
     return { booking_ref: row.booking_ref };
   });
 
+
+// ---------- Place autocomplete (Google Places API New, via gateway) ----------
+export const suggestPlaces = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => z.object({ q: z.string().min(1).max(120) }).parse(d))
+  .handler(async ({ data }) => {
+    const lovableKey = process.env.LOVABLE_API_KEY;
+    const gmapsKey = process.env.GOOGLE_MAPS_API_KEY;
+    if (!lovableKey || !gmapsKey) return { suggestions: [] as string[] };
+    try {
+      const r = await fetch(
+        "https://connector-gateway.lovable.dev/google_maps/places/v1/places:autocomplete",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${lovableKey}`,
+            "X-Connection-Api-Key": gmapsKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            input: data.q,
+            includedRegionCodes: ["in"],
+            languageCode: "en",
+          }),
+        },
+      );
+      if (!r.ok) {
+        console.error("[suggestPlaces]", r.status, await r.text());
+        return { suggestions: [] as string[] };
+      }
+      const j = (await r.json()) as {
+        suggestions?: Array<{ placePrediction?: { text?: { text?: string } } }>;
+      };
+      const out = (j.suggestions ?? [])
+        .map((s) => s.placePrediction?.text?.text)
+        .filter((t): t is string => Boolean(t));
+      return { suggestions: out.slice(0, 8) };
+    } catch (e) {
+      console.error("[suggestPlaces] failed", e);
+      return { suggestions: [] as string[] };
+    }
+  });
