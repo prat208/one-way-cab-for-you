@@ -176,7 +176,9 @@ function MessageBubble({ message }: { message: UIMessage }) {
   );
 }
 
-function ToolCard({ part }: { part: any }) {
+type AnyRec = Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
+function ToolCard({ part }: { part: AnyRec }) {
   const name = part.type.replace("tool-", "");
   const state = part.state;
   const output = part.output;
@@ -199,7 +201,7 @@ function ToolCard({ part }: { part: any }) {
           </span>
         </div>
         <div className="grid grid-cols-2 gap-1.5">
-          {output.estimates.map((e: any) => (
+          {output.estimates.map((e: AnyRec) => (
             <div key={e.name} className="rounded-lg border border-white/10 bg-white/[0.02] p-2">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 {e.category} · {e.seats} seats
@@ -269,7 +271,7 @@ function ToolCard({ part }: { part: any }) {
           Popular routes
         </div>
         <ul className="space-y-1 text-xs">
-          {output.routes.slice(0, 8).map((r: any, i: number) => (
+          {output.routes.slice(0, 8).map((r: AnyRec, i: number) => (
             <li key={i} className="flex items-center justify-between">
               <span>
                 {r.from_city} → {r.to_city}
