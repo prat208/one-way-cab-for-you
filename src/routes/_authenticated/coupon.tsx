@@ -11,7 +11,10 @@ export const Route = createFileRoute("/_authenticated/coupon")({
   component: CouponPage,
 });
 
-type Data = { lead: { name: string } | null; coupon: { code: string; discount_pct: number; valid_until: string } | null };
+type Data = {
+  lead: { name: string } | null;
+  coupon: { code: string; discount_pct: number; valid_until: string } | null;
+};
 
 function CouponPage() {
   const nav = useNavigate();

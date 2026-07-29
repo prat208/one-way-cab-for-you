@@ -10,7 +10,13 @@ export function CabGlyph({ className }: { className?: string }) {
       />
       <circle cx="18" cy="19" r="3" fill="currentColor" />
       <circle cx="46" cy="19" r="3" fill="currentColor" />
-      <path d="M50 12h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+      <path
+        d="M50 12h4"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity="0.7"
+      />
     </svg>
   );
 }

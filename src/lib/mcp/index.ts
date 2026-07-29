@@ -6,8 +6,7 @@ import createTravelLead from "./tools/create_travel_lead";
 // The OAuth issuer must be the direct Supabase host. Read the project ref
 // from the Vite-inlined env; SUPABASE_URL is rewritten on publish and would
 // fail RFC 8414 issuer verification.
-const projectRef =
-  import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
+const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
 export default defineMcp({
   name: "one-way-cab-mcp",

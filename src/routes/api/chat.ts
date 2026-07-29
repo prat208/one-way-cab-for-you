@@ -61,7 +61,11 @@ export const Route = createFileRoute("/api/chat")({
               execute: async ({ pickup_city, drop_city, trip_type, local_package }) => {
                 if (trip_type === "local") {
                   const pkg = LOCAL_PACKAGES[local_package ?? "8h-80km"];
-                  const v = await supabase.from("vehicles").select("*").eq("is_active", true).order("sort_order");
+                  const v = await supabase
+                    .from("vehicles")
+                    .select("*")
+                    .eq("is_active", true)
+                    .order("sort_order");
                   return {
                     trip_type,
                     distance_km: pkg.km,
@@ -70,13 +74,19 @@ export const Route = createFileRoute("/api/chat")({
                       name: x.name,
                       category: x.category,
                       seats: x.seats,
-                      fare: Math.round(Number(x.base_fare) + Number(x.per_km_rate) * pkg.km + 150 * pkg.hours),
+                      fare: Math.round(
+                        Number(x.base_fare) + Number(x.per_km_rate) * pkg.km + 150 * pkg.hours,
+                      ),
                     })),
                   };
                 }
                 const [r, v] = await Promise.all([
-                  supabase.from("routes").select("distance_km,duration_hours")
-                    .or(`and(from_city.eq.${pickup_city},to_city.eq.${drop_city}),and(from_city.eq.${drop_city},to_city.eq.${pickup_city})`)
+                  supabase
+                    .from("routes")
+                    .select("distance_km,duration_hours")
+                    .or(
+                      `and(from_city.eq.${pickup_city},to_city.eq.${drop_city}),and(from_city.eq.${drop_city},to_city.eq.${pickup_city})`,
+                    )
                     .maybeSingle(),
                   supabase.from("vehicles").select("*").eq("is_active", true).order("sort_order"),
                 ]);
@@ -92,7 +102,9 @@ export const Route = createFileRoute("/api/chat")({
                     name: x.name,
                     category: x.category,
                     seats: x.seats,
-                    fare: Math.round(Number(x.base_fare) + Number(x.per_km_rate) * distance + allowance),
+                    fare: Math.round(
+                      Number(x.base_fare) + Number(x.per_km_rate) * distance + allowance,
+                    ),
                   })),
                 };
               },
@@ -106,9 +118,15 @@ export const Route = createFileRoute("/api/chat")({
                 budget: z.enum(["economy", "balanced", "premium"]).default("balanced"),
               }),
               execute: async ({ passengers, luggage, budget }) => {
-                const v = await supabase.from("vehicles").select("*").eq("is_active", true).order("sort_order");
+                const v = await supabase
+                  .from("vehicles")
+                  .select("*")
+                  .eq("is_active", true)
+                  .order("sort_order");
                 const list = v.data ?? [];
-                const enough = list.filter((x) => x.seats >= passengers + (luggage === "heavy" ? 1 : 0));
+                const enough = list.filter(
+                  (x) => x.seats >= passengers + (luggage === "heavy" ? 1 : 0),
+                );
                 const pool = enough.length ? enough : list;
                 const pick =
                   budget === "economy"
@@ -143,7 +161,10 @@ export const Route = createFileRoute("/api/chat")({
               description: "List popular outstation routes, optionally filtered by origin city.",
               inputSchema: z.object({ from_city: z.string().nullable().default(null) }),
               execute: async ({ from_city }) => {
-                let q = supabase.from("routes").select("from_city,to_city,distance_km,duration_hours").eq("is_popular", true);
+                let q = supabase
+                  .from("routes")
+                  .select("from_city,to_city,distance_km,duration_hours")
+                  .eq("is_popular", true);
                 if (from_city) q = q.or(`from_city.eq.${from_city},to_city.eq.${from_city}`);
                 const { data } = await q.order("distance_km").limit(12);
                 return { routes: data ?? [] };

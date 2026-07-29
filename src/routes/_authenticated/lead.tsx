@@ -76,19 +76,49 @@ function LeadPage() {
         <p className="text-xs uppercase tracking-wider text-[color:var(--gold)]">Almost there</p>
         <h1 className="mt-2 text-3xl font-semibold text-foreground">Tell us a bit about you</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Takes 20 seconds. We'll unlock live fares and send you a discount coupon on the next screen.
+          Takes 20 seconds. We'll unlock live fares and send you a discount coupon on the next
+          screen.
         </p>
 
         <form onSubmit={onSubmit} className="mt-8 grid gap-4">
-          <Field label="Full name" required value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
-          <Field label="Mobile number" required type="tel" value={form.phone} onChange={(v) => setForm({ ...form, phone: v })} />
-          <Field label="Email" required type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} />
+          <Field
+            label="Full name"
+            required
+            value={form.name}
+            onChange={(v) => setForm({ ...form, name: v })}
+          />
+          <Field
+            label="Mobile number"
+            required
+            type="tel"
+            value={form.phone}
+            onChange={(v) => setForm({ ...form, phone: v })}
+          />
+          <Field
+            label="Email"
+            required
+            type="email"
+            value={form.email}
+            onChange={(v) => setForm({ ...form, email: v })}
+          />
           <div className="grid grid-cols-2 gap-3">
-            <Field label="City" required value={form.city} onChange={(v) => setForm({ ...form, city: v })} />
-            <Field label="State" required value={form.state} onChange={(v) => setForm({ ...form, state: v })} />
+            <Field
+              label="City"
+              required
+              value={form.city}
+              onChange={(v) => setForm({ ...form, city: v })}
+            />
+            <Field
+              label="State"
+              required
+              value={form.state}
+              onChange={(v) => setForm({ ...form, state: v })}
+            />
           </div>
           <label className="grid gap-1.5">
-            <span className="text-xs font-medium text-muted-foreground">Anything else? (optional)</span>
+            <span className="text-xs font-medium text-muted-foreground">
+              Anything else? (optional)
+            </span>
             <textarea
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
@@ -116,9 +146,17 @@ function LeadPage() {
 }
 
 function Field({
-  label, value, onChange, required, type = "text",
+  label,
+  value,
+  onChange,
+  required,
+  type = "text",
 }: {
-  label: string; value: string; onChange: (v: string) => void; required?: boolean; type?: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  required?: boolean;
+  type?: string;
 }) {
   return (
     <label className="grid gap-1.5">

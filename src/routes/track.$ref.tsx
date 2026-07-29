@@ -6,10 +6,7 @@ import { ArrowLeft, Calendar, IndianRupee, Loader2, MapPin, Search } from "lucid
 export const Route = createFileRoute("/track/$ref")({
   ssr: false,
   head: ({ params }) => ({
-    meta: [
-      { title: `Track ${params.ref} — ONE WAY CAB` },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: `Track ${params.ref} — ONE WAY CAB` }, { name: "robots", content: "noindex" }],
   }),
   component: Track,
 });
@@ -34,13 +31,11 @@ function Track() {
 
   useEffect(() => {
     setLoading(true);
-    supabase
-      .rpc("lookup_booking", { _ref: ref })
-      .then(({ data, error }) => {
-        if (error) setError(error.message);
-        else setRow((data?.[0] as LookupRow) ?? null);
-        setLoading(false);
-      });
+    supabase.rpc("lookup_booking", { _ref: ref }).then(({ data, error }) => {
+      if (error) setError(error.message);
+      else setRow((data?.[0] as LookupRow) ?? null);
+      setLoading(false);
+    });
   }, [ref]);
 
   return (
@@ -84,12 +79,15 @@ function Track() {
             </p>
           ) : !row ? (
             <p className="rounded-xl border border-white/10 bg-white/[0.03] p-6 text-sm text-muted-foreground">
-              No booking found for <span className="font-mono text-[color:var(--gold)]">{ref}</span>. Double-check the reference and try again.
+              No booking found for <span className="font-mono text-[color:var(--gold)]">{ref}</span>
+              . Double-check the reference and try again.
             </p>
           ) : (
             <div className="glass rounded-2xl p-5">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-sm text-[color:var(--gold)]">{row.booking_ref}</span>
+                <span className="font-mono text-sm text-[color:var(--gold)]">
+                  {row.booking_ref}
+                </span>
                 <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] uppercase tracking-widest">
                   {row.status}
                 </span>

@@ -83,7 +83,8 @@ export const submitLead = createServerFn({ method: "POST" })
         city: (lead as { state?: string | null; origin_city: string }).origin_city,
         state: (lead as { state?: string | null }).state ?? null,
         couponCode: coupon.code,
-        loginMethod: (context.claims?.app_metadata?.provider as "email" | "phone" | "oauth") ?? "email",
+        loginMethod:
+          (context.claims?.app_metadata?.provider as "email" | "phone" | "oauth") ?? "email",
         submittedAt: new Date().toISOString(),
       },
     });
@@ -109,7 +110,10 @@ export const getMyLead = createServerFn({ method: "POST" })
     return { lead, coupon };
   });
 
-async function requireAdmin(ctx: { supabase: import("@supabase/supabase-js").SupabaseClient; userId: string }) {
+async function requireAdmin(ctx: {
+  supabase: import("@supabase/supabase-js").SupabaseClient;
+  userId: string;
+}) {
   const { data } = await ctx.supabase.rpc("has_role", { _user_id: ctx.userId, _role: "admin" });
   if (!data) throw new Error("Forbidden");
 }
@@ -129,13 +133,17 @@ export const listLeads = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     await requireAdmin(context);
     const { supabase } = context;
-    let q = supabase.from("leads").select("*, coupons(code, discount_pct, valid_until)", { count: "exact" });
+    let q = supabase
+      .from("leads")
+      .select("*, coupons(code, discount_pct, valid_until)", { count: "exact" });
     if (data.status) q = q.eq("status", data.status);
     if (data.from) q = q.gte("created_at", data.from);
     if (data.to) q = q.lte("created_at", data.to);
     if (data.q) {
       const s = `%${data.q}%`;
-      q = q.or(`name.ilike.${s},phone.ilike.${s},email.ilike.${s},origin_city.ilike.${s},state.ilike.${s}`);
+      q = q.or(
+        `name.ilike.${s},phone.ilike.${s},email.ilike.${s},origin_city.ilike.${s},state.ilike.${s}`,
+      );
     }
     const start = data.page * data.pageSize;
     q = q.order("created_at", { ascending: false }).range(start, start + data.pageSize - 1);
@@ -159,7 +167,11 @@ export const updateLead = createServerFn({ method: "POST" })
     await requireAdmin(context);
     const { id, ...patch } = data;
     const { supabase } = context;
-    const { data: prev } = await supabase.from("leads").select("status,assigned_to").eq("id", id).single();
+    const { data: prev } = await supabase
+      .from("leads")
+      .select("status,assigned_to")
+      .eq("id", id)
+      .single();
     const { error } = await supabase.from("leads").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
     if (patch.status && prev && prev.status !== patch.status) {
@@ -171,7 +183,10 @@ export const updateLead = createServerFn({ method: "POST" })
       });
     }
     if (patch.status === "contacted") {
-      await supabase.from("leads").update({ last_contacted_at: new Date().toISOString() }).eq("id", id);
+      await supabase
+        .from("leads")
+        .update({ last_contacted_at: new Date().toISOString() })
+        .eq("id", id);
     }
     return { ok: true };
   });
@@ -196,7 +211,10 @@ export const addLeadNote = createServerFn({ method: "POST" })
     });
     if (error) throw new Error(error.message);
     if (data.kind === "call") {
-      await supabase.from("leads").update({ last_contacted_at: new Date().toISOString() }).eq("id", data.leadId);
+      await supabase
+        .from("leads")
+        .update({ last_contacted_at: new Date().toISOString() })
+        .eq("id", data.leadId);
     }
     return { ok: true };
   });
@@ -225,8 +243,19 @@ export const exportLeadsCsv = createServerFn({ method: "POST" })
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     const headers = [
-      "Created", "Name", "Phone", "Email", "City", "State",
-      "Status", "AssignedTo", "FollowUpAt", "LastContactedAt", "Coupon", "Discount", "Notes",
+      "Created",
+      "Name",
+      "Phone",
+      "Email",
+      "City",
+      "State",
+      "Status",
+      "AssignedTo",
+      "FollowUpAt",
+      "LastContactedAt",
+      "Coupon",
+      "Discount",
+      "Notes",
     ];
     const esc = (v: unknown) => {
       const s = v == null ? "" : String(v);
@@ -235,15 +264,28 @@ export const exportLeadsCsv = createServerFn({ method: "POST" })
     const lines = [headers.join(",")];
     for (const r of rows ?? []) {
       const cRaw = (r as { coupons?: unknown }).coupons;
-      const c = Array.isArray(cRaw) ? (cRaw[0] as { code?: string; discount_pct?: number } | undefined) : (cRaw as { code?: string; discount_pct?: number } | null);
-      lines.push([
-        r.created_at, r.name, r.phone, r.email, r.origin_city,
-        (r as { state?: string | null }).state ?? "",
-        r.status, r.assigned_to ?? "",
-        (r as { follow_up_at?: string | null }).follow_up_at ?? "",
-        (r as { last_contacted_at?: string | null }).last_contacted_at ?? "",
-        c?.code ?? "", c?.discount_pct ?? "", r.notes ?? "",
-      ].map(esc).join(","));
+      const c = Array.isArray(cRaw)
+        ? (cRaw[0] as { code?: string; discount_pct?: number } | undefined)
+        : (cRaw as { code?: string; discount_pct?: number } | null);
+      lines.push(
+        [
+          r.created_at,
+          r.name,
+          r.phone,
+          r.email,
+          r.origin_city,
+          (r as { state?: string | null }).state ?? "",
+          r.status,
+          r.assigned_to ?? "",
+          (r as { follow_up_at?: string | null }).follow_up_at ?? "",
+          (r as { last_contacted_at?: string | null }).last_contacted_at ?? "",
+          c?.code ?? "",
+          c?.discount_pct ?? "",
+          r.notes ?? "",
+        ]
+          .map(esc)
+          .join(","),
+      );
     }
     return { csv: lines.join("\n") };
   });

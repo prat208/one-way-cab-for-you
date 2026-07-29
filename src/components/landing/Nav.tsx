@@ -50,21 +50,22 @@ export function Nav() {
               <Phone className="h-4 w-4 text-[color:var(--gold)]" /> 24×7 · 8999740424
             </a>
 
-            {!loading && (user ? (
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-sm font-medium hover:bg-white/10"
-              >
-                <LayoutDashboard className="h-4 w-4" /> Dashboard
-              </Link>
-            ) : (
-              <Link
-                to="/auth"
-                className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-sm font-medium hover:bg-white/10"
-              >
-                <LogIn className="h-4 w-4" /> Sign in
-              </Link>
-            ))}
+            {!loading &&
+              (user ? (
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-sm font-medium hover:bg-white/10"
+                >
+                  <LayoutDashboard className="h-4 w-4" /> Dashboard
+                </Link>
+              ) : (
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center gap-1.5 rounded-full glass px-4 py-2 text-sm font-medium hover:bg-white/10"
+                >
+                  <LogIn className="h-4 w-4" /> Sign in
+                </Link>
+              ))}
             <AuthLink to="/book" className="rounded-full btn-gold px-5 py-2 text-sm font-semibold">
               Book now
             </AuthLink>

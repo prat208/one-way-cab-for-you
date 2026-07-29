@@ -9,9 +9,16 @@ export const Route = createFileRoute("/rates")({
   head: () => ({
     meta: [
       { title: "Fare Calculator & Rate Card — ONE WAY CAB" },
-      { name: "description", content: "Live fare calculator for any Maharashtra route. Fixed rates for 9 popular routes, per-km pricing for all others. Sedan, Ertiga, Innova, Kia & Mini Bus." },
+      {
+        name: "description",
+        content:
+          "Live fare calculator for any Maharashtra route. Fixed rates for 9 popular routes, per-km pricing for all others. Sedan, Ertiga, Innova, Kia & Mini Bus.",
+      },
       { property: "og:title", content: "Fare Calculator — ONE WAY CAB" },
-      { property: "og:description", content: "Estimate outstation cab fare across Maharashtra instantly." },
+      {
+        property: "og:description",
+        content: "Estimate outstation cab fare across Maharashtra instantly.",
+      },
       { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/rates" },
       { property: "og:type", content: "website" },
     ],
@@ -70,9 +77,7 @@ function findFixed(from: string, to: string): FixedRoute | null {
   const b = norm(to);
   return (
     FIXED_ROUTES.find(
-      (r) =>
-        (norm(r.from) === a && norm(r.to) === b) ||
-        (norm(r.from) === b && norm(r.to) === a),
+      (r) => (norm(r.from) === a && norm(r.to) === b) || (norm(r.from) === b && norm(r.to) === a),
     ) ?? null
   );
 }
@@ -181,7 +186,9 @@ function RatesPage() {
           <div className="text-xs uppercase tracking-[0.18em] text-[color:var(--gold)]">
             Rate card & calculator
           </div>
-          <h1 className="mt-1 text-3xl font-bold sm:text-4xl">Instant Maharashtra Fare Calculator</h1>
+          <h1 className="mt-1 text-3xl font-bold sm:text-4xl">
+            Instant Maharashtra Fare Calculator
+          </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Fixed prices apply to our 9 popular routes. Any other location is priced by driving
             distance × per-km rate. Toll, parking, state tax and driver allowance are extra.
@@ -258,9 +265,9 @@ function RatesPage() {
                 {(Object.keys(VEHICLE_META) as VehicleKey[]).map((k) => {
                   const fare =
                     result.kind === "fixed"
-                      ? (k === "sedan" || k === "ertiga" || k === "kia" || k === "innova"
-                          ? result.fares[k as "sedan" | "ertiga" | "kia" | "innova"]
-                          : null)
+                      ? k === "sedan" || k === "ertiga" || k === "kia" || k === "innova"
+                        ? result.fares[k as "sedan" | "ertiga" | "kia" | "innova"]
+                        : null
                       : result.fares[k];
                   return (
                     <div
@@ -269,7 +276,9 @@ function RatesPage() {
                     >
                       <div>
                         <div className="text-sm font-medium">{VEHICLE_META[k].name}</div>
-                        <div className="text-[11px] text-muted-foreground">{VEHICLE_META[k].capacity}</div>
+                        <div className="text-[11px] text-muted-foreground">
+                          {VEHICLE_META[k].capacity}
+                        </div>
                       </div>
                       <div className="text-right">
                         {fare == null ? (
@@ -330,16 +339,21 @@ function RatesPage() {
             Applied to any Maharashtra destination not listed above.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {([
-              ["Sedan", "4 Seater", 13],
-              ["Ertiga", "7 Seater", 16],
-              ["Mini Bus (Non-AC)", "17 Seater", 23],
-              ["Mini Bus (AC)", "17 Seater", 26],
-            ] as const).map(([name, cap, rate]) => (
+            {(
+              [
+                ["Sedan", "4 Seater", 13],
+                ["Ertiga", "7 Seater", 16],
+                ["Mini Bus (Non-AC)", "17 Seater", 23],
+                ["Mini Bus (AC)", "17 Seater", 26],
+              ] as const
+            ).map(([name, cap, rate]) => (
               <div key={name} className="glass rounded-xl p-4">
                 <div className="text-sm font-medium">{name}</div>
                 <div className="text-xs text-muted-foreground">{cap}</div>
-                <div className="mt-2 text-2xl font-bold text-[color:var(--gold)]">₹{rate}<span className="text-sm font-normal text-muted-foreground">/km</span></div>
+                <div className="mt-2 text-2xl font-bold text-[color:var(--gold)]">
+                  ₹{rate}
+                  <span className="text-sm font-normal text-muted-foreground">/km</span>
+                </div>
               </div>
             ))}
           </div>

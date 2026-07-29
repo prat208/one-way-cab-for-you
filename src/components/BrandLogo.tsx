@@ -26,7 +26,9 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
       initial={shouldAnimate ? { opacity: 0, scale: 0.92 } : false}
       animate={shouldAnimate ? { opacity: 1, scale: 1 } : undefined}
       transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}
-      whileHover={shouldAnimate ? { rotate: [0, -2, 2, 0], transition: { duration: 0.9 } } : undefined}
+      whileHover={
+        shouldAnimate ? { rotate: [0, -2, 2, 0], transition: { duration: 0.9 } } : undefined
+      }
     >
       {/* Golden aura */}
       {shouldAnimate && (

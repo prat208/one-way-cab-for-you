@@ -36,15 +36,39 @@ const fadeUp = {
 
 export function Services() {
   const items = [
-    { icon: RouteIcon, title: "Outstation One-Way", body: "Pay only for one side. Perfect for weekend trips across Maharashtra." },
-    { icon: Car, title: "Round Trip", body: "Return the same day or after a few days. Same driver, same car." },
-    { icon: Plane, title: "Airport Transfer", body: "Flight-tracked pickup and drop to Pune & Mumbai airports." },
-    { icon: Building2, title: "Corporate Travel", body: "Monthly billing, professional chauffeurs, dedicated account manager." },
+    {
+      icon: RouteIcon,
+      title: "Outstation One-Way",
+      body: "Pay only for one side. Perfect for weekend trips across Maharashtra.",
+    },
+    {
+      icon: Car,
+      title: "Round Trip",
+      body: "Return the same day or after a few days. Same driver, same car.",
+    },
+    {
+      icon: Plane,
+      title: "Airport Transfer",
+      body: "Flight-tracked pickup and drop to Pune & Mumbai airports.",
+    },
+    {
+      icon: Building2,
+      title: "Corporate Travel",
+      body: "Monthly billing, professional chauffeurs, dedicated account manager.",
+    },
   ];
   return (
     <section id="services" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Services" title={<>Every trip, <span className="text-gradient-gold">handled</span>.</>} sub="One platform for your outstation, airport and corporate rides." />
+        <SectionHeader
+          eyebrow="Services"
+          title={
+            <>
+              Every trip, <span className="text-gradient-gold">handled</span>.
+            </>
+          }
+          sub="One platform for your outstation, airport and corporate rides."
+        />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {items.map((it, i) => (
             <motion.div
@@ -67,16 +91,56 @@ export function Services() {
 
 export function Fleet() {
   const fleet = [
-    { name: "Sedan", alt: "Premium sedan cab for outstation travel", tag: "Comfort", seats: 4, rate: "₹12/km", img: sedanAsset.url, pts: ["AC · Music", "2 large bags", "Great for couples"] },
-    { name: "SUV", alt: "Luxury SUV cab for outstation trips", tag: "Premium", seats: 6, rate: "₹16/km", img: suvAsset.url, pts: ["Extra headroom", "4 large bags", "Ideal weekend trips"] },
-    { name: "Innova Crysta", alt: "Toyota Innova Crysta luxury MPV cab", tag: "Luxury", seats: 7, rate: "₹19/km", img: innovaAsset.url, pts: ["Plush interiors", "4 large bags", "Silent cabin"] },
-    { name: "Tempo Traveller", alt: "Tempo Traveller minibus for group outstation travel", tag: "Group", seats: 12, rate: "₹26/km", img: tempoAsset.url, pts: ["Reclining seats", "8 large bags", "Group outings"] },
+    {
+      name: "Sedan",
+      alt: "Premium sedan cab for outstation travel",
+      tag: "Comfort",
+      seats: 4,
+      rate: "₹12/km",
+      img: sedanAsset.url,
+      pts: ["AC · Music", "2 large bags", "Great for couples"],
+    },
+    {
+      name: "SUV",
+      alt: "Luxury SUV cab for outstation trips",
+      tag: "Premium",
+      seats: 6,
+      rate: "₹16/km",
+      img: suvAsset.url,
+      pts: ["Extra headroom", "4 large bags", "Ideal weekend trips"],
+    },
+    {
+      name: "Innova Crysta",
+      alt: "Toyota Innova Crysta luxury MPV cab",
+      tag: "Luxury",
+      seats: 7,
+      rate: "₹19/km",
+      img: innovaAsset.url,
+      pts: ["Plush interiors", "4 large bags", "Silent cabin"],
+    },
+    {
+      name: "Tempo Traveller",
+      alt: "Tempo Traveller minibus for group outstation travel",
+      tag: "Group",
+      seats: 12,
+      rate: "₹26/km",
+      img: tempoAsset.url,
+      pts: ["Reclining seats", "8 large bags", "Group outings"],
+    },
   ];
   return (
     <section id="fleet" className="relative py-16 sm:py-24 md:py-32">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,rgba(255,200,61,0.08),transparent_60%)]" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Fleet" title={<>Cars you'd want to <span className="text-gradient-gold">be seen in</span>.</>} sub="Late-model, deep-cleaned, and driven by verified chauffeurs." />
+        <SectionHeader
+          eyebrow="Fleet"
+          title={
+            <>
+              Cars you'd want to <span className="text-gradient-gold">be seen in</span>.
+            </>
+          }
+          sub="Late-model, deep-cleaned, and driven by verified chauffeurs."
+        />
         <div className="mt-14 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {fleet.map((f, i) => (
             <motion.article
@@ -124,17 +188,49 @@ export function Fleet() {
 
 export function WhyUs() {
   const feats = [
-    { icon: ShieldCheck, title: "Verified chauffeurs", body: "Background-checked, uniformed, professionally trained drivers." },
-    { icon: Wallet, title: "Transparent pricing", body: "No hidden charges. What you see on the estimate is what you pay." },
-    { icon: Clock, title: "On-time, always", body: "97.3% of our rides start within 5 minutes of scheduled pickup." },
-    { icon: Headphones, title: "24×7 live support", body: "Real humans on chat and call — before, during, and after your ride." },
-    { icon: Sparkles, title: "Sanitised cabins", body: "Every car deep-cleaned between trips. Bottled water on board." },
-    { icon: MapPin, title: "Door-to-door", body: "Pickup from your gate, drop at your destination — nothing in between." },
+    {
+      icon: ShieldCheck,
+      title: "Verified chauffeurs",
+      body: "Background-checked, uniformed, professionally trained drivers.",
+    },
+    {
+      icon: Wallet,
+      title: "Transparent pricing",
+      body: "No hidden charges. What you see on the estimate is what you pay.",
+    },
+    {
+      icon: Clock,
+      title: "On-time, always",
+      body: "97.3% of our rides start within 5 minutes of scheduled pickup.",
+    },
+    {
+      icon: Headphones,
+      title: "24×7 live support",
+      body: "Real humans on chat and call — before, during, and after your ride.",
+    },
+    {
+      icon: Sparkles,
+      title: "Sanitised cabins",
+      body: "Every car deep-cleaned between trips. Bottled water on board.",
+    },
+    {
+      icon: MapPin,
+      title: "Door-to-door",
+      body: "Pickup from your gate, drop at your destination — nothing in between.",
+    },
   ];
   return (
     <section id="why" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Why ONE WAY CAB" title={<>Built for people who <span className="text-gradient-gold">value their time</span>.</>} sub="Six reasons customers refer us to their friends and family." />
+        <SectionHeader
+          eyebrow="Why ONE WAY CAB"
+          title={
+            <>
+              Built for people who <span className="text-gradient-gold">value their time</span>.
+            </>
+          }
+          sub="Six reasons customers refer us to their friends and family."
+        />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {feats.map((f, i) => (
             <motion.div
@@ -164,7 +260,15 @@ export function Process() {
   return (
     <section id="how" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="How it works" title={<>Booked in under a <span className="text-gradient-gold">minute</span>.</>} sub="No app to download. No signup. No back-and-forth." />
+        <SectionHeader
+          eyebrow="How it works"
+          title={
+            <>
+              Booked in under a <span className="text-gradient-gold">minute</span>.
+            </>
+          }
+          sub="No app to download. No signup. No back-and-forth."
+        />
         <div className="relative mt-16 grid gap-6 md:grid-cols-4">
           <div className="pointer-events-none absolute inset-x-6 top-8 hidden h-px bg-gradient-to-r from-transparent via-[color:var(--gold)]/40 to-transparent md:block" />
           {steps.map((s, i) => (
@@ -199,7 +303,15 @@ export function PopularRoutes() {
   return (
     <section id="routes" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Popular routes" title={<>Most-loved <span className="text-gradient-gold">outstation trips</span>.</>} sub="Fares below are indicative sedan one-way rates." />
+        <SectionHeader
+          eyebrow="Popular routes"
+          title={
+            <>
+              Most-loved <span className="text-gradient-gold">outstation trips</span>.
+            </>
+          }
+          sub="Fares below are indicative sedan one-way rates."
+        />
         <div className="mt-14 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {routes.map((r, i) => (
             <motion.div
@@ -216,11 +328,15 @@ export function PopularRoutes() {
                   <div className="flex items-center gap-1.5 text-base font-semibold">
                     <span>→</span> {r.to}
                   </div>
-                  <div className="mt-1 text-[11px] text-muted-foreground">{r.km} km · ~{Math.round(r.km / 55)}h</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">
+                    {r.km} km · ~{Math.round(r.km / 55)}h
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground">from</div>
-                  <div className="text-base font-bold text-gradient-gold">₹{r.price.toLocaleString("en-IN")}</div>
+                  <div className="text-base font-bold text-gradient-gold">
+                    ₹{r.price.toLocaleString("en-IN")}
+                  </div>
                 </div>
               </AuthLink>
             </motion.div>
@@ -243,22 +359,33 @@ export function Cities() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Cities we serve"
-          title={<>Book from your <span className="text-gradient-gold">home city</span>.</>}
+          title={
+            <>
+              Book from your <span className="text-gradient-gold">home city</span>.
+            </>
+          }
           sub="Dedicated pages, fares and popular routes for each city we operate from."
         />
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {cities.map((c, i) => (
-            <motion.div key={c.slug} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.06 }}>
+            <motion.div
+              key={c.slug}
+              {...fadeUp}
+              transition={{ ...fadeUp.transition, delay: i * 0.06 }}
+            >
               <Link
                 to="/city/$slug"
                 params={{ slug: c.slug }}
                 className="glass group relative flex h-full items-center justify-between overflow-hidden rounded-2xl p-5 transition-transform hover:-translate-y-0.5"
               >
                 <div>
-                  <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">{c.tag}</div>
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+                    {c.tag}
+                  </div>
                   <div className="mt-1 text-xl font-semibold">{c.name}</div>
                   <div className="mt-1 flex items-center gap-1 text-xs text-[color:var(--gold)]">
-                    Explore <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                    Explore{" "}
+                    <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
                   </div>
                 </div>
                 <MapPin className="h-8 w-8 text-[color:var(--gold)]/60" />
@@ -273,14 +400,37 @@ export function Cities() {
 
 export function Testimonials() {
   const t = [
-    { n: "Aarti S.", city: "Pune → Kolhapur", body: "Chauffeur was on time and super polite. Car smelled brand new. Best outstation experience I've had in years.", rating: 5 },
-    { n: "Rohit M.", city: "Mumbai → Nashik", body: "Booked at 10 pm for a 6 am pickup. They confirmed on WhatsApp in minutes. Fare was exactly what the estimate showed.", rating: 5 },
-    { n: "Neha K.", city: "Pune → Mahabaleshwar", body: "Loved the Innova. Kids slept the whole way. Driver stopped at a great tea break spot without me asking.", rating: 5 },
+    {
+      n: "Aarti S.",
+      city: "Pune → Kolhapur",
+      body: "Chauffeur was on time and super polite. Car smelled brand new. Best outstation experience I've had in years.",
+      rating: 5,
+    },
+    {
+      n: "Rohit M.",
+      city: "Mumbai → Nashik",
+      body: "Booked at 10 pm for a 6 am pickup. They confirmed on WhatsApp in minutes. Fare was exactly what the estimate showed.",
+      rating: 5,
+    },
+    {
+      n: "Neha K.",
+      city: "Pune → Mahabaleshwar",
+      body: "Loved the Innova. Kids slept the whole way. Driver stopped at a great tea break spot without me asking.",
+      rating: 5,
+    },
   ];
   return (
     <section className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <SectionHeader eyebrow="Loved by travellers" title={<>What our <span className="text-gradient-gold">riders say</span>.</>} sub="A snapshot of thousands of 5-star reviews." />
+        <SectionHeader
+          eyebrow="Loved by travellers"
+          title={
+            <>
+              What our <span className="text-gradient-gold">riders say</span>.
+            </>
+          }
+          sub="A snapshot of thousands of 5-star reviews."
+        />
         <div className="mt-14 grid gap-5 md:grid-cols-3">
           {t.map((r, i) => (
             <motion.figure
@@ -291,7 +441,10 @@ export function Testimonials() {
             >
               <div className="flex items-center gap-0.5">
                 {Array.from({ length: r.rating }).map((_, k) => (
-                  <Star key={k} className="h-4 w-4 fill-[color:var(--gold)] text-[color:var(--gold)]" />
+                  <Star
+                    key={k}
+                    className="h-4 w-4 fill-[color:var(--gold)] text-[color:var(--gold)]"
+                  />
                 ))}
               </div>
               <blockquote className="mt-3 text-sm text-foreground/90">"{r.body}"</blockquote>
@@ -314,16 +467,39 @@ export function Testimonials() {
 
 export function FAQ() {
   const items = [
-    { q: "How do I pay?", a: "Cash or UPI to the driver after the ride. Corporate customers can request monthly invoicing." },
-    { q: "What's the cancellation policy?", a: "Free cancellation up to 12 hours before pickup. After that, a small driver-allowance fee applies." },
-    { q: "Do you charge for return with one-way?", a: "No — one-way rides mean you only pay for the distance you travel." },
-    { q: "Is toll & parking included?", a: "Toll, state permits and parking are billed at actuals with digital receipts." },
-    { q: "Which cars do you offer?", a: "Sedan, SUV, Innova Crysta and Tempo Traveller — all late-model, sanitised and AC." },
+    {
+      q: "How do I pay?",
+      a: "Cash or UPI to the driver after the ride. Corporate customers can request monthly invoicing.",
+    },
+    {
+      q: "What's the cancellation policy?",
+      a: "Free cancellation up to 12 hours before pickup. After that, a small driver-allowance fee applies.",
+    },
+    {
+      q: "Do you charge for return with one-way?",
+      a: "No — one-way rides mean you only pay for the distance you travel.",
+    },
+    {
+      q: "Is toll & parking included?",
+      a: "Toll, state permits and parking are billed at actuals with digital receipts.",
+    },
+    {
+      q: "Which cars do you offer?",
+      a: "Sedan, SUV, Innova Crysta and Tempo Traveller — all late-model, sanitised and AC.",
+    },
   ];
   return (
     <section id="faq" className="relative py-16 sm:py-24 md:py-32">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
-        <SectionHeader eyebrow="FAQ" title={<>Answers, before you <span className="text-gradient-gold">ask</span>.</>} sub="Everything you need to know before you book." />
+        <SectionHeader
+          eyebrow="FAQ"
+          title={
+            <>
+              Answers, before you <span className="text-gradient-gold">ask</span>.
+            </>
+          }
+          sub="Everything you need to know before you book."
+        />
         <div className="mt-12 divide-y divide-white/10 rounded-2xl glass">
           {items.map((it) => (
             <details key={it.q} className="group px-5 py-4 open:bg-white/[0.03]">
@@ -352,7 +528,9 @@ export function Footer() {
               <BrandLogo crop className="h-12 w-12" />
               <div>
                 <div className="text-sm font-bold tracking-wide">ONEWAYCABS</div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Tours &amp; Travels · Kolhapur</div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                  Tours &amp; Travels · Kolhapur
+                </div>
               </div>
             </div>
             <p className="mt-4 max-w-md text-sm text-muted-foreground">
@@ -360,15 +538,19 @@ export function Footer() {
               Booked in under a minute.
             </p>
             <address className="mt-5 not-italic text-sm text-foreground/80">
-              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Visit us</div>
+              <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                Visit us
+              </div>
               <a
                 href="https://www.google.com/maps/search/?api=1&query=Tawade+hotel+near+Sai+medical+Bapat+Camp+Gandhinagar+Kolhapur+416005"
                 target="_blank"
                 rel="noreferrer"
                 className="mt-2 block hover:text-[color:var(--gold)]"
               >
-                Tawade Hotel, near Sai Medical,<br />
-                Bapat Camp, Gandhinagar,<br />
+                Tawade Hotel, near Sai Medical,
+                <br />
+                Bapat Camp, Gandhinagar,
+                <br />
                 Kolhapur, Maharashtra 416005
               </a>
             </address>
@@ -376,18 +558,49 @@ export function Footer() {
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Company</div>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><a href="#services" className="text-foreground/80 hover:text-foreground">Services</a></li>
-              <li><a href="#fleet" className="text-foreground/80 hover:text-foreground">Fleet</a></li>
-              <li><a href="#routes" className="text-foreground/80 hover:text-foreground">Popular routes</a></li>
-              <li><a href="#faq" className="text-foreground/80 hover:text-foreground">FAQ</a></li>
+              <li>
+                <a href="#services" className="text-foreground/80 hover:text-foreground">
+                  Services
+                </a>
+              </li>
+              <li>
+                <a href="#fleet" className="text-foreground/80 hover:text-foreground">
+                  Fleet
+                </a>
+              </li>
+              <li>
+                <a href="#routes" className="text-foreground/80 hover:text-foreground">
+                  Popular routes
+                </a>
+              </li>
+              <li>
+                <a href="#faq" className="text-foreground/80 hover:text-foreground">
+                  FAQ
+                </a>
+              </li>
             </ul>
           </div>
           <div>
             <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Contact</div>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><a href="tel:+918999740424" className="text-foreground/80 hover:text-foreground">24×7 helpline · +91 8999740424</a></li>
-              <li><a href="tel:+919403001415" className="text-foreground/80 hover:text-foreground">Sales · +91 9403001415</a></li>
-              <li><a href="mailto:onewaycabsc@gmail.com" className="text-foreground/80 hover:text-foreground">onewaycabsc@gmail.com</a></li>
+              <li>
+                <a href="tel:+918999740424" className="text-foreground/80 hover:text-foreground">
+                  24×7 helpline · +91 8999740424
+                </a>
+              </li>
+              <li>
+                <a href="tel:+919403001415" className="text-foreground/80 hover:text-foreground">
+                  Sales · +91 9403001415
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:onewaycabsc@gmail.com"
+                  className="text-foreground/80 hover:text-foreground"
+                >
+                  onewaycabsc@gmail.com
+                </a>
+              </li>
               <li className="text-foreground/80">Pune · Mumbai · Kolhapur · Nashik</li>
             </ul>
           </div>
@@ -422,13 +635,24 @@ function SectionHeader({
 }) {
   return (
     <div className="mx-auto max-w-2xl text-center">
-      <motion.div {...fadeUp} className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]">
+      <motion.div
+        {...fadeUp}
+        className="text-xs uppercase tracking-[0.22em] text-[color:var(--gold)]"
+      >
         {eyebrow}
       </motion.div>
-      <motion.h2 {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="mt-3 text-3xl font-semibold sm:text-4xl md:text-5xl">
+      <motion.h2
+        {...fadeUp}
+        transition={{ ...fadeUp.transition, delay: 0.05 }}
+        className="mt-3 text-3xl font-semibold sm:text-4xl md:text-5xl"
+      >
         {title}
       </motion.h2>
-      <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }} className="mt-4 text-sm text-muted-foreground sm:text-base">
+      <motion.p
+        {...fadeUp}
+        transition={{ ...fadeUp.transition, delay: 0.1 }}
+        className="mt-4 text-sm text-muted-foreground sm:text-base"
+      >
         {sub}
       </motion.p>
     </div>
@@ -439,9 +663,21 @@ export function CareUSP() {
   const openCare = () =>
     typeof window !== "undefined" && window.dispatchEvent(new CustomEvent("open-call-care"));
   const perks = [
-    { icon: PhoneCall, title: "Real human, first ring", body: "No IVR mazes. A trip planner picks up in under 20 seconds — day or night." },
-    { icon: MessageCircle, title: "Personalized on call", body: "We already see your city, destination, date & coupon — no re-explaining your trip." },
-    { icon: ShieldCheck, title: "One number, end-to-end", body: "Booking, driver ETA, changes, refunds — the same person owns your ride." },
+    {
+      icon: PhoneCall,
+      title: "Real human, first ring",
+      body: "No IVR mazes. A trip planner picks up in under 20 seconds — day or night.",
+    },
+    {
+      icon: MessageCircle,
+      title: "Personalized on call",
+      body: "We already see your city, destination, date & coupon — no re-explaining your trip.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "One number, end-to-end",
+      body: "Booking, driver ETA, changes, refunds — the same person owns your ride.",
+    },
   ];
   return (
     <section id="care" className="relative py-16 sm:py-24 md:py-32">
@@ -453,7 +689,10 @@ export function CareUSP() {
 
           <div className="grid gap-10 md:grid-cols-2 md:items-center">
             <div>
-              <motion.div {...fadeUp} className="inline-flex items-center gap-2 rounded-full border border-[color:var(--gold)]/30 bg-[color:var(--gold)]/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[color:var(--gold)]">
+              <motion.div
+                {...fadeUp}
+                className="inline-flex items-center gap-2 rounded-full border border-[color:var(--gold)]/30 bg-[color:var(--gold)]/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-[color:var(--gold)]"
+              >
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[color:var(--gold)]/70 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-[color:var(--gold)]" />
@@ -461,11 +700,22 @@ export function CareUSP() {
                 Our USP · Talk to a human, 24×7
               </motion.div>
 
-              <motion.h2 {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.05 }} className="mt-4 text-3xl font-semibold sm:text-4xl md:text-5xl">
-                Every ride begins with a <span className="text-gradient-gold">real conversation</span>.
+              <motion.h2
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: 0.05 }}
+                className="mt-4 text-3xl font-semibold sm:text-4xl md:text-5xl"
+              >
+                Every ride begins with a{" "}
+                <span className="text-gradient-gold">real conversation</span>.
               </motion.h2>
-              <motion.p {...fadeUp} transition={{ ...fadeUp.transition, delay: 0.1 }} className="mt-4 max-w-lg text-sm text-muted-foreground sm:text-base">
-                Bots quote fares. Humans plan trips. Call us and a trip planner answers with your name, route, date and coupon already on screen — so you get the right car, the right price, in one call.
+              <motion.p
+                {...fadeUp}
+                transition={{ ...fadeUp.transition, delay: 0.1 }}
+                className="mt-4 max-w-lg text-sm text-muted-foreground sm:text-base"
+              >
+                Bots quote fares. Humans plan trips. Call us and a trip planner answers with your
+                name, route, date and coupon already on screen — so you get the right car, the right
+                price, in one call.
               </motion.p>
 
               <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -520,4 +770,3 @@ export function CareUSP() {
     </section>
   );
 }
-

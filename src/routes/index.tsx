@@ -23,9 +23,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
-      { name: "description", content: "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support and instant WhatsApp booking." },
+      {
+        name: "description",
+        content:
+          "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support and instant WhatsApp booking.",
+      },
       { property: "og:title", content: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
-      { property: "og:description", content: "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support." },
+      {
+        property: "og:description",
+        content:
+          "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support.",
+      },
       { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/" },
       { property: "og:type", content: "website" },
     ],
@@ -49,17 +57,26 @@ export const Route = createFileRoute("/")({
             {
               "@type": "Question",
               name: "Do you offer one-way outstation cabs?",
-              acceptedAnswer: { "@type": "Answer", text: "Yes. We offer transparent one-way fares across Maharashtra with no return-trip charges." },
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Yes. We offer transparent one-way fares across Maharashtra with no return-trip charges.",
+              },
             },
             {
               "@type": "Question",
               name: "Are your chauffeurs verified?",
-              acceptedAnswer: { "@type": "Answer", text: "Every chauffeur is background-checked, licensed and trained for long-distance outstation travel." },
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Every chauffeur is background-checked, licensed and trained for long-distance outstation travel.",
+              },
             },
             {
               "@type": "Question",
               name: "How do I get a fare estimate?",
-              acceptedAnswer: { "@type": "Answer", text: "Use the live fare calculator on the Rates page or start a booking on the Book page for an instant quote." },
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: "Use the live fare calculator on the Rates page or start a booking on the Book page for an instant quote.",
+              },
             },
           ],
         }),
@@ -73,7 +90,9 @@ function Stat({ v, l }: { v: string; l: string }) {
   return (
     <div>
       <div className="text-2xl font-bold text-gradient-gold sm:text-3xl">{v}</div>
-      <div className="mt-0.5 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">{l}</div>
+      <div className="mt-0.5 text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+        {l}
+      </div>
     </div>
   );
 }
@@ -97,7 +116,9 @@ function Landing() {
               transition={{ delay: 0.1 }}
               className="glass inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-[11px] uppercase tracking-[0.18em] text-muted-foreground"
             >
-              <span className="grid h-4 w-4 place-items-center rounded-full bg-[color:var(--gold)]/20 text-[color:var(--gold)]">★</span>
+              <span className="grid h-4 w-4 place-items-center rounded-full bg-[color:var(--gold)]/20 text-[color:var(--gold)]">
+                ★
+              </span>
               Rated 4.9 by 12,400+ travellers
             </motion.div>
 
@@ -128,7 +149,10 @@ function Landing() {
               transition={{ delay: 0.45 }}
               className="mt-8 flex flex-wrap items-center gap-3"
             >
-              <AuthLink to="/book" className="rounded-full btn-gold px-6 py-3 text-sm font-semibold">
+              <AuthLink
+                to="/book"
+                className="rounded-full btn-gold px-6 py-3 text-sm font-semibold"
+              >
                 Get instant fare
               </AuthLink>
               <button

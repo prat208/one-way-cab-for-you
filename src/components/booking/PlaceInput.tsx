@@ -46,11 +46,18 @@ export function PlaceInput({
           const list = r.suggestions.length
             ? r.suggestions
             : fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-          setItems(list);
+          setItems(Array.from(new Set(list)));
         })
         .catch(() =>
-          setItems(fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8)),
+          setItems(
+            Array.from(
+              new Set(
+                fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8),
+              ),
+            ),
+          ),
         );
+
     }, 250);
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -107,7 +114,9 @@ export function PlaceInput({
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => pick(s)}
                 className={`block w-full rounded-lg px-3 py-2 text-left text-xs leading-snug transition-colors ${
-                  i === active ? "bg-white/10 text-foreground" : "text-muted-foreground hover:bg-white/5"
+                  i === active
+                    ? "bg-white/10 text-foreground"
+                    : "text-muted-foreground hover:bg-white/5"
                 }`}
               >
                 {s}

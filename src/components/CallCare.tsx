@@ -80,7 +80,6 @@ export function CallCare() {
     };
   }, [user, open]);
 
-
   function personalizedMessage() {
     const lines: string[] = [];
     lines.push("Hi ONE WAY CAB team,");
@@ -162,15 +161,28 @@ export function CallCare() {
                   <User2 className="h-3.5 w-3.5" /> Your details will be shared on call
                 </div>
                 <div className="mt-2 grid gap-1 text-xs text-muted-foreground">
-                  {info.name && <div><span className="text-foreground">{info.name}</span></div>}
+                  {info.name && (
+                    <div>
+                      <span className="text-foreground">{info.name}</span>
+                    </div>
+                  )}
                   {(info.city || info.destination) && (
                     <div>
-                      Trip: {info.city ?? "—"} → <span className="text-foreground">{info.destination ?? "TBD"}</span>
+                      Trip: {info.city ?? "—"} →{" "}
+                      <span className="text-foreground">{info.destination ?? "TBD"}</span>
                       {info.travel_date ? ` · ${info.travel_date}` : ""}
                     </div>
                   )}
-                  {info.coupon && <div>Coupon: <span className="text-foreground">{info.coupon}</span></div>}
-                  {info.lastBookingRef && <div>Booking: <span className="text-foreground">{info.lastBookingRef}</span></div>}
+                  {info.coupon && (
+                    <div>
+                      Coupon: <span className="text-foreground">{info.coupon}</span>
+                    </div>
+                  )}
+                  {info.lastBookingRef && (
+                    <div>
+                      Booking: <span className="text-foreground">{info.lastBookingRef}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -224,8 +236,12 @@ export function CallCare() {
                 className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3 hover:bg-white/[0.06]"
               >
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Email us</div>
-                  <div className="text-base font-semibold text-foreground">onewaycabsc@gmail.com</div>
+                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Email us
+                  </div>
+                  <div className="text-base font-semibold text-foreground">
+                    onewaycabsc@gmail.com
+                  </div>
                 </div>
                 <div className="inline-flex items-center gap-1.5 rounded-lg glass px-3 py-2 text-xs font-semibold">
                   <Mail className="h-3.5 w-3.5 text-[color:var(--gold)]" /> Send

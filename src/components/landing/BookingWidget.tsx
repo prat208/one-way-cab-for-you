@@ -115,7 +115,8 @@ export function BookingWidget({
     }
     if (!name.trim() || name.trim().length < 2) return setError("Please enter your name.");
     if (!/^[+0-9\s-]{7,20}$/.test(phone)) return setError("Please enter a valid phone number.");
-    if (tripType !== "local" && pickup === drop) return setError("Pickup and destination must differ.");
+    if (tripType !== "local" && pickup === drop)
+      return setError("Pickup and destination must differ.");
     setSubmitting(true);
     try {
       const notesParts: string[] = [];
@@ -228,7 +229,10 @@ export function BookingWidget({
             </p>
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup city">
+              <Field
+                icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />}
+                label="Pickup city"
+              >
                 <PlaceInput
                   value={pickup}
                   onChange={setPickup}
@@ -238,7 +242,10 @@ export function BookingWidget({
               </Field>
 
               {tripType === "local" ? (
-                <Field icon={<Clock className="h-4 w-4 text-[color:var(--cyan)]" />} label="Package">
+                <Field
+                  icon={<Clock className="h-4 w-4 text-[color:var(--cyan)]" />}
+                  label="Package"
+                >
                   <select
                     value={localPackage}
                     onChange={(e) => setLocalPackage(e.target.value as LocalPackage)}
@@ -252,7 +259,10 @@ export function BookingWidget({
                   </select>
                 </Field>
               ) : (
-                <Field icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />} label="Destination">
+                <Field
+                  icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />}
+                  label="Destination"
+                >
                   <PlaceInput
                     value={drop}
                     onChange={setDrop}
@@ -262,7 +272,10 @@ export function BookingWidget({
                 </Field>
               )}
 
-              <Field icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup date">
+              <Field
+                icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />}
+                label="Pickup date"
+              >
                 <input
                   type="date"
                   value={date}
@@ -271,7 +284,10 @@ export function BookingWidget({
                   className="w-full bg-transparent text-sm text-foreground outline-none [color-scheme:dark]"
                 />
               </Field>
-              <Field icon={<Clock className="h-4 w-4 text-[color:var(--cyan)]" />} label="Pickup time">
+              <Field
+                icon={<Clock className="h-4 w-4 text-[color:var(--cyan)]" />}
+                label="Pickup time"
+              >
                 <input
                   type="time"
                   value={time}
@@ -295,7 +311,10 @@ export function BookingWidget({
                 </Field>
               )}
 
-              <Field icon={<Phone className="h-4 w-4 text-[color:var(--cyan)]" />} label="Mobile number">
+              <Field
+                icon={<Phone className="h-4 w-4 text-[color:var(--cyan)]" />}
+                label="Mobile number"
+              >
                 <input
                   type="tel"
                   inputMode="tel"
