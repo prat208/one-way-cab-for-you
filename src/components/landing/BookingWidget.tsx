@@ -16,6 +16,7 @@ import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
+import { PlaceInput } from "@/components/booking/PlaceInput";
 
 type Estimate = {
   vehicle_id: string;
@@ -228,17 +229,12 @@ export function BookingWidget({
 
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup city">
-                <select
+                <PlaceInput
                   value={pickup}
-                  onChange={(e) => setPickup(e.target.value)}
-                  className="w-full bg-transparent text-sm text-foreground outline-none"
-                >
-                  {cityList.map((c) => (
-                    <option key={c} value={c} className="bg-[#0a0f24]">
-                      {c}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setPickup}
+                  fallback={cityList}
+                  placeholder="Any city, town or landmark…"
+                />
               </Field>
 
               {tripType === "local" ? (
@@ -257,17 +253,12 @@ export function BookingWidget({
                 </Field>
               ) : (
                 <Field icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />} label="Destination">
-                  <select
+                  <PlaceInput
                     value={drop}
-                    onChange={(e) => setDrop(e.target.value)}
-                    className="w-full bg-transparent text-sm text-foreground outline-none"
-                  >
-                    {cityList.map((c) => (
-                      <option key={c} value={c} className="bg-[#0a0f24]">
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={setDrop}
+                    fallback={cityList}
+                    placeholder="Where to?"
+                  />
                 </Field>
               )}
 

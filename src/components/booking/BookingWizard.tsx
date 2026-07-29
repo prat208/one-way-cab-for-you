@@ -8,6 +8,7 @@ import {
 import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
+import { PlaceInput } from "@/components/booking/PlaceInput";
 import { RouteMap } from "./RouteMap";
 
 
@@ -265,30 +266,13 @@ export function BookingWizard({
 
               {step === 1 && (
                 <StepPane title="Where & when?" hint="Type any city, town or landmark">
-                  <datalist id="city-suggestions">
-                    {cityList.map((c) => <option key={c} value={c} />)}
-                  </datalist>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Field icon={<MapPin className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup location">
-                      <input
-                        list="city-suggestions"
-                        value={pickup}
-                        onChange={(e) => setPickup(e.target.value)}
-                        placeholder="e.g. Kolhapur, Mahabaleshwar, Airport…"
-                        className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
-                        autoComplete="off"
-                      />
+                      <PlaceInput value={pickup} onChange={setPickup} fallback={cityList} placeholder="e.g. Kolhapur, Mahabaleshwar, Airport…" />
                     </Field>
                     {tripType !== "local" && (
                       <Field icon={<MapPin className="h-4 w-4 text-[color:var(--cyan)]" />} label="Destination">
-                        <input
-                          list="city-suggestions"
-                          value={drop}
-                          onChange={(e) => setDrop(e.target.value)}
-                          placeholder="e.g. Pune, Mumbai, Panhala Fort…"
-                          className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
-                          autoComplete="off"
-                        />
+                        <PlaceInput value={drop} onChange={setDrop} fallback={cityList} placeholder="e.g. Pune, Mumbai, Panhala Fort…" />
                       </Field>
                     )}
                     <Field icon={<Calendar className="h-4 w-4 text-[color:var(--gold)]" />} label="Pickup date">
