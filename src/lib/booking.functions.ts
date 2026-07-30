@@ -371,7 +371,54 @@ const BookingInput = z.object({
   origin_label: z.string().max(200).optional().nullable(),
   destination_label: z.string().max(200).optional().nullable(),
   polyline: z.string().max(60000).optional().nullable(),
+  coupon_code: z.string().trim().max(40).optional().nullable(),
 });
+
+// ---------- Coupons ----------
+// Public: check a coupon code against a fare and return the discounted price.
+export const validateCoupon = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z
+      .object({ code: z.string().trim().min(2).max(40), fare: z.number().nonnegative() })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const supabase = serverSupabase();
+    const { data: rows, error } = await supabase.rpc("validate_coupon", {
+      _code: data.code,
+      _fare: data.fare,
+    });
+    if (error) {
+      console.error("[validateCoupon]", error);
+      return {
+        valid: false,
+        code: data.code.toUpperCase(),
+        discount_pct: 0,
+        discount_amount: 0,
+        final_fare: data.fare,
+        reason: "Could not check this coupon. Try again.",
+      };
+    }
+    const r = Array.isArray(rows) ? rows[0] : rows;
+    if (!r) {
+      return {
+        valid: false,
+        code: data.code.toUpperCase(),
+        discount_pct: 0,
+        discount_amount: 0,
+        final_fare: data.fare,
+        reason: "Coupon not found",
+      };
+    }
+    return {
+      valid: Boolean(r.valid),
+      code: r.code,
+      discount_pct: Number(r.discount_pct ?? 0),
+      discount_amount: Number(r.discount_amount ?? 0),
+      final_fare: Number(r.final_fare ?? data.fare),
+      reason: r.reason ?? null,
+    };
+  });
 
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
