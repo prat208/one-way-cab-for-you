@@ -653,6 +653,13 @@ function CouponsPane() {
   const [maxUses, setMaxUses] = useState(0);
   const [minFare, setMinFare] = useState(0);
 
+  const codePreview = `OWC${pct}-XXXX`;
+  const labelPreview =
+    `${pct}% OFF` +
+    (minFare > 0 ? ` above ₹${minFare}` : "") +
+    ` · ${maxUses === 0 ? "unlimited uses" : `${maxUses} use${maxUses > 1 ? "s" : ""}`}` +
+    ` · valid ${days} day${days > 1 ? "s" : ""}`;
+
   const load = useCallback(() => {
     setLoading(true);
     runList(undefined as never)
