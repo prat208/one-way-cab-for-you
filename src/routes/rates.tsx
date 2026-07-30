@@ -4,6 +4,7 @@ import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Sections";
 import { BackHome } from "@/components/BackHome";
 import { Loader2, MapPin, ArrowRight, Sparkles } from "lucide-react";
+import { billableDistanceKm } from "@/lib/fare";
 
 export const Route = createFileRoute("/rates")({
   head: () => ({
