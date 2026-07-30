@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { motion, AnimatePresence } from "framer-motion";
+import { billableDistanceKm } from "@/lib/fare";
 import {
   MapPin,
   Calendar,
