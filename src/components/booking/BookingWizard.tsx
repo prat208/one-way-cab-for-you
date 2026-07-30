@@ -18,7 +18,7 @@ import {
   MessageSquare,
   PartyPopper,
 } from "lucide-react";
-import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
+import { createBooking, estimateFare, getCatalog, validateCoupon } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
 import { PlaceInput } from "@/components/booking/PlaceInput";
@@ -36,7 +36,7 @@ type Estimate = {
 type TripType = "one-way" | "round-trip" | "local";
 type LocalPackage = "4h-40km" | "8h-80km" | "12h-120km";
 
-const STEPS = ["Trip", "Route", "Cab", "You", "Confirm"] as const;
+const STEPS = ["Trip", "Route", "Cab", "You", "Offer", "Confirm"] as const;
 
 const TRIPS: { id: TripType; label: string; hint: string; icon: string }[] = [
   { id: "one-way", label: "One Way", hint: "Pay only for one side", icon: "→" },
@@ -57,6 +57,7 @@ export function BookingWizard({
   const runGetCatalog = useServerFn(getCatalog);
   const runEstimate = useServerFn(estimateFare);
   const runCreate = useServerFn(createBooking);
+  const runCoupon = useServerFn(validateCoupon);
 
   const [step, setStep] = useState(0);
   const [cities, setCities] = useState<{ name: string }[]>([]);
@@ -83,6 +84,18 @@ export function BookingWizard({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [bookingRef, setBookingRef] = useState<string | null>(null);
+  const [couponInput, setCouponInput] = useState("");
+  const [couponBusy, setCouponBusy] = useState(false);
+  const [coupon, setCoupon] = useState<{
+    code: string;
+    discount_pct: number;
+    discount_amount: number;
+    final_fare: number;
+  } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+
+  const baseFare = selected?.fare ?? 0;
+  const payableFare = coupon ? coupon.final_fare : baseFare;
 
   useEffect(() => {
     runGetCatalog({ data: {} })
@@ -158,6 +171,42 @@ export function BookingWizard({
     return () => clearTimeout(handle);
   }, [pickup, drop, tripType, localPackage, runEstimate]);
 
+  useEffect(() => {
+    setCoupon(null);
+    setCouponError(null);
+  }, [selected?.vehicle_id, selected?.fare]);
+
+  async function applyCoupon() {
+    const code = couponInput.trim();
+    if (code.length < 2 || baseFare <= 0) return;
+    setCouponBusy(true);
+    setCouponError(null);
+    try {
+      const res = await runCoupon({ data: { code, fare: baseFare } });
+      if (res.valid) {
+        setCoupon({
+          code: res.code,
+          discount_pct: res.discount_pct,
+          discount_amount: res.discount_amount,
+          final_fare: res.final_fare,
+        });
+      } else {
+        setCoupon(null);
+        setCouponError(res.reason || "This coupon can't be applied.");
+      }
+    } catch {
+      setCouponError("Could not check this coupon. Try again.");
+    } finally {
+      setCouponBusy(false);
+    }
+  }
+
+  function removeCoupon() {
+    setCoupon(null);
+    setCouponInput("");
+    setCouponError(null);
+  }
+
   const cityList = cities.length
     ? cities.map((c) => c.name)
     : ["Pune", "Mumbai", "Kolhapur", "Nashik", "Shirdi", "Lonavala", "Mahabaleshwar"];
@@ -201,6 +250,7 @@ export function BookingWizard({
           destination_lat: routeDest?.lat ?? null,
           destination_lng: routeDest?.lng ?? null,
           polyline: polyline ?? null,
+          coupon_code: coupon?.code ?? null,
         },
       });
       setBookingRef(res.booking_ref);
@@ -230,7 +280,10 @@ export function BookingWizard({
             {pickup} → {tripType === "local" ? pickup : drop}
           </div>
           <div className="text-muted-foreground">
-            {date} {time} · {selected?.name} · ₹{selected?.fare.toLocaleString("en-IN")}
+            {date} {time} · {selected?.name} · ₹{payableFare.toLocaleString("en-IN")}
+            {coupon && (
+              <span className="text-[color:var(--gold)]"> · {coupon.code} applied</span>
+            )}
           </div>
         </div>
         <p className="mt-5 text-xs text-muted-foreground">
@@ -550,6 +603,87 @@ export function BookingWizard({
               )}
 
               {step === 4 && (
+                <StepPane title="Have a coupon?" hint="Apply a code to unlock your final price">
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">Fare before discount</span>
+                        <span className="flex items-center font-semibold">
+                          <IndianRupee className="h-3.5 w-3.5" />
+                          {baseFare.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row">
+                        <input
+                          value={couponInput}
+                          onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              applyCoupon();
+                            }
+                          }}
+                          disabled={!!coupon}
+                          placeholder="Enter coupon code"
+                          className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-2.5 font-mono text-sm uppercase tracking-widest text-foreground outline-none focus:border-[color:var(--gold)]/50 disabled:opacity-60"
+                        />
+                        {coupon ? (
+                          <button
+                            type="button"
+                            onClick={removeCoupon}
+                            className="rounded-xl glass px-4 py-2.5 text-xs font-semibold hover:bg-white/10"
+                          >
+                            Remove
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={applyCoupon}
+                            disabled={couponBusy || couponInput.trim().length < 2}
+                            className="inline-flex items-center justify-center gap-1.5 rounded-xl btn-gold px-5 py-2.5 text-xs font-semibold disabled:opacity-40"
+                          >
+                            {couponBusy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                            Apply
+                          </button>
+                        )}
+                      </div>
+
+                      {couponError && (
+                        <p className="mt-2 text-xs text-red-400" role="alert">
+                          {couponError}
+                        </p>
+                      )}
+
+                      {coupon && (
+                        <div className="mt-4 space-y-2 border-t border-white/10 pt-3 text-sm">
+                          <div className="flex items-center justify-between text-[color:var(--gold)]">
+                            <span className="text-xs">
+                              {coupon.code} · {coupon.discount_pct}% off
+                            </span>
+                            <span className="flex items-center font-semibold">
+                              −<IndianRupee className="h-3.5 w-3.5" />
+                              {coupon.discount_amount.toLocaleString("en-IN")}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">You pay</span>
+                            <span className="flex items-center text-xl font-bold text-[color:var(--gold)]">
+                              <IndianRupee className="h-4 w-4" />
+                              {coupon.final_fare.toLocaleString("en-IN")}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      No coupon? Just continue — you'll still see your final price on the next step.
+                    </p>
+                  </div>
+                </StepPane>
+              )}
+
+              {step === 5 && (
                 <StepPane title="Review & confirm" hint="Verify your trip details">
                   <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 space-y-3 text-sm">
                     <Row label="Trip">
@@ -574,13 +708,28 @@ export function BookingWizard({
                     <Row label="Passenger">
                       {name} · {phone}
                     </Row>
+                    {coupon && (
+                      <>
+                        <Row label="Fare">
+                          <span className="line-through opacity-60">
+                            ₹{baseFare.toLocaleString("en-IN")}
+                          </span>
+                        </Row>
+                        <Row label="Coupon">
+                          <span className="text-[color:var(--gold)]">
+                            {coupon.code} · −₹{coupon.discount_amount.toLocaleString("en-IN")} (
+                            {coupon.discount_pct}%)
+                          </span>
+                        </Row>
+                      </>
+                    )}
                     <div className="border-t border-white/10 pt-3 flex items-center justify-between">
                       <span className="text-xs text-muted-foreground">
-                        Estimated fare (pay after ride)
+                        {coupon ? "Final fare (pay after ride)" : "Estimated fare (pay after ride)"}
                       </span>
                       <span className="flex items-center text-xl font-bold text-[color:var(--gold)]">
                         <IndianRupee className="h-4 w-4" />
-                        {selected?.fare.toLocaleString("en-IN")}
+                        {payableFare.toLocaleString("en-IN")}
                       </span>
                     </div>
                   </div>
@@ -663,10 +812,12 @@ export function BookingWizard({
               </div>
               <div className="text-sm font-semibold">{selected.name}</div>
               <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-[11px] text-muted-foreground">Estimated fare</span>
+                <span className="text-[11px] text-muted-foreground">
+                  {coupon ? "Final fare" : "Estimated fare"}
+                </span>
                 <span className="flex items-center text-lg font-bold text-[color:var(--gold)]">
                   <IndianRupee className="h-4 w-4" />
-                  {selected.fare.toLocaleString("en-IN")}
+                  {payableFare.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>
