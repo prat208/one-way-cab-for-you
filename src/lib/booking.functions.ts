@@ -97,7 +97,10 @@ export const getCityPage = createServerFn({ method: "GET" })
         const other = r.from_city === meta.name ? r.to_city : r.from_city;
         const distance = Number(r.distance_km);
         const fare = cheapest
-          ? Math.round(Number(cheapest.base_fare) + Number(cheapest.per_km_rate) * distance)
+          ? Math.round(
+              Number(cheapest.base_fare) +
+                Number(cheapest.per_km_rate) * billableDistanceKm(distance),
+            )
           : null;
         return {
           to: other,
