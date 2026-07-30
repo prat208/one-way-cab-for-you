@@ -186,3 +186,16 @@
     radial-gradient(1200px 600px at 50% 40%, color-mix(in oklab, var(--navy-soft) 90%, transparent), var(--navy-deep) 70%),
     var(--navy-deep);
 }
+
+/* Mobile-first motion budget: phones get fewer continuously-animating,
+   composite-heavy layers so scrolling and the intro stay at 60fps. */
+@media (max-width: 640px) {
+  .particle { animation-duration: 18s !important; opacity: 0.5; }
+  .cloud-drift-slow, .cloud-drift-fast { animation: none; }
+  .headlight { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .particle, .cloud-drift-slow, .cloud-drift-fast, .road-lines, .wheel-spin,
+  .float-slow, .headlight { animation: none !important; }
+}
