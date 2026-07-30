@@ -32,7 +32,7 @@ export function BrandIntro() {
       return;
     }
     const mobile = window.matchMedia("(max-width: 640px)").matches;
-    const t = setTimeout(() => setShow(false), mobile ? 1900 : 4200);
+    const t = setTimeout(() => setShow(false), mobile ? 3800 : 4200);
     return () => clearTimeout(t);
   }, [prefersReduced]);
 
@@ -72,8 +72,8 @@ function MobileIntro() {
         aria-hidden
         className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-[color:var(--gold,#f5c66b)]/60"
         initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ scaleX: 1, opacity: [0, 1, 0] }}
-        transition={{ duration: 1, times: [0, 0.4, 1], ease: "easeOut" }}
+        animate={{ scaleX: 1, opacity: [0, 1, 1, 0] }}
+        transition={{ duration: 2.6, times: [0, 0.25, 0.7, 1], ease: "easeInOut" }}
         style={{ transformOrigin: "center", willChange: "transform, opacity" }}
       />
 
@@ -81,9 +81,9 @@ function MobileIntro() {
       <motion.div
         aria-hidden
         className="pointer-events-none absolute top-1/2 -translate-y-1/2 text-[color:var(--gold,#f5c66b)]"
-        initial={{ x: "-45vw", opacity: 0 }}
-        animate={{ x: ["-45vw", "0vw", "0vw"], opacity: [0, 1, 0] }}
-        transition={{ duration: 0.9, times: [0, 0.7, 1], ease: [0.2, 0.7, 0.2, 1] }}
+        initial={{ x: "-60vw", opacity: 0 }}
+        animate={{ x: ["-60vw", "0vw", "0vw", "10vw"], opacity: [0, 1, 1, 0] }}
+        transition={{ duration: 2.1, times: [0, 0.55, 0.8, 1], ease: [0.22, 0.7, 0.25, 1] }}
         style={{ willChange: "transform, opacity" }}
       >
         <CabGlyph className="w-28" />
@@ -95,31 +95,36 @@ function MobileIntro() {
           alt="Onewaycabs — Tours and travels"
           draggable={false}
           className="relative z-10 h-36 w-auto object-contain"
-          initial={{ opacity: 0, scale: 0.82 }}
+          initial={{ opacity: 0, scale: 0.86 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.75, ease: [0.2, 0.7, 0.2, 1] }}
+          transition={{ duration: 0.9, delay: 1.5, ease: [0.2, 0.7, 0.2, 1] }}
           style={{ willChange: "transform, opacity" }}
         />
 
-        <motion.div
-          className="mt-5 font-display text-xl font-bold tracking-[0.24em] text-[color:var(--gold,#f5c66b)]"
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 1.05, ease: [0.2, 0.7, 0.2, 1] }}
-          style={{ willChange: "transform, opacity" }}
-        >
-          {BRAND}
-        </motion.div>
+        <div className="mt-5 flex font-display text-xl font-bold tracking-[0.24em] text-[color:var(--gold,#f5c66b)]">
+          {BRAND.split("").map((ch, i) => (
+            <motion.span
+              key={`${ch}-${i}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45, delay: 2.15 + i * 0.05, ease: [0.2, 0.7, 0.2, 1] }}
+              style={{ willChange: "transform, opacity" }}
+            >
+              {ch === " " ? "\u00A0" : ch}
+            </motion.span>
+          ))}
+        </div>
 
         <motion.span
           aria-hidden
           className="mt-2 block h-[2px] w-40 bg-[color:var(--gold,#f5c66b)]"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ duration: 0.45, delay: 1.3, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 2.75, ease: "easeInOut" }}
           style={{ transformOrigin: "left", willChange: "transform" }}
         />
       </div>
+
     </div>
   );
 }
