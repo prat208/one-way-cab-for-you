@@ -20,11 +20,11 @@ export function HeroScene() {
       {/* Stars */}
       <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_20%_20%,#ffffff33_1px,transparent_1.5px),radial-gradient(circle_at_70%_35%,#ffffff22_1px,transparent_1.5px),radial-gradient(circle_at_45%_15%,#ffffff33_1px,transparent_1.5px)] [background-size:220px_220px,320px_320px,180px_180px]" />
 
-      {/* Clouds */}
-      <div className="absolute top-[18%] left-0 h-24 w-full">
+      {/* Clouds — blur layers are expensive on phones, desktop only */}
+      <div className="absolute top-[18%] left-0 hidden h-24 w-full sm:block">
         <div className="cloud-drift-slow absolute top-0 h-24 w-56 rounded-full bg-white/[0.05] blur-2xl" />
       </div>
-      <div className="absolute top-[28%] left-0 h-16 w-full">
+      <div className="absolute top-[28%] left-0 hidden h-16 w-full sm:block">
         <div className="cloud-drift-fast absolute top-0 h-16 w-40 rounded-full bg-cyan-300/[0.06] blur-2xl" />
       </div>
 
