@@ -87,7 +87,11 @@ const inAppChannel: Channel = {
         lead_id: null,
         kind: "booking_created",
         title: `New booking — ${p.bookingRef}`,
-        body: `${p.customerName} · ${p.pickupCity} → ${p.dropCity} · ${p.phone}`,
+        body: `${p.customerName} · ${p.pickupCity} → ${p.dropCity} · ${p.phone}${
+          p.couponCode
+            ? ` · coupon ${p.couponCode} (−${p.discountPct}%) → ₹${Number(p.finalFare ?? 0).toLocaleString("en-IN")}`
+            : ""
+        }`,
       }));
       if (rows.length === 0) return;
       const { error } = await supabaseAdmin.from("admin_notifications").insert(rows);
