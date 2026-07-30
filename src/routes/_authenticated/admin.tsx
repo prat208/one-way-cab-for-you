@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AdminBell } from "@/components/admin/AdminBell";
 import { BackHome } from "@/components/BackHome";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import {
@@ -616,6 +616,262 @@ function UsersPane() {
             <UserMinus className="h-4 w-4" /> Revoke
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+type Coupon = {
+  id: string;
+  code: string;
+  label: string | null;
+  discount_pct: number;
+  valid_until: string;
+  max_uses: number;
+  used_count: number;
+  active: boolean;
+  min_fare: number;
+  created_at: string;
+};
+
+function CouponsPane() {
+  const runList = useServerFn(listCoupons);
+  const runCreate = useServerFn(createCoupon);
+  const runToggle = useServerFn(setCouponActive);
+  const runDelete = useServerFn(deleteCoupon);
+
+  const [coupons, setCoupons] = useState<Coupon[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const [code, setCode] = useState("");
+  const [label, setLabel] = useState("");
+  const [pct, setPct] = useState(10);
+  const [days, setDays] = useState(60);
+  const [maxUses, setMaxUses] = useState(0);
+  const [minFare, setMinFare] = useState(0);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    runList({ data: {} })
+      .then((r) => setCoupons(r.coupons as Coupon[]))
+      .catch((e) => setError(e instanceof Error ? e.message : "Could not load coupons"))
+      .finally(() => setLoading(false));
+  }, [runList]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  async function generate() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await runCreate({
+        data: {
+          code: code.trim(),
+          label: label.trim(),
+          discount_pct: pct,
+          valid_days: days,
+          max_uses: maxUses,
+          min_fare: minFare,
+        },
+      });
+      if (!res.ok) setError(res.error);
+      else {
+        setCode("");
+        setLabel("");
+        load();
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not create coupon");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function shareText(c: Coupon) {
+    return `🎟 ONE WAY CAB offer — use coupon ${c.code} for ${c.discount_pct}% off your ride.${
+      c.min_fare > 0 ? ` Minimum fare ₹${c.min_fare}.` : ""
+    } Valid until ${c.valid_until}. Book at https://one-way-cab-for-you.lovable.app/book`;
+  }
+
+  async function copy(c: Coupon) {
+    await navigator.clipboard.writeText(shareText(c));
+    setCopied(c.id);
+    setTimeout(() => setCopied(null), 1800);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="glass rounded-2xl p-4">
+        <div className="flex items-center gap-2">
+          <Ticket className="h-4 w-4 text-[color:var(--gold)]" />
+          <h2 className="text-sm font-semibold">Generate a coupon</h2>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          <label className="text-xs text-muted-foreground">
+            Code (blank = auto)
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              placeholder="DIWALI10"
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Label
+            <input
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              placeholder="Festive offer"
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Discount %
+            <input
+              type="number"
+              min={1}
+              max={90}
+              value={pct}
+              onChange={(e) => setPct(Number(e.target.value))}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Valid (days)
+            <input
+              type="number"
+              min={1}
+              max={365}
+              value={days}
+              onChange={(e) => setDays(Number(e.target.value))}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Max uses (0 = ∞)
+            <input
+              type="number"
+              min={0}
+              value={maxUses}
+              onChange={(e) => setMaxUses(Number(e.target.value))}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
+            />
+          </label>
+          <label className="text-xs text-muted-foreground">
+            Min fare ₹
+            <input
+              type="number"
+              min={0}
+              value={minFare}
+              onChange={(e) => setMinFare(Number(e.target.value))}
+              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
+            />
+          </label>
+        </div>
+        <div className="mt-4 flex items-center gap-3">
+          <button
+            onClick={generate}
+            disabled={busy}
+            className="inline-flex items-center gap-1.5 rounded-full btn-gold px-4 py-2 text-xs font-semibold disabled:opacity-50"
+          >
+            {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Ticket className="h-3.5 w-3.5" />}
+            Generate coupon
+          </button>
+          {error && <span className="text-xs text-red-400">{error}</span>}
+        </div>
+      </div>
+
+      <div className="glass overflow-hidden rounded-2xl">
+        {loading ? (
+          <div className="grid place-items-center py-14">
+            <Loader2 className="h-5 w-5 animate-spin text-[color:var(--gold)]" />
+          </div>
+        ) : coupons.length === 0 ? (
+          <p className="p-8 text-center text-sm text-muted-foreground">No coupons yet.</p>
+        ) : (
+          <div className="divide-y divide-white/10">
+            {coupons.map((c) => {
+              const expired = c.valid_until < new Date().toISOString().slice(0, 10);
+              return (
+                <div
+                  key={c.id}
+                  className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+                >
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-sm font-bold text-[color:var(--gold)]">
+                        {c.code}
+                      </span>
+                      <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold">
+                        {c.discount_pct}% off
+                      </span>
+                      {!c.active && (
+                        <span className="rounded-full bg-red-500/15 px-2 py-0.5 text-[10px] text-red-300">
+                          disabled
+                        </span>
+                      )}
+                      {expired && (
+                        <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] text-muted-foreground">
+                          expired
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-0.5 text-[11px] text-muted-foreground">
+                      {c.label ? `${c.label} · ` : ""}valid until {c.valid_until} · used{" "}
+                      {c.used_count}
+                      {c.max_uses > 0 ? `/${c.max_uses}` : ""}
+                      {c.min_fare > 0 ? ` · min ₹${c.min_fare}` : ""}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <a
+                      href={`https://wa.me/?text=${encodeURIComponent(shareText(c))}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 rounded-full glass px-3 py-1.5 text-[11px] hover:bg-white/10"
+                    >
+                      <MessageCircle className="h-3 w-3" /> WhatsApp
+                    </a>
+                    <a
+                      href={`mailto:?subject=${encodeURIComponent(
+                        `Your ONE WAY CAB coupon ${c.code}`,
+                      )}&body=${encodeURIComponent(shareText(c))}`}
+                      className="inline-flex items-center gap-1 rounded-full glass px-3 py-1.5 text-[11px] hover:bg-white/10"
+                    >
+                      <Mail className="h-3 w-3" /> Email
+                    </a>
+                    <button
+                      onClick={() => copy(c)}
+                      className="inline-flex items-center gap-1 rounded-full glass px-3 py-1.5 text-[11px] hover:bg-white/10"
+                    >
+                      <Copy className="h-3 w-3" /> {copied === c.id ? "Copied" : "Copy"}
+                    </button>
+                    <button
+                      onClick={() =>
+                        runToggle({ data: { id: c.id, active: !c.active } }).then(load)
+                      }
+                      className="inline-flex items-center gap-1 rounded-full glass px-3 py-1.5 text-[11px] hover:bg-white/10"
+                    >
+                      {c.active ? <X className="h-3 w-3" /> : <Check className="h-3 w-3" />}
+                      {c.active ? "Disable" : "Enable"}
+                    </button>
+                    <button
+                      onClick={() => runDelete({ data: { id: c.id } }).then(load)}
+                      className="inline-flex items-center gap-1 rounded-full glass px-3 py-1.5 text-[11px] text-red-300 hover:bg-red-500/10"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
