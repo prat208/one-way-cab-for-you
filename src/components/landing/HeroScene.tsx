@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 export function HeroScene() {
   // Deterministic particle set so SSR matches CSR (no hydration diff).
   // Fewer particles on mobile for smoother scrolling & less GPU load.
-  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches;
-  const count = isMobile ? 8 : 22;
+  // Render the same set on server and client (no hydration diff); the extra
+  // particles are simply hidden on phones via CSS for a lighter mobile paint.
+  const count = 22;
   const particles = Array.from({ length: count }, (_, i) => ({
     left: (i * 37) % 100,
     delay: (i * 0.7) % 12,
@@ -72,7 +73,7 @@ export function HeroScene() {
       {particles.map((p, i) => (
         <span
           key={i}
-          className="particle absolute bottom-0 rounded-full bg-[color:var(--gold)]/60"
+          className={`particle absolute bottom-0 rounded-full bg-[color:var(--gold)]/60 ${i >= 8 ? "hidden sm:block" : ""}`}
           style={{
             left: `${p.left}%`,
             width: p.size,
