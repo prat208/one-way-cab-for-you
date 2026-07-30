@@ -3,6 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { dispatch } from "@/lib/notify.server";
+import { billableDistanceKm } from "@/lib/fare";
+
 
 function serverSupabase() {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
