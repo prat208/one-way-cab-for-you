@@ -32,7 +32,7 @@ export function BrandIntro() {
       return;
     }
     const mobile = window.matchMedia("(max-width: 640px)").matches;
-    const t = setTimeout(() => setShow(false), mobile ? 1900 : 4200);
+    const t = setTimeout(() => setShow(false), mobile ? 3800 : 4200);
     return () => clearTimeout(t);
   }, [prefersReduced]);
 
