@@ -67,22 +67,22 @@ export function BrandIntro() {
 function MobileIntro() {
   return (
     <div className="relative flex w-full flex-col items-center px-6">
-      {/* Road line — pure transform */}
+      {/* Road line — transform-only, no opacity keyframe array */}
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-[color:var(--gold,#f5c66b)]/60"
-        initial={{ scaleX: 0, opacity: 0 }}
-        animate={{ scaleX: 1, opacity: [0, 1, 1, 0] }}
-        transition={{ duration: 2.6, times: [0, 0.25, 0.7, 1], ease: "easeInOut" }}
-        style={{ transformOrigin: "center", willChange: "transform, opacity" }}
+        className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-[color:var(--gold,#f5c66b)]/50"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 1.1, ease: "easeOut" }}
+        style={{ transformOrigin: "center", willChange: "transform", contain: "paint" }}
       />
 
-      {/* Cab sweeps in */}
+      {/* Cab sweeps in — single transform track */}
       <motion.div
         aria-hidden
-        className="pointer-events-none absolute top-1/2 -translate-y-1/2 text-[color:var(--gold,#f5c66b)]"
-        initial={{ x: "-60vw", opacity: 0 }}
-        animate={{ x: ["-60vw", "0vw", "0vw", "10vw"], opacity: [0, 1, 1, 0] }}
+        className="pointer-events-none absolute top-1/2 text-[color:var(--gold,#f5c66b)]"
+        initial={{ x: "-60vw", y: "-50%", opacity: 0 }}
+        animate={{ x: ["-60vw", "0vw", "0vw", "12vw"], y: "-50%", opacity: [0, 1, 1, 0] }}
         transition={{ duration: 2.1, times: [0, 0.55, 0.8, 1], ease: [0.22, 0.7, 0.25, 1] }}
         style={{ willChange: "transform, opacity" }}
       >
@@ -90,54 +90,56 @@ function MobileIntro() {
       </motion.div>
 
       <div className="relative flex flex-col items-center">
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden" style={{ contain: "paint" }}>
           <motion.img
             src={logoFull}
             alt="Onewaycabs — Tours and travels"
             draggable={false}
+            width={320}
+            height={144}
+            decoding="async"
+            fetchPriority="high"
             className="relative z-10 h-36 w-auto object-contain"
-            initial={{ opacity: 0, scale: 0.86 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 1.5, ease: [0.2, 0.7, 0.2, 1] }}
+            transition={{ duration: 0.8, delay: 1.5, ease: [0.2, 0.7, 0.2, 1] }}
             style={{ willChange: "transform, opacity" }}
           />
+          {/* Shine sweep — opaque-free gradient, no blend mode (cheaper compositing) */}
           <motion.span
             aria-hidden
-            className="pointer-events-none absolute inset-y-0 -left-1/2 z-20 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent mix-blend-screen"
+            className="pointer-events-none absolute inset-y-0 -left-1/2 z-20 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent"
             initial={{ x: "0%", opacity: 0 }}
             animate={{ x: ["0%", "450%"], opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 1.15, delay: 2.45, times: [0, 0.15, 0.78, 1], ease: "easeInOut" }}
+            transition={{ duration: 1.1, delay: 2.45, times: [0, 0.15, 0.78, 1], ease: "easeInOut" }}
             style={{ willChange: "transform, opacity" }}
           />
         </div>
 
-        <div className="mt-5 flex font-display text-xl font-bold tracking-[0.24em] text-[color:var(--gold,#f5c66b)]">
-          {BRAND.split("").map((ch, i) => (
-            <motion.span
-              key={`${ch}-${i}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.45, delay: 2.15 + i * 0.05, ease: [0.2, 0.7, 0.2, 1] }}
-              style={{ willChange: "transform, opacity" }}
-            >
-              {ch === " " ? "\u00A0" : ch}
-            </motion.span>
-          ))}
-        </div>
+        {/* Wordmark animates as one layer instead of 10 per-letter layers */}
+        <motion.div
+          className="mt-5 font-display text-xl font-bold tracking-[0.24em] text-[color:var(--gold,#f5c66b)]"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 2.15, ease: [0.2, 0.7, 0.2, 1] }}
+          style={{ willChange: "transform, opacity" }}
+        >
+          {BRAND}
+        </motion.div>
 
         <motion.span
           aria-hidden
           className="mt-2 block h-[2px] w-40 bg-[color:var(--gold,#f5c66b)]"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ duration: 0.8, delay: 2.75, ease: "easeInOut" }}
+          transition={{ duration: 0.7, delay: 2.6, ease: "easeInOut" }}
           style={{ transformOrigin: "left", willChange: "transform" }}
         />
       </div>
-
     </div>
   );
 }
+
 
 /* --------------------------------- desktop --------------------------------- */
 
