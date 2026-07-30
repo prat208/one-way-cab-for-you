@@ -215,17 +215,21 @@ export const estimateFare = createServerFn({ method: "POST" })
     const duration = (oneWayDuration ?? oneWayDistance / 55) * multiplier;
     const driverAllowance = data.trip_type === "round-trip" ? 300 : 0;
 
+    // Minimum billable slabs: under 200 km bills at 200 km, 200–300 km bills at 300 km
+    const billableKm = billableDistanceKm(distance);
+
     const estimates = vehicles.map((v) => ({
       vehicle_id: v.id,
       name: v.name,
       category: v.category,
       seats: v.seats,
       per_km_rate: Number(v.per_km_rate),
-      fare: Math.round(Number(v.base_fare) + Number(v.per_km_rate) * distance + driverAllowance),
+      fare: Math.round(Number(v.base_fare) + Number(v.per_km_rate) * billableKm + driverAllowance),
     }));
 
     return {
       distance_km: distance,
+      billable_km: billableKm,
       duration_hours: duration,
       estimates,
       trip_type: data.trip_type,
@@ -235,6 +239,7 @@ export const estimateFare = createServerFn({ method: "POST" })
       origin_label: originLabel,
       destination_label: destinationLabel,
     };
+
   });
 
 // ---------- Google Maps helpers (gateway) ----------
