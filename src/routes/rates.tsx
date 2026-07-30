@@ -117,6 +117,7 @@ type Result =
       from: string;
       to: string;
       distanceKm: number;
+      billableKm: number;
       fares: Record<VehicleKey, number | null>;
     };
 
