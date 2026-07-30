@@ -58,14 +58,18 @@ export type Database = {
       bookings: {
         Row: {
           booking_ref: string
+          coupon_code: string | null
           created_at: string
           customer_name: string
+          discount_amount: number | null
+          discount_pct: number | null
           distance_km: number | null
           driver_id: string | null
           driver_vehicle_id: string | null
           drop_city: string
           email: string | null
           estimated_fare: number | null
+          final_fare: number | null
           id: string
           notes: string | null
           payment_status: string
@@ -81,14 +85,18 @@ export type Database = {
         }
         Insert: {
           booking_ref?: string
+          coupon_code?: string | null
           created_at?: string
           customer_name: string
+          discount_amount?: number | null
+          discount_pct?: number | null
           distance_km?: number | null
           driver_id?: string | null
           driver_vehicle_id?: string | null
           drop_city: string
           email?: string | null
           estimated_fare?: number | null
+          final_fare?: number | null
           id?: string
           notes?: string | null
           payment_status?: string
@@ -104,14 +112,18 @@ export type Database = {
         }
         Update: {
           booking_ref?: string
+          coupon_code?: string | null
           created_at?: string
           customer_name?: string
+          discount_amount?: number | null
+          discount_pct?: number | null
           distance_km?: number | null
           driver_id?: string | null
           driver_vehicle_id?: string | null
           drop_city?: string
           email?: string | null
           estimated_fare?: number | null
+          final_fare?: number | null
           id?: string
           notes?: string | null
           payment_status?: string
@@ -168,27 +180,45 @@ export type Database = {
       }
       coupons: {
         Row: {
+          active: boolean
           code: string
           created_at: string
+          created_by: string | null
           discount_pct: number
           id: string
-          lead_id: string
+          label: string | null
+          lead_id: string | null
+          max_uses: number
+          min_fare: number
+          used_count: number
           valid_until: string
         }
         Insert: {
+          active?: boolean
           code: string
           created_at?: string
+          created_by?: string | null
           discount_pct?: number
           id?: string
-          lead_id: string
+          label?: string | null
+          lead_id?: string | null
+          max_uses?: number
+          min_fare?: number
+          used_count?: number
           valid_until?: string
         }
         Update: {
+          active?: boolean
           code?: string
           created_at?: string
+          created_by?: string | null
           discount_pct?: number
           id?: string
-          lead_id?: string
+          label?: string | null
+          lead_id?: string | null
+          max_uses?: number
+          min_fare?: number
+          used_count?: number
           valid_until?: string
         }
         Relationships: [
@@ -612,6 +642,17 @@ export type Database = {
           status: string
           trip_type: string
           vehicle_name: string
+        }[]
+      }
+      validate_coupon: {
+        Args: { _code: string; _fare: number }
+        Returns: {
+          code: string
+          discount_amount: number
+          discount_pct: number
+          final_fare: number
+          reason: string
+          valid: boolean
         }[]
       }
     }
