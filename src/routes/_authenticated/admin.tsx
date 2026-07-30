@@ -5,10 +5,23 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { assignBookingDriver, setDriverVehicleStatus, setUserRole } from "@/lib/admin.functions";
+import {
+  assignBookingDriver,
+  createCoupon,
+  deleteCoupon,
+  listCoupons,
+  setCouponActive,
+  setDriverVehicleStatus,
+  setUserRole,
+} from "@/lib/admin.functions";
 import {
   Car,
   Check,
+  Copy,
+  MessageCircle,
+  Mail,
+  Ticket,
+  Trash2,
   Download,
   Loader2,
   LogOut,
@@ -62,7 +75,7 @@ type DriverVehicle = {
 function AdminConsole() {
   const navigate = useNavigate();
   const { user, isAdmin, loading, signOut } = useAuth();
-  const [tab, setTab] = useState<"bookings" | "drivers" | "users">("bookings");
+  const [tab, setTab] = useState<"bookings" | "coupons" | "drivers" | "users">("bookings");
 
   if (loading) {
     return (
@@ -126,7 +139,7 @@ function AdminConsole() {
 
       <main className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex items-center gap-2">
-          {(["bookings", "drivers", "users"] as const).map((t) => (
+          {(["bookings", "coupons", "drivers", "users"] as const).map((t) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -138,6 +151,7 @@ function AdminConsole() {
         </div>
         <div className="mt-6">
           {tab === "bookings" && <BookingsPane />}
+          {tab === "coupons" && <CouponsPane />}
           {tab === "drivers" && <DriversPane />}
           {tab === "users" && <UsersPane />}
         </div>
