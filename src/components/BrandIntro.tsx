@@ -6,11 +6,9 @@ import { CabGlyph } from "./CabGlyph";
 const BRAND = "ONEWAYCABS";
 
 function useIsMobileNow() {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches,
-  );
+  // null until mounted so SSR and first client render match exactly.
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
   useEffect(() => {
-    if (typeof window === "undefined") return;
     setIsMobile(window.matchMedia("(max-width: 640px)").matches);
   }, []);
   return isMobile;
@@ -37,6 +35,8 @@ export function BrandIntro() {
     const t = setTimeout(() => setShow(false), mobile ? 1900 : 4200);
     return () => clearTimeout(t);
   }, [prefersReduced]);
+
+  if (isMobile === null) return null;
 
   return (
     <AnimatePresence>
