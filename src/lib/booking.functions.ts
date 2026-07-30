@@ -371,7 +371,54 @@ const BookingInput = z.object({
   origin_label: z.string().max(200).optional().nullable(),
   destination_label: z.string().max(200).optional().nullable(),
   polyline: z.string().max(60000).optional().nullable(),
+  coupon_code: z.string().trim().max(40).optional().nullable(),
 });
+
+// ---------- Coupons ----------
+// Public: check a coupon code against a fare and return the discounted price.
+export const validateCoupon = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z
+      .object({ code: z.string().trim().min(2).max(40), fare: z.number().nonnegative() })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const supabase = serverSupabase();
+    const { data: rows, error } = await supabase.rpc("validate_coupon", {
+      _code: data.code,
+      _fare: data.fare,
+    });
+    if (error) {
+      console.error("[validateCoupon]", error);
+      return {
+        valid: false,
+        code: data.code.toUpperCase(),
+        discount_pct: 0,
+        discount_amount: 0,
+        final_fare: data.fare,
+        reason: "Could not check this coupon. Try again.",
+      };
+    }
+    const r = Array.isArray(rows) ? rows[0] : rows;
+    if (!r) {
+      return {
+        valid: false,
+        code: data.code.toUpperCase(),
+        discount_pct: 0,
+        discount_amount: 0,
+        final_fare: data.fare,
+        reason: "Coupon not found",
+      };
+    }
+    return {
+      valid: Boolean(r.valid),
+      code: r.code,
+      discount_pct: Number(r.discount_pct ?? 0),
+      discount_amount: Number(r.discount_amount ?? 0),
+      final_fare: Number(r.final_fare ?? data.fare),
+      reason: r.reason ?? null,
+    };
+  });
 
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((d) => BookingInput.parse(d))
@@ -400,6 +447,26 @@ export const createBooking = createServerFn({ method: "POST" })
       verifiedUserId = null;
     }
 
+    // Re-validate the coupon server-side — never trust a client-sent discount.
+    const baseFare = data.estimated_fare ?? 0;
+    let couponCode: string | null = null;
+    let discountPct = 0;
+    let discountAmount = 0;
+    let finalFare = baseFare;
+    if (data.coupon_code && baseFare > 0) {
+      const { data: rows } = await supabaseAdmin.rpc("validate_coupon", {
+        _code: data.coupon_code,
+        _fare: baseFare,
+      });
+      const r = Array.isArray(rows) ? rows[0] : rows;
+      if (r?.valid) {
+        couponCode = r.code;
+        discountPct = Number(r.discount_pct ?? 0);
+        discountAmount = Number(r.discount_amount ?? 0);
+        finalFare = Number(r.final_fare ?? baseFare);
+      }
+    }
+
     const insertRow = {
       customer_name: data.customer_name,
       phone: data.phone,
@@ -417,7 +484,12 @@ export const createBooking = createServerFn({ method: "POST" })
       status: "pending" as const,
       payment_status: "unpaid" as const,
       user_id: verifiedUserId,
+      coupon_code: couponCode,
+      discount_pct: couponCode ? discountPct : null,
+      discount_amount: couponCode ? discountAmount : null,
+      final_fare: couponCode ? finalFare : (data.estimated_fare ?? null),
     };
+
 
     const { data: row, error } = await supabaseAdmin
       .from("bookings")
@@ -428,6 +500,20 @@ export const createBooking = createServerFn({ method: "POST" })
       console.error("createBooking error", error);
       throw new Error("Could not save your booking. Please try again.");
     }
+    if (couponCode) {
+      const { data: cur } = await supabaseAdmin
+        .from("coupons")
+        .select("id, used_count")
+        .ilike("code", couponCode)
+        .maybeSingle();
+      if (cur) {
+        await supabaseAdmin
+          .from("coupons")
+          .update({ used_count: Number(cur.used_count ?? 0) + 1 })
+          .eq("id", cur.id);
+      }
+    }
+
     const hasCoords =
       data.origin_lat != null &&
       data.origin_lng != null &&
@@ -459,6 +545,10 @@ export const createBooking = createServerFn({ method: "POST" })
         distanceKm: data.distance_km ?? null,
         notes: data.notes || null,
         createdAt: row.created_at,
+        couponCode,
+        discountPct: couponCode ? discountPct : null,
+        discountAmount: couponCode ? discountAmount : null,
+        finalFare: couponCode ? finalFare : (data.estimated_fare ?? null),
         originLabel: data.origin_label ?? null,
         destinationLabel: data.destination_label ?? null,
         originLat: data.origin_lat ?? null,
