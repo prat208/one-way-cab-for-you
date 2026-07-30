@@ -655,7 +655,7 @@ function CouponsPane() {
 
   const load = useCallback(() => {
     setLoading(true);
-    runList({ data: {} })
+    runList(undefined as never)
       .then((r) => setCoupons(r.coupons as Coupon[]))
       .catch((e) => setError(e instanceof Error ? e.message : "Could not load coupons"))
       .finally(() => setLoading(false));
