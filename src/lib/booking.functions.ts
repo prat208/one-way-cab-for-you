@@ -500,6 +500,20 @@ export const createBooking = createServerFn({ method: "POST" })
       console.error("createBooking error", error);
       throw new Error("Could not save your booking. Please try again.");
     }
+    if (couponCode) {
+      const { data: cur } = await supabaseAdmin
+        .from("coupons")
+        .select("id, used_count")
+        .ilike("code", couponCode)
+        .maybeSingle();
+      if (cur) {
+        await supabaseAdmin
+          .from("coupons")
+          .update({ used_count: Number(cur.used_count ?? 0) + 1 })
+          .eq("id", cur.id);
+      }
+    }
+
     const hasCoords =
       data.origin_lat != null &&
       data.origin_lng != null &&
