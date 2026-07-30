@@ -30,6 +30,10 @@ export type BookingCreatedPayload = {
   distanceKm: number | null;
   notes: string | null;
   createdAt: string;
+  couponCode?: string | null;
+  discountPct?: number | null;
+  discountAmount?: number | null;
+  finalFare?: number | null;
   originLabel?: string | null;
   destinationLabel?: string | null;
   originLat?: number | null;
