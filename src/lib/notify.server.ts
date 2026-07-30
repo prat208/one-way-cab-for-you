@@ -156,6 +156,18 @@ const slackChannel: Channel = {
                   type: "mrkdwn",
                   text: `*Distance:*\n${event.payload.distanceKm != null ? `${event.payload.distanceKm} km` : "—"}`,
                 },
+                {
+                  type: "mrkdwn",
+                  text: `*Coupon:*\n${
+                    event.payload.couponCode
+                      ? `${event.payload.couponCode} (−${event.payload.discountPct}% / ₹${Number(event.payload.discountAmount ?? 0).toLocaleString("en-IN")})`
+                      : "—"
+                  }`,
+                },
+                {
+                  type: "mrkdwn",
+                  text: `*Payable:*\n${event.payload.finalFare != null ? `₹${Number(event.payload.finalFare).toLocaleString("en-IN")}` : "—"}`,
+                },
               ],
             },
             {
