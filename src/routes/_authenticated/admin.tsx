@@ -711,25 +711,10 @@ function CouponsPane() {
           <Ticket className="h-4 w-4 text-[color:var(--gold)]" />
           <h2 className="text-sm font-semibold">Generate a coupon</h2>
         </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          <label className="text-xs text-muted-foreground">
-            Code (blank = auto)
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="DIWALI10"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
-            />
-          </label>
-          <label className="text-xs text-muted-foreground">
-            Label
-            <input
-              value={label}
-              onChange={(e) => setLabel(e.target.value)}
-              placeholder="Festive offer"
-              className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
-            />
-          </label>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Set the discount, validity and usage limit — the code and label are generated automatically.
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <label className="text-xs text-muted-foreground">
             Discount %
             <input
@@ -772,6 +757,11 @@ function CouponsPane() {
               className="mt-1 w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--gold)]/50"
             />
           </label>
+        </div>
+        <div className="mt-4 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+          <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Preview</p>
+          <p className="mt-1 font-mono text-sm text-[color:var(--gold)]">{codePreview}</p>
+          <p className="text-xs text-muted-foreground">{labelPreview}</p>
         </div>
         <div className="mt-4 flex items-center gap-3">
           <button
