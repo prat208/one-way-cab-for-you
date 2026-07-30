@@ -178,7 +178,7 @@ export const createCoupon = createServerFn({ method: "POST" })
       .from("coupons")
       .insert({
         code,
-        label: data.label || null,
+        label: data.label || autoLabel,
         discount_pct: data.discount_pct,
         valid_until: validUntil,
         max_uses: data.max_uses,
