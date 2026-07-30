@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { motion, AnimatePresence } from "framer-motion";
+import { billableDistanceKm } from "@/lib/fare";
 import {
   MapPin,
   Calendar,
@@ -819,7 +820,11 @@ export function BookingWizard({
               {tripType === "local"
                 ? `Local · ${localPackage}`
                 : distance
-                  ? `${distance} km · ~${Math.round(duration ?? 0)}h`
+                  ? `${distance} km · ~${Math.round(duration ?? 0)}h${
+                      billableDistanceKm(distance) > distance
+                        ? ` · billed at ${billableDistanceKm(distance)} km min`
+                        : ""
+                    }`
                   : "Enter cities"}
             </div>
             <div className="text-xs text-muted-foreground flex items-center gap-1.5">

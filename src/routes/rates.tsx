@@ -4,6 +4,7 @@ import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Sections";
 import { BackHome } from "@/components/BackHome";
 import { Loader2, MapPin, ArrowRight, Sparkles } from "lucide-react";
+import { billableDistanceKm } from "@/lib/fare";
 
 export const Route = createFileRoute("/rates")({
   head: () => ({
@@ -117,6 +118,7 @@ type Result =
       from: string;
       to: string;
       distanceKm: number;
+      billableKm: number;
       fares: Record<VehicleKey, number | null>;
     };
 
@@ -159,15 +161,16 @@ function RatesPage() {
         return;
       }
       const rounded = Math.round(km);
+      const billable = billableDistanceKm(rounded);
       const fares: Record<VehicleKey, number | null> = {
-        sedan: Math.round(rounded * (PER_KM.sedan as number)),
-        ertiga: Math.round(rounded * (PER_KM.ertiga as number)),
+        sedan: Math.round(billable * (PER_KM.sedan as number)),
+        ertiga: Math.round(billable * (PER_KM.ertiga as number)),
         kia: null,
         innova: null,
-        minibus_nonac: Math.round(rounded * (PER_KM.minibus_nonac as number)),
-        minibus_ac: Math.round(rounded * (PER_KM.minibus_ac as number)),
+        minibus_nonac: Math.round(billable * (PER_KM.minibus_nonac as number)),
+        minibus_ac: Math.round(billable * (PER_KM.minibus_ac as number)),
       };
-      setResult({ kind: "perkm", from: pickup, to: drop, distanceKm: rounded, fares });
+      setResult({ kind: "perkm", from: pickup, to: drop, distanceKm: rounded, billableKm: billable, fares });
     } catch {
       setError("Something went wrong while calculating. Please retry.");
     } finally {
@@ -258,6 +261,9 @@ function RatesPage() {
                 ) : (
                   <span className="ml-2 text-xs text-muted-foreground">
                     ~{result.distanceKm} km driving distance
+                    {result.billableKm > result.distanceKm && (
+                      <> · billed at minimum {result.billableKm} km</>
+                    )}
                   </span>
                 )}
               </div>
@@ -358,8 +364,9 @@ function RatesPage() {
             ))}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Estimated Fare = Total Distance (km) × Vehicle Rate per km. Distance is computed on the
-            driving route between the two locations.
+            Estimated Fare = Billable Distance (km) × Vehicle Rate per km. Minimum billing applies:
+            any trip under 200 km is charged as 200 km, and any trip from 200–300 km is charged as
+            300 km. Beyond 300 km, actual driving distance is used.
           </p>
         </section>
       </main>
