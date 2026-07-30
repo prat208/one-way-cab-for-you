@@ -364,8 +364,9 @@ function RatesPage() {
             ))}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Estimated Fare = Total Distance (km) × Vehicle Rate per km. Distance is computed on the
-            driving route between the two locations.
+            Estimated Fare = Billable Distance (km) × Vehicle Rate per km. Minimum billing applies:
+            any trip under 200 km is charged as 200 km, and any trip from 200–300 km is charged as
+            300 km. Beyond 300 km, actual driving distance is used.
           </p>
         </section>
       </main>
