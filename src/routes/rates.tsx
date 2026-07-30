@@ -261,6 +261,9 @@ function RatesPage() {
                 ) : (
                   <span className="ml-2 text-xs text-muted-foreground">
                     ~{result.distanceKm} km driving distance
+                    {result.billableKm > result.distanceKm && (
+                      <> · billed at minimum {result.billableKm} km</>
+                    )}
                   </span>
                 )}
               </div>
