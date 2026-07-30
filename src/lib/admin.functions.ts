@@ -164,15 +164,21 @@ export const createCoupon = createServerFn({ method: "POST" })
       _role: "admin",
     });
     if (!isAdmin) throw new Error("Forbidden");
-    const code = (data.code || `OWC-${Math.random().toString(36).slice(2, 8)}`).toUpperCase();
+    const rand = Math.random().toString(36).slice(2, 6).toUpperCase();
+    const code = (data.code || `OWC${data.discount_pct}-${rand}`).toUpperCase();
     const validUntil = new Date(Date.now() + data.valid_days * 86400000)
       .toISOString()
       .slice(0, 10);
+    const autoLabel =
+      `${data.discount_pct}% OFF` +
+      (data.min_fare > 0 ? ` above ₹${data.min_fare}` : "") +
+      ` · ${data.max_uses === 0 ? "unlimited uses" : `${data.max_uses} use${data.max_uses > 1 ? "s" : ""}`}` +
+      ` · valid ${data.valid_days} day${data.valid_days > 1 ? "s" : ""}`;
     const { data: row, error } = await context.supabase
       .from("coupons")
       .insert({
         code,
-        label: data.label || null,
+        label: data.label || autoLabel,
         discount_pct: data.discount_pct,
         valid_until: validUntil,
         max_uses: data.max_uses,
