@@ -90,16 +90,26 @@ function MobileIntro() {
       </motion.div>
 
       <div className="relative flex flex-col items-center">
-        <motion.img
-          src={logoFull}
-          alt="Onewaycabs — Tours and travels"
-          draggable={false}
-          className="relative z-10 h-36 w-auto object-contain"
-          initial={{ opacity: 0, scale: 0.86 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, delay: 1.5, ease: [0.2, 0.7, 0.2, 1] }}
-          style={{ willChange: "transform, opacity" }}
-        />
+        <div className="relative overflow-hidden">
+          <motion.img
+            src={logoFull}
+            alt="Onewaycabs — Tours and travels"
+            draggable={false}
+            className="relative z-10 h-36 w-auto object-contain"
+            initial={{ opacity: 0, scale: 0.86 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.9, delay: 1.5, ease: [0.2, 0.7, 0.2, 1] }}
+            style={{ willChange: "transform, opacity" }}
+          />
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 -left-1/2 z-20 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent mix-blend-screen"
+            initial={{ x: "0%", opacity: 0 }}
+            animate={{ x: ["0%", "450%"], opacity: [0, 1, 1, 0] }}
+            transition={{ duration: 1.15, delay: 2.45, times: [0, 0.15, 0.78, 1], ease: "easeInOut" }}
+            style={{ willChange: "transform, opacity" }}
+          />
+        </div>
 
         <div className="mt-5 flex font-display text-xl font-bold tracking-[0.24em] text-[color:var(--gold,#f5c66b)]">
           {BRAND.split("").map((ch, i) => (
