@@ -12,8 +12,7 @@ import {
   CheckCircle2,
   Sparkles,
 } from "lucide-react";
-import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { estimateFare, getCatalog } from "@/lib/booking.functions";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { PlaceInput } from "@/components/booking/PlaceInput";
@@ -51,7 +50,6 @@ export function BookingWidget({
 } = {}) {
   const runGetCatalog = useServerFn(getCatalog);
   const runEstimate = useServerFn(estimateFare);
-  const runCreate = useServerFn(createBooking);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -106,47 +104,40 @@ export function BookingWidget({
       .finally(() => setBusy(false));
   }, [pickup, drop, tripType, localPackage, runEstimate]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!user) {
-      navigate({ to: "/auth", search: { redirect: "/book" } });
-      return;
-    }
-    if (!name.trim() || name.trim().length < 2) return setError("Please enter your name.");
-    if (!/^[+0-9\s-]{7,20}$/.test(phone)) return setError("Please enter a valid phone number.");
-    if (tripType !== "local" && pickup === drop)
+    if (tripType !== "local" && pickup.trim().toLowerCase() === drop.trim().toLowerCase())
       return setError("Pickup and destination must differ.");
-    setSubmitting(true);
-    try {
-      const notesParts: string[] = [];
-      if (tripType === "round-trip") notesParts.push(`Return date: ${returnDate}`);
-      if (tripType === "local") notesParts.push(`Package: ${localPackage}`);
-      const { data: sess } = await supabase.auth.getSession();
-      const res = await runCreate({
-        data: {
-          customer_name: name.trim(),
-          phone: phone.trim(),
-          pickup_city: pickup,
-          drop_city: tripType === "local" ? pickup : drop,
-          pickup_date: date,
-          pickup_time: time,
-          vehicle_id: selected?.vehicle_id ?? null,
-          vehicle_name: selected?.name,
-          distance_km: distance ?? undefined,
-          estimated_fare: selected?.fare,
-          trip_type: tripType,
-          notes: notesParts.join(" · "),
-          user_id: sess.session?.user.id ?? null,
+
+    const search = {
+      pickup: pickup.trim(),
+      drop: tripType === "local" ? pickup.trim() : drop.trim(),
+      trip: tripType,
+      date,
+      time,
+      pkg: tripType === "local" ? localPackage : undefined,
+      ret: tripType === "round-trip" ? returnDate : undefined,
+      name: name.trim() || undefined,
+      phone: phone.trim() || undefined,
+      vehicle: selected?.vehicle_id ?? undefined,
+    };
+
+    if (!user) {
+      navigate({
+        to: "/auth",
+        search: {
+          redirect: `/book?${new URLSearchParams(
+            Object.entries(search).filter(([, v]) => v != null) as [string, string][],
+          ).toString()}`,
         },
       });
-      setRef(res.booking_ref);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setSubmitting(false);
+      return;
     }
+    setSubmitting(true);
+    navigate({ to: "/book", search });
   }
+
 
   const cityList = cities.length
     ? cities.map((c) => c.name)
@@ -401,13 +392,13 @@ export function BookingWidget({
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  Book now — pay after ride
+                  Continue to booking
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </>
               )}
             </button>
             <p className="text-center text-[11px] text-muted-foreground">
-              No signup needed · Instant confirmation call · Free cancellation up to 12h
+              Next: choose your cab, apply a coupon and confirm — takes under a minute
             </p>
           </motion.form>
         )}

@@ -7,7 +7,16 @@ import { AssistantPanel } from "@/components/chat/AssistantPanel";
 const searchSchema = z.object({
   pickup: z.string().optional(),
   drop: z.string().optional(),
+  trip: z.enum(["one-way", "round-trip", "local"]).optional(),
+  date: z.string().optional(),
+  time: z.string().optional(),
+  pkg: z.enum(["4h-40km", "8h-80km", "12h-120km"]).optional(),
+  ret: z.string().optional(),
+  name: z.string().optional(),
+  phone: z.string().optional(),
+  vehicle: z.string().optional(),
 });
+
 
 export const Route = createFileRoute("/book")({
   validateSearch: (s) => searchSchema.parse(s),
@@ -30,7 +39,7 @@ export const Route = createFileRoute("/book")({
 });
 
 function BookPage() {
-  const { pickup, drop } = useSearch({ from: "/book" });
+  const prefill = useSearch({ from: "/book" });
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
@@ -54,7 +63,7 @@ function BookPage() {
         </header>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
-          <BookingWizard initialPickup={pickup} initialDrop={drop} />
+          <BookingWizard {...prefill} initialPickup={prefill.pickup} initialDrop={prefill.drop} />
           <AssistantPanel />
         </div>
       </main>

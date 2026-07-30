@@ -53,24 +53,43 @@ const PACKAGES: { id: LocalPackage; label: string; sub: string }[] = [
 export function BookingWizard({
   initialPickup,
   initialDrop,
-}: { initialPickup?: string; initialDrop?: string } = {}) {
+  trip,
+  date: initialDate,
+  time: initialTime,
+  pkg,
+  ret,
+  name: initialName,
+  phone: initialPhone,
+  vehicle,
+}: {
+  initialPickup?: string;
+  initialDrop?: string;
+  trip?: TripType;
+  date?: string;
+  time?: string;
+  pkg?: LocalPackage;
+  ret?: string;
+  name?: string;
+  phone?: string;
+  vehicle?: string;
+} = {}) {
   const runGetCatalog = useServerFn(getCatalog);
   const runEstimate = useServerFn(estimateFare);
   const runCreate = useServerFn(createBooking);
   const runCoupon = useServerFn(validateCoupon);
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(initialPickup && initialDrop ? 1 : 0);
   const [cities, setCities] = useState<{ name: string }[]>([]);
-  const [tripType, setTripType] = useState<TripType>("one-way");
-  const [localPackage, setLocalPackage] = useState<LocalPackage>("8h-80km");
+  const [tripType, setTripType] = useState<TripType>(trip ?? "one-way");
+  const [localPackage, setLocalPackage] = useState<LocalPackage>(pkg ?? "8h-80km");
   const [pickup, setPickup] = useState(initialPickup ?? "Pune");
   const [drop, setDrop] = useState(initialDrop ?? "Mumbai");
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
-  const [date, setDate] = useState(today);
-  const [time, setTime] = useState("09:00");
-  const [returnDate, setReturnDate] = useState(today);
-  const [phone, setPhone] = useState("");
-  const [name, setName] = useState("");
+  const [date, setDate] = useState(initialDate ?? today);
+  const [time, setTime] = useState(initialTime ?? "09:00");
+  const [returnDate, setReturnDate] = useState(ret ?? today);
+  const [phone, setPhone] = useState(initialPhone ?? "");
+  const [name, setName] = useState(initialName ?? "");
   const [email, setEmail] = useState("");
   const [notes, setNotes] = useState("");
   const [selected, setSelected] = useState<Estimate | null>(null);
@@ -160,7 +179,9 @@ export function BookingWizard({
           setRouteDest(("destination" in r ? r.destination : null) ?? null);
           setSelected(
             (prev) =>
-              r.estimates.find((e) => e.vehicle_id === prev?.vehicle_id) ?? r.estimates[0] ?? null,
+              r.estimates.find((e) => e.vehicle_id === (prev?.vehicle_id ?? vehicle)) ??
+              r.estimates[0] ??
+              null,
           );
         })
         .catch((err) =>
@@ -169,7 +190,7 @@ export function BookingWizard({
         .finally(() => setBusy(false));
     }, 400);
     return () => clearTimeout(handle);
-  }, [pickup, drop, tripType, localPackage, runEstimate]);
+  }, [pickup, drop, tripType, localPackage, runEstimate, vehicle]);
 
   useEffect(() => {
     setCoupon(null);
