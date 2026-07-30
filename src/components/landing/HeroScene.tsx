@@ -102,10 +102,10 @@ export function HeroCar() {
       aria-hidden
     >
       <div className="relative float-slow">
-        {/* Headlight glow */}
-        <div className="headlight absolute -left-10 bottom-8 h-40 w-56 rounded-full bg-[radial-gradient(circle,rgba(255,220,120,0.55),transparent_70%)] blur-2xl" />
+        {/* Headlight glow — hidden on phones (blur is costly) */}
+        <div className="headlight absolute -left-10 bottom-8 hidden h-40 w-56 rounded-full bg-[radial-gradient(circle,rgba(255,220,120,0.55),transparent_70%)] blur-2xl sm:block" />
         {/* Underglow */}
-        <div className="absolute bottom-1 left-[8%] right-[8%] h-6 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(0,212,255,0.6),transparent_65%)] blur-xl" />
+        <div className="absolute bottom-1 left-[8%] right-[8%] hidden h-6 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(0,212,255,0.6),transparent_65%)] blur-xl sm:block" />
 
         <img
           src={suvImg}
