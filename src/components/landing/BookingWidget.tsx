@@ -12,8 +12,7 @@ import {
   CheckCircle2,
   Sparkles,
 } from "lucide-react";
-import { createBooking, estimateFare, getCatalog } from "@/lib/booking.functions";
-import { supabase } from "@/integrations/supabase/client";
+import { estimateFare, getCatalog } from "@/lib/booking.functions";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
 import { PlaceInput } from "@/components/booking/PlaceInput";
@@ -51,7 +50,6 @@ export function BookingWidget({
 } = {}) {
   const runGetCatalog = useServerFn(getCatalog);
   const runEstimate = useServerFn(estimateFare);
-  const runCreate = useServerFn(createBooking);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -394,13 +392,13 @@ export function BookingWidget({
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <>
-                  Book now — pay after ride
+                  Continue to booking
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </>
               )}
             </button>
             <p className="text-center text-[11px] text-muted-foreground">
-              No signup needed · Instant confirmation call · Free cancellation up to 12h
+              Next: choose your cab, apply a coupon and confirm — takes under a minute
             </p>
           </motion.form>
         )}
