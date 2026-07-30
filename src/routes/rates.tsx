@@ -159,15 +159,16 @@ function RatesPage() {
         return;
       }
       const rounded = Math.round(km);
+      const billable = billableDistanceKm(rounded);
       const fares: Record<VehicleKey, number | null> = {
-        sedan: Math.round(rounded * (PER_KM.sedan as number)),
-        ertiga: Math.round(rounded * (PER_KM.ertiga as number)),
+        sedan: Math.round(billable * (PER_KM.sedan as number)),
+        ertiga: Math.round(billable * (PER_KM.ertiga as number)),
         kia: null,
         innova: null,
-        minibus_nonac: Math.round(rounded * (PER_KM.minibus_nonac as number)),
-        minibus_ac: Math.round(rounded * (PER_KM.minibus_ac as number)),
+        minibus_nonac: Math.round(billable * (PER_KM.minibus_nonac as number)),
+        minibus_ac: Math.round(billable * (PER_KM.minibus_ac as number)),
       };
-      setResult({ kind: "perkm", from: pickup, to: drop, distanceKm: rounded, fares });
+      setResult({ kind: "perkm", from: pickup, to: drop, distanceKm: rounded, billableKm: billable, fares });
     } catch {
       setError("Something went wrong while calculating. Please retry.");
     } finally {
