@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 export function HeroScene() {
   // Deterministic particle set so SSR matches CSR (no hydration diff).
   // Fewer particles on mobile for smoother scrolling & less GPU load.
-  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 640px)").matches;
-  const count = isMobile ? 8 : 22;
+  // Render the same set on server and client (no hydration diff); the extra
+  // particles are simply hidden on phones via CSS for a lighter mobile paint.
+  const count = 22;
   const particles = Array.from({ length: count }, (_, i) => ({
     left: (i * 37) % 100,
     delay: (i * 0.7) % 12,
@@ -20,11 +21,11 @@ export function HeroScene() {
       {/* Stars */}
       <div className="absolute inset-0 opacity-60 [background-image:radial-gradient(circle_at_20%_20%,#ffffff33_1px,transparent_1.5px),radial-gradient(circle_at_70%_35%,#ffffff22_1px,transparent_1.5px),radial-gradient(circle_at_45%_15%,#ffffff33_1px,transparent_1.5px)] [background-size:220px_220px,320px_320px,180px_180px]" />
 
-      {/* Clouds */}
-      <div className="absolute top-[18%] left-0 h-24 w-full">
+      {/* Clouds — blur layers are expensive on phones, desktop only */}
+      <div className="absolute top-[18%] left-0 hidden h-24 w-full sm:block">
         <div className="cloud-drift-slow absolute top-0 h-24 w-56 rounded-full bg-white/[0.05] blur-2xl" />
       </div>
-      <div className="absolute top-[28%] left-0 h-16 w-full">
+      <div className="absolute top-[28%] left-0 hidden h-16 w-full sm:block">
         <div className="cloud-drift-fast absolute top-0 h-16 w-40 rounded-full bg-cyan-300/[0.06] blur-2xl" />
       </div>
 
@@ -72,7 +73,7 @@ export function HeroScene() {
       {particles.map((p, i) => (
         <span
           key={i}
-          className="particle absolute bottom-0 rounded-full bg-[color:var(--gold)]/60"
+          className={`particle absolute bottom-0 rounded-full bg-[color:var(--gold)]/60 ${i >= 8 ? "hidden sm:block" : ""}`}
           style={{
             left: `${p.left}%`,
             width: p.size,
@@ -102,10 +103,10 @@ export function HeroCar() {
       aria-hidden
     >
       <div className="relative float-slow">
-        {/* Headlight glow */}
-        <div className="headlight absolute -left-10 bottom-8 h-40 w-56 rounded-full bg-[radial-gradient(circle,rgba(255,220,120,0.55),transparent_70%)] blur-2xl" />
+        {/* Headlight glow — hidden on phones (blur is costly) */}
+        <div className="headlight absolute -left-10 bottom-8 hidden h-40 w-56 rounded-full bg-[radial-gradient(circle,rgba(255,220,120,0.55),transparent_70%)] blur-2xl sm:block" />
         {/* Underglow */}
-        <div className="absolute bottom-1 left-[8%] right-[8%] h-6 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(0,212,255,0.6),transparent_65%)] blur-xl" />
+        <div className="absolute bottom-1 left-[8%] right-[8%] hidden h-6 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(0,212,255,0.6),transparent_65%)] blur-xl sm:block" />
 
         <img
           src={suvImg}

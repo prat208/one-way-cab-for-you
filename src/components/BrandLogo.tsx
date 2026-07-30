@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import logoFull from "@/assets/onewaycabs-logo-clean.png";
 import logoEmblem from "@/assets/onewaycabs-emblem.png";
@@ -15,10 +16,17 @@ type Props = {
  * Brand mark — the golden Onewaycabs emblem.
  * The image is imported from the CDN pointer so it lives outside the repo.
  * Wrapped in a motion layer that breathes softly and glints on hover.
+ * On phones the looping blur/glint layers are dropped for smooth scrolling.
  */
 export function BrandLogo({ className, alive = true, crop = false, alt = "Onewaycabs" }: Props) {
   const reduce = useReducedMotion();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    setIsMobile(window.matchMedia("(max-width: 640px)").matches);
+  }, []);
   const shouldAnimate = alive && !reduce;
+  const rich = shouldAnimate && !isMobile;
+
 
   return (
     <motion.div
@@ -31,7 +39,7 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
       }
     >
       {/* Golden aura */}
-      {shouldAnimate && (
+      {rich && (
         <motion.span
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-full blur-2xl"
@@ -49,7 +57,7 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
         alt={alt}
         draggable={false}
         className={`relative z-10 h-full w-full select-none object-contain`}
-        animate={shouldAnimate ? { y: [0, -3, 0] } : undefined}
+        animate={rich ? { y: [0, -3, 0] } : undefined}
         transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
         style={{
           filter: shouldAnimate
@@ -59,7 +67,7 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
       />
 
       {/* Headlight sweep on hover / loop */}
-      {shouldAnimate && (
+      {rich && (
         <motion.span
           aria-hidden
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
