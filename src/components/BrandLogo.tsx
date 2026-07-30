@@ -39,7 +39,7 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
       }
     >
       {/* Golden aura */}
-      {shouldAnimate && (
+      {rich && (
         <motion.span
           aria-hidden
           className="pointer-events-none absolute inset-0 rounded-full blur-2xl"
@@ -57,7 +57,7 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
         alt={alt}
         draggable={false}
         className={`relative z-10 h-full w-full select-none object-contain`}
-        animate={shouldAnimate ? { y: [0, -3, 0] } : undefined}
+        animate={rich ? { y: [0, -3, 0] } : undefined}
         transition={{ duration: 4.8, repeat: Infinity, ease: "easeInOut" }}
         style={{
           filter: shouldAnimate
@@ -67,7 +67,7 @@ export function BrandLogo({ className, alive = true, crop = false, alt = "Oneway
       />
 
       {/* Headlight sweep on hover / loop */}
-      {shouldAnimate && (
+      {rich && (
         <motion.span
           aria-hidden
           className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
