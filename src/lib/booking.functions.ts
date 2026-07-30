@@ -447,6 +447,26 @@ export const createBooking = createServerFn({ method: "POST" })
       verifiedUserId = null;
     }
 
+    // Re-validate the coupon server-side — never trust a client-sent discount.
+    const baseFare = data.estimated_fare ?? 0;
+    let couponCode: string | null = null;
+    let discountPct = 0;
+    let discountAmount = 0;
+    let finalFare = baseFare;
+    if (data.coupon_code && baseFare > 0) {
+      const { data: rows } = await supabaseAdmin.rpc("validate_coupon", {
+        _code: data.coupon_code,
+        _fare: baseFare,
+      });
+      const r = Array.isArray(rows) ? rows[0] : rows;
+      if (r?.valid) {
+        couponCode = r.code;
+        discountPct = Number(r.discount_pct ?? 0);
+        discountAmount = Number(r.discount_amount ?? 0);
+        finalFare = Number(r.final_fare ?? baseFare);
+      }
+    }
+
     const insertRow = {
       customer_name: data.customer_name,
       phone: data.phone,
@@ -464,7 +484,12 @@ export const createBooking = createServerFn({ method: "POST" })
       status: "pending" as const,
       payment_status: "unpaid" as const,
       user_id: verifiedUserId,
+      coupon_code: couponCode,
+      discount_pct: couponCode ? discountPct : null,
+      discount_amount: couponCode ? discountAmount : null,
+      final_fare: couponCode ? finalFare : (data.estimated_fare ?? null),
     };
+
 
     const { data: row, error } = await supabaseAdmin
       .from("bookings")
