@@ -120,18 +120,14 @@ export const setUserRole = createServerFn({ method: "POST" })
   });
 
 // ---------- Coupons (admin) ----------
-async function assertAdmin(context: { supabase: any; userId: string }) {
-  const { data: isAdmin } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (!isAdmin) throw new Error("Forbidden");
-}
-
 export const listCoupons = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await assertAdmin(context);
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
     const { data, error } = await context.supabase
       .from("coupons")
       .select("id,code,label,discount_pct,valid_until,max_uses,used_count,active,min_fare,created_at")
@@ -163,7 +159,11 @@ export const createCoupon = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
     const code = (data.code || `OWC-${Math.random().toString(36).slice(2, 8)}`).toUpperCase();
     const validUntil = new Date(Date.now() + data.valid_days * 86400000)
       .toISOString()
@@ -198,7 +198,11 @@ export const setCouponActive = createServerFn({ method: "POST" })
     z.object({ id: z.string().uuid(), active: z.boolean() }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
     const { error } = await context.supabase
       .from("coupons")
       .update({ active: data.active })
@@ -211,7 +215,11 @@ export const deleteCoupon = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    const { data: isAdmin } = await context.supabase.rpc("has_role", {
+      _user_id: context.userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Forbidden");
     const { error } = await context.supabase.from("coupons").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
