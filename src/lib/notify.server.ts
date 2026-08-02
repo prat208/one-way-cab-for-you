@@ -343,7 +343,7 @@ const webhookChannel: Channel = {
   id: "webhook",
   isEnabled: () => true,
   async send(event) {
-    const url = process.env.BOOKING_WEBHOOK_URL_OVERRIDE || DEFAULT_WEBHOOK_URL;
+    const url = process.env.BOOKING_WEBHOOK_URL || DEFAULT_WEBHOOK_URL;
     const secret = process.env.BOOKING_WEBHOOK_SECRET;
     try {
       const res = await fetch(url, {
