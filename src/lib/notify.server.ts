@@ -334,13 +334,16 @@ const whatsappChannel: Channel = {
   },
 };
 
-// Generic webhook: POSTs the full event as JSON to BOOKING_WEBHOOK_URL.
-// Ideal for n8n, Zapier, Make, or any custom HTTP endpoint.
+// Generic webhook: POSTs the full event as JSON to the n8n intake endpoint.
+// Override with BOOKING_WEBHOOK_URL_OVERRIDE if the endpoint ever changes.
+const DEFAULT_WEBHOOK_URL =
+  "https://primary-production-ea19e.up.railway.app/webhook-test/customer-intake";
+
 const webhookChannel: Channel = {
   id: "webhook",
-  isEnabled: () => Boolean(process.env.BOOKING_WEBHOOK_URL),
+  isEnabled: () => true,
   async send(event) {
-    const url = process.env.BOOKING_WEBHOOK_URL!;
+    const url = process.env.BOOKING_WEBHOOK_URL_OVERRIDE || DEFAULT_WEBHOOK_URL;
     const secret = process.env.BOOKING_WEBHOOK_SECRET;
     try {
       const res = await fetch(url, {
