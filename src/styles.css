@@ -209,3 +209,24 @@
   .particle, .cloud-drift-slow, .cloud-drift-fast, .road-lines, .wheel-spin,
   .float-slow, .headlight { animation: none !important; }
 }
+
+/* ------------------------------------------------------------------
+   Light-theme compatibility: legacy dark-theme white-alpha utilities
+   are remapped to navy-alpha on light surfaces, and restored inside
+   .on-dark bands (hero, navy sections, footer).
+------------------------------------------------------------------ */
+:where([class*="bg-white/"]) {
+  background-color: color-mix(in oklab, var(--foreground) 4%, transparent) !important;
+}
+:where([class*="border-white/"]) {
+  border-color: color-mix(in oklab, var(--foreground) 12%, transparent) !important;
+}
+:where([class*="divide-white/"]) > * + * {
+  border-color: color-mix(in oklab, var(--foreground) 12%, transparent) !important;
+}
+:where([class*="text-white"]) { color: var(--foreground) !important; }
+
+.on-dark :where([class*="bg-white/"]) { background-color: rgba(255, 255, 255, 0.08) !important; }
+.on-dark :where([class*="border-white/"]) { border-color: rgba(255, 255, 255, 0.16) !important; }
+.on-dark :where([class*="divide-white/"]) > * + * { border-color: rgba(255, 255, 255, 0.16) !important; }
+.on-dark :where([class*="text-white"]) { color: #ffffff !important; }
