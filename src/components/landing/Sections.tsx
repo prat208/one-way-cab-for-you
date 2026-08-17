@@ -812,7 +812,7 @@ export function Packages() {
             <motion.div key={p.name} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.07 }}>
               <AuthLink
                 to="/book"
-                className="group relative block overflow-hidden rounded-2xl"
+                className="on-dark group relative block overflow-hidden rounded-2xl"
               >
                 <img
                   src={p.img}
@@ -822,7 +822,7 @@ export function Packages() {
                   height={600}
                   className="h-56 w-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1533]/90 via-[#0B1533]/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1533] via-[#0B1533]/45 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
                   <div>
                     <div className="text-base font-bold text-white">{p.name}</div>
