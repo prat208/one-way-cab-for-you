@@ -78,7 +78,7 @@ export function Services() {
               key={it.title}
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: i * 0.08 }}
-              className="glass group relative overflow-hidden rounded-2xl p-6"
+              className="group relative overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[#FFFBF0] p-6 transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(15,27,61,0.55)]"
             >
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[color:var(--gold)]/10 blur-2xl transition-opacity group-hover:opacity-100" />
               <it.icon className="h-8 w-8 text-[color:var(--gold)]" />
@@ -152,7 +152,7 @@ export function Fleet() {
               transition={{ ...fadeUp.transition, delay: i * 0.08 }}
               className="glass group relative overflow-hidden rounded-3xl p-5"
             >
-              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1030] to-[#050816]">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
                 <img
                   src={f.img}
                   alt={f.alt}
@@ -223,7 +223,7 @@ export function WhyUs() {
     },
   ];
   return (
-    <section id="why" className="relative py-16 sm:py-24 md:py-32">
+    <section id="why" className="on-dark relative bg-[#0B1533] py-16 sm:py-24 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Why ONE WAY CAB"
@@ -523,7 +523,7 @@ export function FAQ() {
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-white/10 bg-[#03060f]">
+    <footer className="on-dark relative bg-[#0B1533]">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
