@@ -19,11 +19,14 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { CARE_NUMBERS } from "@/components/CallCare";
-import suvImg from "@/assets/hero-suv.png";
 import sedanAsset from "@/assets/sedan.png.asset.json";
 import suvAsset from "@/assets/suv.png.asset.json";
 import innovaAsset from "@/assets/innova.png.asset.json";
 import tempoAsset from "@/assets/tempo.png.asset.json";
+import pkgMaha from "@/assets/pkg-mahabaleshwar.jpg";
+import pkgGoa from "@/assets/pkg-goa.jpg";
+import pkgTarkarli from "@/assets/pkg-tarkarli.jpg";
+import pkgKerala from "@/assets/pkg-kerala.jpg";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandLogo } from "@/components/BrandLogo";
 
@@ -75,7 +78,7 @@ export function Services() {
               key={it.title}
               {...fadeUp}
               transition={{ ...fadeUp.transition, delay: i * 0.08 }}
-              className="glass group relative overflow-hidden rounded-2xl p-6"
+              className="group relative overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[#FFFBF0] p-6 transition-shadow hover:shadow-[0_18px_40px_-28px_rgba(15,27,61,0.55)]"
             >
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[color:var(--gold)]/10 blur-2xl transition-opacity group-hover:opacity-100" />
               <it.icon className="h-8 w-8 text-[color:var(--gold)]" />
@@ -149,7 +152,7 @@ export function Fleet() {
               transition={{ ...fadeUp.transition, delay: i * 0.08 }}
               className="glass group relative overflow-hidden rounded-3xl p-5"
             >
-              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-gradient-to-br from-[#0a1030] to-[#050816]">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
                 <img
                   src={f.img}
                   alt={f.alt}
@@ -220,7 +223,7 @@ export function WhyUs() {
     },
   ];
   return (
-    <section id="why" className="relative py-16 sm:py-24 md:py-32">
+    <section id="why" className="on-dark relative bg-[#0B1533] py-16 sm:py-24 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Why ONE WAY CAB"
@@ -520,7 +523,7 @@ export function FAQ() {
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-white/10 bg-[#03060f]">
+    <footer className="on-dark relative bg-[#0B1533]">
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
@@ -762,6 +765,136 @@ export function CareUSP() {
                     <div className="mt-1 text-xs text-muted-foreground sm:text-sm">{p.body}</div>
                   </div>
                 </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function Packages() {
+  const packs = [
+    { name: "Mahabaleshwar", meta: "2 Days / 1 Night", price: "₹4,999", img: pkgMaha },
+    { name: "Goa Getaway", meta: "3 Days / 2 Nights", price: "₹7,999", img: pkgGoa },
+    { name: "Tarkarli Beach", meta: "2 Days / 1 Night", price: "₹5,499", img: pkgTarkarli },
+    { name: "Kerala Bliss", meta: "4 Days / 3 Nights", price: "₹12,999", img: pkgKerala },
+  ];
+  const perks = [
+    { icon: Wallet, t: "Best Price Guarantee", s: "Get the best rates" },
+    { icon: ShieldCheck, t: "Verified Drivers", s: "Background verified" },
+    { icon: Sparkles, t: "Clean & Safe Cars", s: "Sanitized for your safety" },
+    { icon: Headphones, t: "24×7 Customer Support", s: "We are here to help" },
+  ];
+  return (
+    <section id="packages" className="relative bg-muted/40 py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--gold)]">
+              Explore more
+            </div>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">
+              Popular Tour <span className="text-gradient-gold">Packages</span>
+            </h2>
+          </div>
+          <AuthLink
+            to="/book"
+            className="hidden items-center gap-1.5 text-sm font-semibold text-[color:var(--gold)] sm:inline-flex"
+          >
+            View All Packages <ArrowRight className="h-4 w-4" />
+          </AuthLink>
+        </div>
+
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {packs.map((p, i) => (
+            <motion.div key={p.name} {...fadeUp} transition={{ ...fadeUp.transition, delay: i * 0.07 }}>
+              <AuthLink
+                to="/book"
+                className="on-dark group relative block overflow-hidden rounded-2xl"
+              >
+                <img
+                  src={p.img}
+                  alt={`${p.name} tour package`}
+                  loading="lazy"
+                  width={800}
+                  height={600}
+                  className="h-56 w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B1533] via-[#0B1533]/45 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+                  <div>
+                    <div className="text-base font-bold text-white">{p.name}</div>
+                    <div className="text-[11px] text-white/75">{p.meta}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-extrabold text-[color:var(--gold)]">{p.price}</div>
+                    <div className="text-[10px] text-white/70">Onwards</div>
+                  </div>
+                </div>
+              </AuthLink>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--border)] sm:grid-cols-2 lg:grid-cols-4">
+          {perks.map((p) => (
+            <div key={p.t} className="flex items-center gap-3 bg-background px-5 py-5">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[color:var(--gold)]/15 text-[color:var(--gold)]">
+                <p.icon className="h-5 w-5" />
+              </span>
+              <div>
+                <div className="text-sm font-semibold">{p.t}</div>
+                <div className="text-xs text-muted-foreground">{p.s}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function AppCTA() {
+  return (
+    <section className="relative py-10 sm:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="on-dark relative overflow-hidden rounded-3xl bg-[#0B1533] px-6 py-10 sm:px-12 sm:py-14">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-[color:var(--gold)]/15 blur-3xl" />
+          <div className="relative grid items-center gap-8 md:grid-cols-2">
+            <div>
+              <h2 className="text-3xl font-extrabold leading-tight sm:text-4xl">
+                Book. Ride. Relax.
+                <br />
+                <span className="text-[color:var(--gold)]">All in one place!</span>
+              </h2>
+              <p className="mt-3 max-w-md text-sm text-muted-foreground">
+                Live fares, verified chauffeurs and instant confirmation — book your outstation ride
+                in under a minute, right from your phone.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <AuthLink to="/book" className="rounded-lg btn-gold px-6 py-3 text-sm font-bold">
+                  Book a cab
+                </AuthLink>
+                <a
+                  href="tel:+918999740424"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-5 py-3 text-sm font-medium hover:bg-white/10"
+                >
+                  <Phone className="h-4 w-4 text-[color:var(--gold)]" /> 89997 40424
+                </a>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                ["120k+", "Rides"],
+                ["4.9★", "Rating"],
+                ["97%", "On-time"],
+              ].map(([v, l]) => (
+                <div key={l} className="glass rounded-2xl px-4 py-5 text-center">
+                  <div className="text-xl font-extrabold text-[color:var(--gold)]">{v}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground">{l}</div>
+                </div>
               ))}
             </div>
           </div>

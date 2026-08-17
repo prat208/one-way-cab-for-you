@@ -50,35 +50,35 @@
 :root {
   --radius: 0.875rem;
 
-  /* Core palette */
-  --background: oklch(0.14 0.04 265);          /* #050816 deep navy */
-  --foreground: oklch(0.97 0.01 250);
-  --navy-deep: oklch(0.12 0.04 265);
-  --navy-soft: oklch(0.20 0.05 265);
+  /* Core palette — light, white surfaces with navy ink and yellow accent */
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.24 0.06 265);          /* #0F1B3D navy ink */
+  --navy-deep: oklch(0.22 0.06 265);           /* dark bands */
+  --navy-soft: oklch(0.97 0.005 265);          /* light panel */
 
-  --card: oklch(0.18 0.04 265 / 0.6);
-  --card-foreground: oklch(0.97 0.01 250);
-  --popover: oklch(0.16 0.04 265);
-  --popover-foreground: oklch(0.97 0.01 250);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.06 265);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.06 265);
 
-  --primary: oklch(0.86 0.16 88);              /* #FFC83D gold */
-  --primary-foreground: oklch(0.16 0.04 265);
-  --gold: oklch(0.86 0.16 88);
-  --cyan: oklch(0.82 0.14 210);                /* #00D4FF cyan */
+  --primary: oklch(0.84 0.16 85);              /* #FFC107 yellow */
+  --primary-foreground: oklch(0.22 0.06 265);
+  --gold: oklch(0.80 0.16 82);
+  --cyan: oklch(0.55 0.14 245);
 
-  --secondary: oklch(0.22 0.04 265);
-  --secondary-foreground: oklch(0.97 0.01 250);
-  --muted: oklch(0.22 0.04 265);
-  --muted-foreground: oklch(0.70 0.02 260);
-  --accent: oklch(0.82 0.14 210);
-  --accent-foreground: oklch(0.14 0.04 265);
+  --secondary: oklch(0.96 0.005 265);
+  --secondary-foreground: oklch(0.24 0.06 265);
+  --muted: oklch(0.96 0.005 265);
+  --muted-foreground: oklch(0.52 0.02 265);
+  --accent: oklch(0.96 0.02 85);
+  --accent-foreground: oklch(0.24 0.06 265);
 
-  --destructive: oklch(0.62 0.23 27);
-  --destructive-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.58 0.22 27);
+  --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(1 0 0 / 0.10);
-  --input: oklch(1 0 0 / 0.08);
-  --ring: oklch(0.86 0.16 88 / 0.6);
+  --border: oklch(0.24 0.06 265 / 0.12);
+  --input: oklch(0.24 0.06 265 / 0.08);
+  --ring: oklch(0.84 0.16 85 / 0.6);
 }
 
 .dark {
@@ -86,36 +86,46 @@
 }
 
 @utility glass {
-  background: color-mix(in oklab, var(--navy-soft) 55%, transparent);
-  backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid color-mix(in oklab, white 8%, transparent);
+  background: #ffffff;
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  box-shadow: 0 12px 34px -22px color-mix(in oklab, var(--foreground) 55%, transparent);
 }
 
 @utility text-gradient-gold {
-  background: linear-gradient(120deg, #FFC83D 0%, #FFE8A3 45%, #00D4FF 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: #E5A100;
+  background: none;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
 }
 
 @utility btn-gold {
-  background: linear-gradient(135deg, #FFD35A 0%, #FFC83D 55%, #E6A81E 100%);
-  color: #0a0f24;
-  box-shadow: 0 10px 30px -10px rgba(255, 200, 61, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(135deg, #FFD35A 0%, #FFC107 60%, #F0A500 100%);
+  color: #14204a;
+  box-shadow: 0 12px 28px -14px rgba(255, 193, 7, 0.85);
   transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 40px -12px rgba(255, 200, 61, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    filter: brightness(1.05);
+    box-shadow: 0 18px 36px -14px rgba(255, 193, 7, 0.9);
+    filter: brightness(1.03);
   }
 }
 
 @utility glow-ring {
-  box-shadow:
-    0 0 0 1px rgba(255, 200, 61, 0.18),
-    0 20px 60px -20px rgba(0, 212, 255, 0.35),
-    0 30px 100px -30px rgba(255, 200, 61, 0.25);
+  box-shadow: 0 30px 70px -40px rgba(15, 27, 61, 0.55);
 }
+
+/* Dark bands (hero, why-us, app CTA, footer) keep white-on-navy text. */
+@utility on-dark {
+  color: #F6F8FC;
+  & .text-muted-foreground { color: rgba(226, 232, 244, 0.72); }
+  & .glass {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: none;
+  }
+  & .text-gradient-gold { color: #FFC107; }
+}
+
 
 @keyframes road-scroll {
   from { background-position: 0 0; }
@@ -199,3 +209,24 @@
   .particle, .cloud-drift-slow, .cloud-drift-fast, .road-lines, .wheel-spin,
   .float-slow, .headlight { animation: none !important; }
 }
+
+/* ------------------------------------------------------------------
+   Light-theme compatibility: legacy dark-theme white-alpha utilities
+   are remapped to navy-alpha on light surfaces, and restored inside
+   .on-dark bands (hero, navy sections, footer).
+------------------------------------------------------------------ */
+:where([class*="bg-white/"]) {
+  background-color: color-mix(in oklab, var(--foreground) 4%, transparent) !important;
+}
+:where([class*="border-white/"]) {
+  border-color: color-mix(in oklab, var(--foreground) 12%, transparent) !important;
+}
+:where([class*="divide-white/"]) > * + * {
+  border-color: color-mix(in oklab, var(--foreground) 12%, transparent) !important;
+}
+:where([class*="text-white"]) { color: var(--foreground) !important; }
+
+.on-dark :where([class*="bg-white/"]) { background-color: rgba(255, 255, 255, 0.08) !important; }
+.on-dark :where([class*="border-white/"]) { border-color: rgba(255, 255, 255, 0.16) !important; }
+.on-dark :where([class*="divide-white/"]) > * + * { border-color: rgba(255, 255, 255, 0.16) !important; }
+.on-dark :where([class*="text-white"]) { color: #ffffff !important; }
