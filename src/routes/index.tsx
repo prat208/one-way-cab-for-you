@@ -15,6 +15,8 @@ import {
   FAQ,
   Footer,
   CareUSP,
+  Packages,
+  AppCTA,
 } from "@/components/landing/Sections";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandIntro } from "@/components/BrandIntro";
