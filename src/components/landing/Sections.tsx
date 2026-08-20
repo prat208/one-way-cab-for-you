@@ -336,9 +336,9 @@ export function PopularRoutes() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs text-muted-foreground">from</div>
-                  <div className="text-base font-bold text-gradient-gold">
-                    ₹{r.price.toLocaleString("en-IN")}
+                  <div className="text-xs text-muted-foreground">Get fare</div>
+                  <div className="text-base font-semibold text-gradient-gold">
+                    Login →
                   </div>
                 </div>
               </AuthLink>
