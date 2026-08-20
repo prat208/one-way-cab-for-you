@@ -11,6 +11,7 @@ import {
   Loader2,
   CheckCircle2,
   Sparkles,
+  Lock,
 } from "lucide-react";
 import { estimateFare, getCatalog } from "@/lib/booking.functions";
 import { useNavigate } from "@tanstack/react-router";
@@ -327,13 +328,13 @@ export function BookingWidget({
               />
             </Field>
 
-            {/* Estimates */}
+            {/* Estimates — vehicle options only; fares revealed in the booking wizard */}
             <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-3">
               <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-                <span>Fare estimate</span>
+                <span>Choose your cab</span>
                 <span>
                   {busy
-                    ? "Calculating…"
+                    ? "Finding cabs…"
                     : tripType === "local"
                       ? distance
                         ? `${distance} km included`
@@ -361,8 +362,9 @@ export function BookingWidget({
                         {e.category}
                       </div>
                       <div className="text-sm font-semibold text-foreground">{e.name}</div>
-                      <div className="mt-1 text-base font-bold text-gradient-gold">
-                        ₹{e.fare.toLocaleString("en-IN")}
+                      <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                        <Lock className="h-3 w-3 text-[color:var(--gold)]" />
+                        Fare on booking
                       </div>
                     </button>
                   );
@@ -370,8 +372,8 @@ export function BookingWidget({
                 {!estimates.length && !busy && (
                   <div className="col-span-full py-4 text-center text-xs text-muted-foreground">
                     {tripType === "local"
-                      ? "Choose a city and package to see fares."
-                      : "Choose different pickup & destination cities to see live fares."}
+                      ? "Choose a city and package to see cab options."
+                      : "Choose different pickup & destination cities to see available cabs."}
                   </div>
                 )}
               </div>
