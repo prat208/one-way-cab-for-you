@@ -15,7 +15,6 @@ import {
   FAQ,
   Footer,
   CareUSP,
-  Packages,
   AppCTA,
 } from "@/components/landing/Sections";
 import { AuthLink } from "@/components/AuthLink";
@@ -191,7 +190,6 @@ function Landing() {
       </div>
 
       <Services />
-      <Packages />
       <CareUSP />
       <Fleet />
       <WhyUs />
