@@ -11,7 +11,7 @@ export function Nav() {
   const links = [
     { href: "/#services", label: "Services" },
     { href: "/#fleet", label: "Fleet" },
-    { href: "/#packages", label: "Packages" },
+    
     { href: "/#cities", label: "Cities" },
     { href: "/rates", label: "Fares" },
     { href: "/#faq", label: "FAQ" },
