@@ -23,10 +23,6 @@ import sedanAsset from "@/assets/sedan.png.asset.json";
 import suvAsset from "@/assets/suv.png.asset.json";
 import innovaAsset from "@/assets/innova.png.asset.json";
 import tempoAsset from "@/assets/tempo.png.asset.json";
-import pkgMaha from "@/assets/pkg-mahabaleshwar.jpg";
-import pkgGoa from "@/assets/pkg-goa.jpg";
-import pkgTarkarli from "@/assets/pkg-tarkarli.jpg";
-import pkgKerala from "@/assets/pkg-kerala.jpg";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandLogo } from "@/components/BrandLogo";
 
