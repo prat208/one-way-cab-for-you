@@ -233,20 +233,15 @@ const slackChannel: Channel = {
   },
 };
 
-// Telegram: full booking/lead details to the admin chat via the Lovable
-// Telegram connector gateway. Requires TELEGRAM_API_KEY (linked connector),
-// LOVABLE_API_KEY, and TELEGRAM_ADMIN_CHAT_ID (chat that receives alerts).
+// Telegram: full booking/lead details to the admin chat via the Telegram
+// Bot API directly. Requires TELEGRAM_BOT_TOKEN (from @BotFather) and
+// TELEGRAM_ADMIN_CHAT_ID (chat that receives alerts).
 const telegramChannel: Channel = {
   id: "telegram",
   isEnabled: () =>
-    Boolean(
-      process.env.TELEGRAM_API_KEY &&
-        process.env.LOVABLE_API_KEY &&
-        process.env.TELEGRAM_ADMIN_CHAT_ID,
-    ),
+    Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_ADMIN_CHAT_ID),
   async send(event) {
-    const apiKey = process.env.TELEGRAM_API_KEY!;
-    const lovableKey = process.env.LOVABLE_API_KEY!;
+    const botToken = process.env.TELEGRAM_BOT_TOKEN!;
     const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID!;
 
     const esc = (s: unknown) =>
