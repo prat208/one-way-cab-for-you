@@ -286,11 +286,9 @@ const telegramChannel: Channel = {
           })();
 
     try {
-      const res = await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
+      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${lovableKey}`,
-          "X-Connection-Api-Key": apiKey,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
