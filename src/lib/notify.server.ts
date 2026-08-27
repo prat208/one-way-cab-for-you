@@ -443,7 +443,7 @@ const CHANNELS: Channel[] = [
   slackChannel,
   telegramChannel,
   whatsappChannel,
-  webhookChannel,
+  // webhookChannel — replaced by Telegram alerts
 ];
 
 export async function dispatch(event: NotificationEvent): Promise<void> {
