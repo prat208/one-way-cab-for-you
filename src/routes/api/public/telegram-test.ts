@@ -5,6 +5,16 @@ export const Route = createFileRoute("/api/public/telegram-test")({
   server: {
     handlers: {
       GET: async () => {
+        const token = process.env.TELEGRAM_BOT_TOKEN!;
+        const upd = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
+        const updJson = (await upd.json()) as {
+          ok: boolean;
+          result?: Array<{ message?: { chat?: { id?: number; first_name?: string } } }>;
+        };
+        const chats = (updJson.result ?? [])
+          .map((u) => u.message?.chat)
+          .filter(Boolean)
+          .map((c) => ({ id: c!.id, name: c!.first_name }));
         await dispatch({
           type: "booking.created",
           payload: {
