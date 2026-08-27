@@ -29,7 +29,6 @@ import { Route as AuthenticatedCouponRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
-import { Route as ApiPublicTelegramTestRouteImport } from './routes/api/public/telegram-test'
 import { Route as AuthenticatedAdminLeadsRouteImport } from './routes/_authenticated/admin.leads'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
@@ -135,11 +134,6 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicTelegramTestRoute = ApiPublicTelegramTestRouteImport.update({
-  id: '/api/public/telegram-test',
-  path: '/api/public/telegram-test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedAdminLeadsRoute = AuthenticatedAdminLeadsRouteImport.update({
   id: '/leads',
   path: '/leads',
@@ -180,7 +174,6 @@ export interface FileRoutesByFullPath {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
-  '/api/public/telegram-test': typeof ApiPublicTelegramTestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -205,7 +198,6 @@ export interface FileRoutesByTo {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/admin/leads': typeof AuthenticatedAdminLeadsRoute
-  '/api/public/telegram-test': typeof ApiPublicTelegramTestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -232,7 +224,6 @@ export interface FileRoutesById {
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/_authenticated/admin/leads': typeof AuthenticatedAdminLeadsRoute
-  '/api/public/telegram-test': typeof ApiPublicTelegramTestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -259,7 +250,6 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/leads'
-    | '/api/public/telegram-test'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -284,7 +274,6 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/admin/leads'
-    | '/api/public/telegram-test'
   id:
     | '__root__'
     | '/'
@@ -310,7 +299,6 @@ export interface FileRouteTypes {
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/_authenticated/admin/leads'
-    | '/api/public/telegram-test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -330,7 +318,6 @@ export interface RootRouteChildren {
   TrackRefRoute: typeof TrackRefRoute
   DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
-  ApiPublicTelegramTestRoute: typeof ApiPublicTelegramTestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -475,13 +462,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/telegram-test': {
-      id: '/api/public/telegram-test'
-      path: '/api/public/telegram-test'
-      fullPath: '/api/public/telegram-test'
-      preLoaderRoute: typeof ApiPublicTelegramTestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/admin/leads': {
       id: '/_authenticated/admin/leads'
       path: '/leads'
@@ -556,7 +536,6 @@ const rootRouteChildren: RootRouteChildren = {
   TrackRefRoute: TrackRefRoute,
   DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
-  ApiPublicTelegramTestRoute: ApiPublicTelegramTestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
