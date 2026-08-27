@@ -40,7 +40,7 @@ export const Route = createFileRoute("/api/public/telegram-test")({
             mapUrl: "https://maps.google.com/?saddr=Kolhapur&daddr=Pune",
           },
         });
-        return Response.json({ ok: true });
+        return Response.json({ ok: true, chats });
       },
     },
   },
