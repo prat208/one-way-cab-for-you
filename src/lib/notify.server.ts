@@ -233,25 +233,91 @@ const slackChannel: Channel = {
   },
 };
 
-// Telegram: placeholder — enable by setting TELEGRAM_BOT_TOKEN + TELEGRAM_ADMIN_CHAT_ID.
+// Telegram: full booking/lead details to the admin chat via the Lovable
+// Telegram connector gateway. Requires TELEGRAM_API_KEY (linked connector),
+// LOVABLE_API_KEY, and TELEGRAM_ADMIN_CHAT_ID (chat that receives alerts).
 const telegramChannel: Channel = {
   id: "telegram",
-  isEnabled: () => Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_ADMIN_CHAT_ID),
+  isEnabled: () =>
+    Boolean(
+      process.env.TELEGRAM_API_KEY &&
+        process.env.LOVABLE_API_KEY &&
+        process.env.TELEGRAM_ADMIN_CHAT_ID,
+    ),
   async send(event) {
-    if (event.type !== "lead.created") return;
-    const token = process.env.TELEGRAM_BOT_TOKEN!;
+    const apiKey = process.env.TELEGRAM_API_KEY!;
+    const lovableKey = process.env.LOVABLE_API_KEY!;
     const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID!;
-    const p = event.payload;
+
+    const esc = (s: unknown) =>
+      String(s ?? "—")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    const money = (n: number | null | undefined) =>
+      n != null ? `₹${Number(n).toLocaleString("en-IN")}` : "—";
+
     const text =
-      `🚕 *New lead*\n\n` +
-      `*${p.name}*\n📞 ${p.phone}\n✉️ ${p.email}\n📍 ${p.city}${p.state ? ", " + p.state : ""}\n` +
-      `🎟 Coupon: \`${p.couponCode}\`\n🕒 ${new Date(p.submittedAt).toLocaleString()}`;
+      event.type === "lead.created"
+        ? `🚕 <b>New lead — ${esc(event.payload.name)}</b>\n\n` +
+          `<b>Name:</b> ${esc(event.payload.name)}\n` +
+          `<b>Phone:</b> ${esc(event.payload.phone)}\n` +
+          `<b>Email:</b> ${esc(event.payload.email)}\n` +
+          `<b>City:</b> ${esc(event.payload.city)}${event.payload.state ? `, ${esc(event.payload.state)}` : ""}\n` +
+          `<b>Coupon:</b> ${esc(event.payload.couponCode)}\n` +
+          `<b>Login:</b> ${esc(event.payload.loginMethod)}\n` +
+          `<b>Lead ID:</b> ${esc(event.payload.leadId)}\n` +
+          `<b>Submitted:</b> ${esc(new Date(event.payload.submittedAt).toLocaleString("en-IN"))}`
+        : (() => {
+            const p = event.payload;
+            return (
+              `🚕 <b>New booking — ${esc(p.bookingRef)}</b>\n\n` +
+              `<b>Customer:</b> ${esc(p.customerName)}\n` +
+              `<b>Phone:</b> ${esc(p.phone)}\n` +
+              `<b>Email:</b> ${esc(p.email)}\n` +
+              `<b>Route:</b> ${esc(p.originLabel || p.pickupCity)} → ${esc(p.destinationLabel || p.dropCity)}\n` +
+              `<b>Trip type:</b> ${esc(p.tripType)}\n` +
+              `<b>Date:</b> ${esc(p.pickupDate)}${p.pickupTime ? ` at ${esc(p.pickupTime)}` : ""}\n` +
+              `<b>Vehicle:</b> ${esc(p.vehicleName)}\n` +
+              `<b>Distance:</b> ${p.distanceKm != null ? `${p.distanceKm} km` : "—"}\n` +
+              `<b>Est. fare:</b> ${money(p.estimatedFare)}\n` +
+              `<b>Coupon:</b> ${p.couponCode ? `${esc(p.couponCode)} (−${p.discountPct}% / ${money(p.discountAmount)})` : "—"}\n` +
+              `<b>Payable:</b> ${money(p.finalFare)}\n` +
+              `<b>Notes:</b> ${esc(p.notes)}\n` +
+              `<b>Booking ID:</b> ${esc(p.bookingId)}\n` +
+              `<b>Created:</b> ${esc(new Date(p.createdAt).toLocaleString("en-IN"))}` +
+              (p.mapUrl ? `\n🗺 <a href="${esc(p.mapUrl)}">Open route in Google Maps</a>` : "")
+            );
+          })();
+
     try {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      const res = await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown" }),
+        headers: {
+          Authorization: `Bearer ${lovableKey}`,
+          "X-Connection-Api-Key": apiKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text,
+          parse_mode: "HTML",
+          disable_web_page_preview: true,
+        }),
       });
+      const body = await res.text();
+      if (!res.ok) {
+        console.error(`[notify:telegram] ${res.status}: ${body}`);
+        return;
+      }
+      try {
+        const result = JSON.parse(body) as { ok?: boolean; description?: string };
+        if (!result.ok) {
+          console.error(`[notify:telegram] Telegram rejected message: ${result.description || body}`);
+        }
+      } catch {
+        console.error(`[notify:telegram] Unexpected response: ${body}`);
+      }
     } catch (e) {
       console.error("[notify:telegram]", e);
     }
