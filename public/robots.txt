@@ -8,4 +8,4 @@ Disallow: /track/
 Disallow: /coupon
 Disallow: /lead
 
-Sitemap: https://one-way-cab-for-you.lovable.app/sitemap.xml
+Sitemap: https://onewaycabstaxi.com/sitemap.xml

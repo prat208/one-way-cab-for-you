@@ -20,10 +20,10 @@ export const Route = createFileRoute("/rates")({
         property: "og:description",
         content: "Estimate outstation cab fare across Maharashtra instantly.",
       },
-      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/rates" },
+      { property: "og:url", content: "https://onewaycabstaxi.com/rates" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://one-way-cab-for-you.lovable.app/rates" }],
+    links: [{ rel: "canonical", href: "https://onewaycabstaxi.com/rates" }],
   }),
   component: RatesPage,
 });

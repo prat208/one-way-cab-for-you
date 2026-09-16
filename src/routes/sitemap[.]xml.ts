@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { listCitySlugs } from "@/lib/booking.functions";
 
-const BASE_URL = "https://one-way-cab-for-you.lovable.app";
+const BASE_URL = "https://onewaycabstaxi.com";
 
 interface SitemapEntry {
   path: string;
