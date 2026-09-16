@@ -702,7 +702,7 @@ function CouponsPane() {
   function shareText(c: Coupon) {
     return `🎟 ONE WAY CAB offer — use coupon ${c.code} for ${c.discount_pct}% off your ride.${
       c.min_fare > 0 ? ` Minimum fare ₹${c.min_fare}.` : ""
-    } Valid until ${c.valid_until}. Book at https://one-way-cab-for-you.lovable.app/book`;
+    } Valid until ${c.valid_until}. Book at https://onewaycabstaxi.com/book`;
   }
 
   async function copy(c: Coupon) {

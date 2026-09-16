@@ -30,10 +30,10 @@ export const Route = createFileRoute("/book")({
       },
       { property: "og:title", content: "Book a cab — ONE WAY CAB" },
       { property: "og:description", content: "Live fares, modern booking, AI concierge." },
-      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/book" },
+      { property: "og:url", content: "https://onewaycabstaxi.com/book" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://one-way-cab-for-you.lovable.app/book" }],
+    links: [{ rel: "canonical", href: "https://onewaycabstaxi.com/book" }],
   }),
   component: BookPage,
 });

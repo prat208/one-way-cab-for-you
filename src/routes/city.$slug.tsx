@@ -17,7 +17,7 @@ export const Route = createFileRoute("/city/$slug")({
     if (!loaderData) return { meta: [{ title: "City not found — ONE WAY CAB" }] };
     const title = `${loaderData.name} Outstation Cabs — ONE WAY CAB`;
     const description = `Book premium outstation cabs from ${loaderData.name}. Transparent one-way fares, verified chauffeurs, 24×7 support. ${loaderData.routes.length}+ popular routes.`;
-    const url = `https://one-way-cab-for-you.lovable.app/city/${params.slug}`;
+    const url = `https://onewaycabstaxi.com/city/${params.slug}`;
     return {
       meta: [
         { title },

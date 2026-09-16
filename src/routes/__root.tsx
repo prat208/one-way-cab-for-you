@@ -94,7 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Book premium outstation cabs across Maharashtra with transparent one-way fares, verified chauffeurs and 24×7 support.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/" },
+      { property: "og:url", content: "https://onewaycabstaxi.com/" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
       {
@@ -124,8 +124,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "ONE WAY CAB",
-          url: "https://one-way-cab-for-you.lovable.app/",
-          logo: "https://one-way-cab-for-you.lovable.app/favicon.png",
+          url: "https://onewaycabstaxi.com/",
+          logo: "https://onewaycabstaxi.com/favicon.png",
           telephone: ["+91-8999740424", "+91-9403001415"],
           address: {
             "@type": "PostalAddress",

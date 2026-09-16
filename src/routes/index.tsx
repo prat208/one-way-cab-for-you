@@ -35,10 +35,10 @@ export const Route = createFileRoute("/")({
         content:
           "Outstation, one-way and round-trip cabs across Maharashtra. Live fares, verified chauffeurs, 24×7 support.",
       },
-      { property: "og:url", content: "https://one-way-cab-for-you.lovable.app/" },
+      { property: "og:url", content: "https://onewaycabstaxi.com/" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://one-way-cab-for-you.lovable.app/" }],
+    links: [{ rel: "canonical", href: "https://onewaycabstaxi.com/" }],
     scripts: [
       {
         type: "application/ld+json",
@@ -46,7 +46,7 @@ export const Route = createFileRoute("/")({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: "ONE WAY CAB",
-          url: "https://one-way-cab-for-you.lovable.app/",
+          url: "https://onewaycabstaxi.com/",
         }),
       },
       {
