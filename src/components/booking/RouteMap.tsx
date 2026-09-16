@@ -54,6 +54,7 @@ export function RouteMap(props: Props) {
   const mapObj = useRef<google.maps.Map | null>(null);
   const markers = useRef<google.maps.Marker[]>([]);
   const line = useRef<google.maps.Polyline | null>(null);
+  const [mapError, setMapError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
