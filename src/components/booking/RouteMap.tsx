@@ -73,7 +73,9 @@ export function RouteMap(props: Props) {
         }
         render();
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setMapError(true);
+      });
     return () => {
       cancelled = true;
     };
