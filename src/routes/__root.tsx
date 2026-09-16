@@ -79,6 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "google-site-verification", content: "pcm29kk5gawW0FY7ZR0LoQdUYblee3Yoabc1NLE575Y" },
       { title: "ONE WAY CAB — Premium Outstation Cabs in Maharashtra" },
       {
         name: "description",
