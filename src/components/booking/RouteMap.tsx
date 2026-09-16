@@ -26,7 +26,7 @@ function loadMaps(): Promise<void> {
       key: KEY,
       loading: "async",
       callback: "__gmapsInit",
-      libraries: "geometry,places",
+      libraries: "geometry",
       v: "weekly",
     });
     if (CHANNEL) params.set("channel", CHANNEL);
