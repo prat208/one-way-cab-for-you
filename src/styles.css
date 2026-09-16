@@ -117,7 +117,8 @@
 /* Dark bands (hero, why-us, app CTA, footer) keep white-on-navy text. */
 @utility on-dark {
   color: #F6F8FC;
-  & .text-muted-foreground { color: rgba(226, 232, 244, 0.72); }
+  & .text-muted-foreground { color: rgba(226, 232, 244, 0.78); }
+  & :where([class*="text-foreground"]) { color: rgba(246, 248, 252, 0.92); }
   & .glass {
     background: rgba(255, 255, 255, 0.07);
     border-color: rgba(255, 255, 255, 0.14);
