@@ -1,5 +1,5 @@
 /// <reference types="google.maps" />
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 declare global {
   interface Window {
@@ -26,7 +26,7 @@ function loadMaps(): Promise<void> {
       key: KEY,
       loading: "async",
       callback: "__gmapsInit",
-      libraries: "geometry,places",
+      libraries: "geometry",
       v: "weekly",
     });
     if (CHANNEL) params.set("channel", CHANNEL);
@@ -54,6 +54,7 @@ export function RouteMap(props: Props) {
   const mapObj = useRef<google.maps.Map | null>(null);
   const markers = useRef<google.maps.Marker[]>([]);
   const line = useRef<google.maps.Polyline | null>(null);
+  const [mapError, setMapError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,7 +73,9 @@ export function RouteMap(props: Props) {
         }
         render();
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setMapError(true);
+      });
     return () => {
       cancelled = true;
     };
@@ -130,7 +133,14 @@ export function RouteMap(props: Props) {
 
   return (
     <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/30">
-      <div ref={mapRef} className="h-64 w-full sm:h-72" aria-label="Route preview map" />
+      {mapError ? (
+        <div className="flex h-64 w-full items-center justify-center px-6 text-center text-xs text-muted-foreground sm:h-72">
+          Map preview is unavailable right now. Your distance and fare are still calculated
+          correctly.
+        </div>
+      ) : (
+        <div ref={mapRef} className="h-64 w-full sm:h-72" aria-label="Route preview map" />
+      )}
       <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-xs text-muted-foreground">
         {hasRoute ? (
           <>
