@@ -133,7 +133,14 @@ export function RouteMap(props: Props) {
 
   return (
     <div className="mt-4 overflow-hidden rounded-2xl border border-white/10 bg-black/30">
-      <div ref={mapRef} className="h-64 w-full sm:h-72" aria-label="Route preview map" />
+      {mapError ? (
+        <div className="flex h-64 w-full items-center justify-center px-6 text-center text-xs text-muted-foreground sm:h-72">
+          Map preview is unavailable right now. Your distance and fare are still calculated
+          correctly.
+        </div>
+      ) : (
+        <div ref={mapRef} className="h-64 w-full sm:h-72" aria-label="Route preview map" />
+      )}
       <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-xs text-muted-foreground">
         {hasRoute ? (
           <>
