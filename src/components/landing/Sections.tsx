@@ -148,14 +148,14 @@ export function Fleet() {
               transition={{ ...fadeUp.transition, delay: i * 0.08 }}
               className="glass group relative overflow-hidden rounded-3xl p-5"
             >
-              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
+              <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-white ring-1 ring-black/5">
                 <img
                   src={f.img}
                   alt={f.alt}
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute bottom-2 right-2 rounded-full glass px-2 py-1 text-[10px] uppercase tracking-wider">
+                <div className="absolute bottom-2 right-2 rounded-full bg-black/85 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--gold)]">
                   {f.tag}
                 </div>
               </div>
