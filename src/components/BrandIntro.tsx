@@ -27,12 +27,19 @@ export function BrandIntro() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (prefersReduced) {
+    // Reduced motion, repeat visits in the same session, and slow/save-data
+    // connections skip the intro so the page paints immediately.
+    const seen = sessionStorage.getItem("owc_intro_seen") === "1";
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } })
+      .connection;
+    const slow = Boolean(conn?.saveData) || /2g/.test(conn?.effectiveType ?? "");
+    if (prefersReduced || seen || slow) {
       setShow(false);
       return;
     }
+    sessionStorage.setItem("owc_intro_seen", "1");
     const mobile = window.matchMedia("(max-width: 640px)").matches;
-    const t = setTimeout(() => setShow(false), mobile ? 3800 : 4200);
+    const t = setTimeout(() => setShow(false), mobile ? 1900 : 2400);
     return () => clearTimeout(t);
   }, [prefersReduced]);
 
