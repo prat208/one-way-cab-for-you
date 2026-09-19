@@ -152,7 +152,10 @@ export function Fleet() {
                 <img
                   src={f.img}
                   alt={f.alt}
+                  width={1100}
+                  height={737}
                   loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute bottom-2 right-2 rounded-full bg-black/85 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--gold)]">
