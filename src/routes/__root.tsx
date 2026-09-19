@@ -4,15 +4,17 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useLocation,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CallCare } from "../components/CallCare";
 import { OwnerBadge } from "../components/OwnerBadge";
+import { trackPageView } from "../lib/analytics";
 
 function NotFoundComponent() {
   return (
