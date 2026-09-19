@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import logoFull from "@/assets/onewaycabs-logo-clean.png";
-import logoEmblem from "@/assets/onewaycabs-emblem.png";
+import logoFull from "@/assets/onewaycabs-logo-clean.webp";
+import logoEmblem from "@/assets/onewaycabs-emblem.webp";
 
 type Props = {
   className?: string;

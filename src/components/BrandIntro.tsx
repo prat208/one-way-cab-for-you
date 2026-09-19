@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import logoFull from "@/assets/onewaycabs-logo-clean.png";
+import logoFull from "@/assets/onewaycabs-logo-clean.webp";
 import { CabGlyph } from "./CabGlyph";
 
 const BRAND = "ONEWAYCABS";
