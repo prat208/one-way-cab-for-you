@@ -155,7 +155,7 @@ export function Fleet() {
                   loading="lazy"
                   className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute bottom-2 right-2 rounded-full glass px-2 py-1 text-[10px] uppercase tracking-wider">
+                <div className="absolute bottom-2 right-2 rounded-full bg-black/80 px-2 py-1 text-[10px] uppercase tracking-wider text-white">
                   {f.tag}
                 </div>
               </div>
