@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import heroImg from "@/assets/hero-city-car.jpg";
+import heroImg from "@/assets/hero-city-car.webp";
 
 /**
  * Hero backdrop: cinematic dusk highway photo behind a deep-navy scrim so the
@@ -13,6 +13,9 @@ export function HeroScene() {
         alt=""
         width={1920}
         height={1088}
+        decoding="async"
+        // @ts-expect-error fetchpriority is valid HTML, React types lag behind
+        fetchpriority="high"
         className="absolute inset-0 h-full w-full object-cover object-right"
       />
       <div className="absolute inset-0 bg-[linear-gradient(100deg,#0B1533_10%,rgba(11,21,51,0.92)_40%,rgba(11,21,51,0.45)_65%,rgba(11,21,51,0.25)_100%)]" />

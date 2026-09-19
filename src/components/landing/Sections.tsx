@@ -19,10 +19,10 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { CARE_NUMBERS } from "@/components/CallCare";
-import sedanAsset from "@/assets/sedan.png.asset.json";
-import suvAsset from "@/assets/suv.png.asset.json";
-import innovaAsset from "@/assets/innova.png.asset.json";
-import tempoAsset from "@/assets/tempo.png.asset.json";
+import sedanAsset from "@/assets/sedan.webp.asset.json";
+import suvAsset from "@/assets/suv.webp.asset.json";
+import innovaAsset from "@/assets/innova.webp.asset.json";
+import tempoAsset from "@/assets/tempo.webp.asset.json";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandLogo } from "@/components/BrandLogo";
 
@@ -152,7 +152,10 @@ export function Fleet() {
                 <img
                   src={f.img}
                   alt={f.alt}
+                  width={1100}
+                  height={737}
                   loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute bottom-2 right-2 rounded-full bg-black/85 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[color:var(--gold)]">

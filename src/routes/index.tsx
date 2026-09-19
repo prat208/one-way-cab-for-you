@@ -19,6 +19,7 @@ import {
 } from "@/components/landing/Sections";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandIntro } from "@/components/BrandIntro";
+import heroImg from "@/assets/hero-city-car.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,7 +39,10 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: "https://onewaycabstaxi.com/" },
       { property: "og:type", content: "website" },
     ],
-    links: [{ rel: "canonical", href: "https://onewaycabstaxi.com/" }],
+    links: [
+      { rel: "canonical", href: "https://onewaycabstaxi.com/" },
+      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" },
+    ],
     scripts: [
       {
         type: "application/ld+json",

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import logoFull from "@/assets/onewaycabs-logo-clean.png";
+import logoFull from "@/assets/onewaycabs-logo-clean.webp";
 import { CabGlyph } from "./CabGlyph";
 
 const BRAND = "ONEWAYCABS";
@@ -27,12 +27,19 @@ export function BrandIntro() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (prefersReduced) {
+    // Reduced motion, repeat visits in the same session, and slow/save-data
+    // connections skip the intro so the page paints immediately.
+    const seen = sessionStorage.getItem("owc_intro_seen") === "1";
+    const conn = (navigator as unknown as { connection?: { saveData?: boolean; effectiveType?: string } })
+      .connection;
+    const slow = Boolean(conn?.saveData) || /2g/.test(conn?.effectiveType ?? "");
+    if (prefersReduced || seen || slow) {
       setShow(false);
       return;
     }
+    sessionStorage.setItem("owc_intro_seen", "1");
     const mobile = window.matchMedia("(max-width: 640px)").matches;
-    const t = setTimeout(() => setShow(false), mobile ? 3800 : 4200);
+    const t = setTimeout(() => setShow(false), mobile ? 2300 : 2800);
     return () => clearTimeout(t);
   }, [prefersReduced]);
 
