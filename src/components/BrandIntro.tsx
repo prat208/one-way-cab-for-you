@@ -39,7 +39,7 @@ export function BrandIntro() {
     }
     sessionStorage.setItem("owc_intro_seen", "1");
     const mobile = window.matchMedia("(max-width: 640px)").matches;
-    const t = setTimeout(() => setShow(false), mobile ? 1900 : 2400);
+    const t = setTimeout(() => setShow(false), mobile ? 2300 : 2800);
     return () => clearTimeout(t);
   }, [prefersReduced]);
 

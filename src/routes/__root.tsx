@@ -142,14 +142,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           },
         }),
       },
+      // Analytics is loaded after the page is interactive so it never competes
+      // with the first paint.
       ...(gaId
         ? [
             {
-              src: `https://www.googletagmanager.com/gtag/js?id=${gaId}`,
-              async: true,
-            },
-            {
-              children: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');`,
+              children: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${gaId}');var owcGa=function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${gaId}';document.head.appendChild(s);};if('requestIdleCallback' in window){requestIdleCallback(owcGa,{timeout:4000});}else{window.addEventListener('load',function(){setTimeout(owcGa,1500);});}`,
             },
           ]
         : []),
