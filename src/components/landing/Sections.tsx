@@ -19,10 +19,10 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { CARE_NUMBERS } from "@/components/CallCare";
-import sedanAsset from "@/assets/sedan.png.asset.json";
-import suvAsset from "@/assets/suv.png.asset.json";
-import innovaAsset from "@/assets/innova.png.asset.json";
-import tempoAsset from "@/assets/tempo.png.asset.json";
+import sedanAsset from "@/assets/sedan.webp.asset.json";
+import suvAsset from "@/assets/suv.webp.asset.json";
+import innovaAsset from "@/assets/innova.webp.asset.json";
+import tempoAsset from "@/assets/tempo.webp.asset.json";
 import { AuthLink } from "@/components/AuthLink";
 import { BrandLogo } from "@/components/BrandLogo";
 
