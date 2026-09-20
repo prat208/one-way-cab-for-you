@@ -23,7 +23,6 @@ import { createBooking, estimateFare, getCatalog, validateCoupon } from "@/lib/b
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
 import { PlaceInput } from "@/components/booking/PlaceInput";
-import { RouteMap } from "./RouteMap";
 
 type Estimate = {
   vehicle_id: string;
@@ -97,9 +96,6 @@ export function BookingWizard({
   const [estimates, setEstimates] = useState<Estimate[]>([]);
   const [distance, setDistance] = useState<number | null>(null);
   const [duration, setDuration] = useState<number | null>(null);
-  const [polyline, setPolyline] = useState<string | null>(null);
-  const [routeOrigin, setRouteOrigin] = useState<{ lat: number; lng: number } | null>(null);
-  const [routeDest, setRouteDest] = useState<{ lat: number; lng: number } | null>(null);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -153,9 +149,6 @@ export function BookingWizard({
       setDistance(null);
       setDuration(null);
       setSelected(null);
-      setPolyline(null);
-      setRouteOrigin(null);
-      setRouteDest(null);
       setBusy(false);
       setError(null);
       return;
@@ -175,9 +168,6 @@ export function BookingWizard({
           setEstimates(r.estimates);
           setDistance(Number(r.distance_km));
           setDuration(Number(r.duration_hours));
-          setPolyline(("polyline" in r ? r.polyline : null) ?? null);
-          setRouteOrigin(("origin" in r ? r.origin : null) ?? null);
-          setRouteDest(("destination" in r ? r.destination : null) ?? null);
           setSelected(
             (prev) =>
               r.estimates.find((e) => e.vehicle_id === (prev?.vehicle_id ?? vehicle)) ??
@@ -267,11 +257,6 @@ export function BookingWizard({
           trip_type: tripType,
           notes: notesParts.join(" · "),
           user_id: sess.session?.user.id ?? null,
-          origin_lat: routeOrigin?.lat ?? null,
-          origin_lng: routeOrigin?.lng ?? null,
-          destination_lat: routeDest?.lat ?? null,
-          destination_lng: routeDest?.lng ?? null,
-          polyline: polyline ?? null,
           coupon_code: coupon?.code ?? null,
         },
       });
@@ -495,15 +480,6 @@ export function BookingWizard({
                       </Field>
                     )}
                   </div>
-                  {tripType !== "local" && (
-                    <RouteMap
-                      polyline={polyline}
-                      origin={routeOrigin}
-                      destination={routeDest}
-                      distanceKm={distance}
-                      durationHours={duration}
-                    />
-                  )}
                 </StepPane>
               )}
 

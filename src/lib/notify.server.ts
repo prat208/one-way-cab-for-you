@@ -34,15 +34,6 @@ export type BookingCreatedPayload = {
   discountPct?: number | null;
   discountAmount?: number | null;
   finalFare?: number | null;
-  originLabel?: string | null;
-  destinationLabel?: string | null;
-  originLat?: number | null;
-  originLng?: number | null;
-  destinationLat?: number | null;
-  destinationLng?: number | null;
-  polyline?: string | null;
-  mapUrl?: string | null;
-  staticMapUrl?: string | null;
 };
 
 export type NotificationEvent =
@@ -270,7 +261,7 @@ const telegramChannel: Channel = {
               `<b>Customer:</b> ${esc(p.customerName)}\n` +
               `<b>Phone:</b> ${esc(p.phone)}\n` +
               `<b>Email:</b> ${esc(p.email)}\n` +
-              `<b>Route:</b> ${esc(p.originLabel || p.pickupCity)} → ${esc(p.destinationLabel || p.dropCity)}\n` +
+              `<b>Route:</b> ${esc(p.pickupCity)} → ${esc(p.dropCity)}\n` +
               `<b>Trip type:</b> ${esc(p.tripType)}\n` +
               `<b>Date:</b> ${esc(p.pickupDate)}${p.pickupTime ? ` at ${esc(p.pickupTime)}` : ""}\n` +
               `<b>Vehicle:</b> ${esc(p.vehicleName)}\n` +
@@ -280,8 +271,7 @@ const telegramChannel: Channel = {
               `<b>Payable:</b> ${money(p.finalFare)}\n` +
               `<b>Notes:</b> ${esc(p.notes)}\n` +
               `<b>Booking ID:</b> ${esc(p.bookingId)}\n` +
-              `<b>Created:</b> ${esc(new Date(p.createdAt).toLocaleString("en-IN"))}` +
-              (p.mapUrl ? `\n🗺 <a href="${esc(p.mapUrl)}">Open route in Google Maps</a>` : "")
+              `<b>Created:</b> ${esc(new Date(p.createdAt).toLocaleString("en-IN"))}`
             );
           })();
 
