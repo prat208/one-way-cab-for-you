@@ -529,13 +529,13 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <BrandLogo crop className="h-12 w-12" />
               <div>
-                <div className="text-sm font-bold tracking-wide">ONEWAYCABS</div>
-                <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                <div className="text-sm font-bold tracking-wide text-footer-foreground">ONEWAYCABS</div>
+                <div className="text-[10px] font-medium uppercase tracking-[0.2em] text-footer-foreground">
                   Tours &amp; Travels · Kolhapur
                 </div>
               </div>
             </div>
-            <p className="mt-4 max-w-md text-sm text-muted-foreground">
+            <p className="mt-4 max-w-md text-sm leading-6 text-footer-foreground">
               Premium outstation travel across Maharashtra. Transparent fares. Verified chauffeurs.
               Booked in under a minute.
             </p>
@@ -553,56 +553,56 @@ export function Footer() {
             </address>
           </div>
           <div>
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Company</div>
+            <div className="text-xs font-bold uppercase tracking-[0.18em] text-footer-foreground">Company</div>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <a href="#services" className="text-foreground/80 hover:text-foreground">
+                <a href="#services" className="text-footer-foreground hover:text-[color:var(--gold)]">
                   Services
                 </a>
               </li>
               <li>
-                <a href="#fleet" className="text-foreground/80 hover:text-foreground">
+                <a href="#fleet" className="text-footer-foreground hover:text-[color:var(--gold)]">
                   Fleet
                 </a>
               </li>
               <li>
-                <a href="#routes" className="text-foreground/80 hover:text-foreground">
+                <a href="#routes" className="text-footer-foreground hover:text-[color:var(--gold)]">
                   Popular routes
                 </a>
               </li>
               <li>
-                <a href="#faq" className="text-foreground/80 hover:text-foreground">
+                <a href="#faq" className="text-footer-foreground hover:text-[color:var(--gold)]">
                   FAQ
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Contact</div>
+            <div className="text-xs font-bold uppercase tracking-[0.18em] text-footer-foreground">Contact</div>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <a href="tel:+918999740424" className="text-foreground/80 hover:text-foreground">
+                <a href="tel:+918999740424" className="text-footer-foreground hover:text-[color:var(--gold)]">
                   24×7 helpline · +91 8999740424
                 </a>
               </li>
               <li>
-                <a href="tel:+919403001415" className="text-foreground/80 hover:text-foreground">
+                <a href="tel:+919403001415" className="text-footer-foreground hover:text-[color:var(--gold)]">
                   Sales · +91 9403001415
                 </a>
               </li>
               <li>
                 <a
                   href="mailto:onewaycabsc@gmail.com"
-                  className="text-foreground/80 hover:text-foreground"
+                  className="text-footer-foreground hover:text-[color:var(--gold)]"
                 >
                   onewaycabsc@gmail.com
                 </a>
               </li>
-              <li className="text-foreground/80">Pune · Mumbai · Kolhapur · Nashik</li>
+              <li className="text-footer-foreground">Pune · Mumbai · Kolhapur · Nashik</li>
             </ul>
           </div>
         </div>
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-footer-foreground sm:flex-row">
           <div>
             <Link
               to="/admin-signup"
