@@ -1,6 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
-import { suggestPlaces } from "@/lib/booking.functions";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export function PlaceInput({
   value,
@@ -15,12 +13,15 @@ export function PlaceInput({
   fallback?: string[];
   className?: string;
 }) {
-  const runSuggest = useServerFn(suggestPlaces);
-  const [items, setItems] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const wrapRef = useRef<HTMLDivElement>(null);
-  const skipRef = useRef(false);
+
+  const items = useMemo(() => {
+    const q = value.trim().toLowerCase();
+    if (q.length < 2) return fallback.slice(0, 8);
+    return fallback.filter((place) => place.toLowerCase().includes(q)).slice(0, 8);
+  }, [fallback, value]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -30,41 +31,7 @@ export function PlaceInput({
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
 
-  useEffect(() => {
-    if (skipRef.current) {
-      skipRef.current = false;
-      return;
-    }
-    const q = value.trim();
-    if (q.length < 2) {
-      setItems(fallback.slice(0, 8));
-      return;
-    }
-    const t = setTimeout(() => {
-      runSuggest({ data: { q } })
-        .then((r) => {
-          const list = r.suggestions.length
-            ? r.suggestions
-            : fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
-          setItems(Array.from(new Set(list)));
-        })
-        .catch(() =>
-          setItems(
-            Array.from(
-              new Set(
-                fallback.filter((c) => c.toLowerCase().includes(q.toLowerCase())).slice(0, 8),
-              ),
-            ),
-          ),
-        );
-
-    }, 250);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [value, runSuggest]);
-
   function pick(v: string) {
-    skipRef.current = true;
     onChange(v);
     setOpen(false);
     setActive(-1);

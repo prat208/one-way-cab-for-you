@@ -181,35 +181,19 @@ export const estimateFare = createServerFn({ method: "POST" })
     let oneWayDuration: number | null = routeRes.data?.duration_hours
       ? Number(routeRes.data.duration_hours)
       : null;
-    let polyline: string | null = null;
-    let originLatLng: { lat: number; lng: number } | null = null;
-    let destinationLatLng: { lat: number; lng: number } | null = null;
-    let originLabel: string | null = null;
-    let destinationLabel: string | null = null;
-
     if (oneWayDistance == null) {
-      const live = await googleRoute(data.pickup_city, data.drop_city);
+      const live = await openRoute(data.pickup_city, data.drop_city);
       if (!live) {
         return {
           estimates: [],
           distance_km: 0,
           duration_hours: 0,
-          polyline: null,
-          origin: null,
-          destination: null,
-          origin_label: null,
-          destination_label: null,
           no_route: true as const,
           message: `Couldn't find a driving route between "${data.pickup_city}" and "${data.drop_city}". Please refine the location names.`,
         };
       }
       oneWayDistance = live.distanceKm;
       oneWayDuration = live.durationHours;
-      polyline = live.polyline;
-      originLatLng = live.origin;
-      destinationLatLng = live.destination;
-      originLabel = live.originLabel;
-      destinationLabel = live.destinationLabel;
     }
 
     const vehicles = vehiclesRes.data ?? [];
@@ -238,121 +222,42 @@ export const estimateFare = createServerFn({ method: "POST" })
       duration_hours: duration,
       estimates,
       trip_type: data.trip_type,
-      polyline,
-      origin: originLatLng,
-      destination: destinationLatLng,
-      origin_label: originLabel,
-      destination_label: destinationLabel,
     };
 
   });
 
-// ---------- Google Maps helpers (gateway) ----------
-const GMAPS_GATEWAY = "https://connector-gateway.lovable.dev/google_maps";
-
-async function gmapsHeaders() {
-  const lovableKey = process.env.LOVABLE_API_KEY;
-  const gmapsKey = process.env.GOOGLE_MAPS_API_KEY;
-  if (!lovableKey || !gmapsKey) {
-    throw new Error("Google Maps connector is not configured on the server.");
-  }
-  return {
-    Authorization: `Bearer ${lovableKey}`,
-    "X-Connection-Api-Key": gmapsKey,
-  } as Record<string, string>;
-}
-
-async function geocodeOne(q: string): Promise<{ lat: number; lng: number; label: string } | null> {
-  const headers = await gmapsHeaders();
-  const url = `${GMAPS_GATEWAY}/maps/api/geocode/json?address=${encodeURIComponent(
-    q + ", India",
-  )}&region=in`;
-  const r = await fetch(url, { headers });
+// Free routing fallback keeps arbitrary-location fare estimates independent of a map provider.
+async function geocodeOne(q: string): Promise<{ lat: number; lon: number } | null> {
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(q)}`;
+  const r = await fetch(url, {
+    headers: { Accept: "application/json", "User-Agent": "OneWayCabs/1.0" },
+  });
   if (!r.ok) return null;
-  const j = (await r.json()) as {
-    status?: string;
-    results?: Array<{
-      formatted_address: string;
-      geometry: { location: { lat: number; lng: number } };
-    }>;
-  };
-  const first = j.results?.[0];
+  const j = (await r.json()) as Array<{ lat: string; lon: string }>;
+  const first = j[0];
   if (!first) return null;
-  return {
-    lat: first.geometry.location.lat,
-    lng: first.geometry.location.lng,
-    label: first.formatted_address,
-  };
+  return { lat: Number(first.lat), lon: Number(first.lon) };
 }
 
-async function googleRoute(
+async function openRoute(
   from: string,
   to: string,
 ): Promise<{
   distanceKm: number;
   durationHours: number;
-  polyline: string;
-  origin: { lat: number; lng: number };
-  destination: { lat: number; lng: number };
-  originLabel: string;
-  destinationLabel: string;
 } | null> {
   const [a, b] = await Promise.all([geocodeOne(from), geocodeOne(to)]);
   if (!a || !b) return null;
-  const headers = {
-    ...(await gmapsHeaders()),
-    "Content-Type": "application/json",
-    "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.polyline.encodedPolyline",
-  };
-  const body = JSON.stringify({
-    origin: { location: { latLng: { latitude: a.lat, longitude: a.lng } } },
-    destination: { location: { latLng: { latitude: b.lat, longitude: b.lng } } },
-    travelMode: "DRIVE",
-    routingPreference: "TRAFFIC_UNAWARE",
-    polylineEncoding: "ENCODED_POLYLINE",
-  });
-  const r = await fetch(`${GMAPS_GATEWAY}/routes/directions/v2:computeRoutes`, {
-    method: "POST",
-    headers,
-    body,
-  });
-  if (!r.ok) {
-    if (r.status === 403) {
-      const t = await r.text();
-      const reason =
-        (JSON.parse(t)?.error?.details ?? []).find((d: { reason?: string }) => d.reason)?.reason ??
-        "";
-      if (reason === "API_KEY_HTTP_REFERRER_BLOCKED") {
-        throw new Error(
-          'Google Maps server key is referrer-restricted. Set restrictions to "None" or "IP addresses" in Google Cloud Console.',
-        );
-      }
-      if (reason === "API_KEY_SERVICE_BLOCKED") {
-        throw new Error(
-          "Google Maps server key does not allow the Routes API. Enable it for the server key in Google Cloud Console.",
-        );
-      }
-    }
-    return null;
-  }
-  const j = (await r.json()) as {
-    routes?: Array<{
-      distanceMeters?: number;
-      duration?: string;
-      polyline?: { encodedPolyline?: string };
-    }>;
-  };
+  const r = await fetch(
+    `https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`,
+  );
+  if (!r.ok) return null;
+  const j = (await r.json()) as { routes?: Array<{ distance?: number; duration?: number }> };
   const route = j.routes?.[0];
-  if (!route?.distanceMeters) return null;
-  const durationSec = route.duration ? parseInt(route.duration.replace("s", ""), 10) : 0;
+  if (!route?.distance) return null;
   return {
-    distanceKm: route.distanceMeters / 1000,
-    durationHours: durationSec ? durationSec / 3600 : route.distanceMeters / 1000 / 55,
-    polyline: route.polyline?.encodedPolyline ?? "",
-    origin: { lat: a.lat, lng: a.lng },
-    destination: { lat: b.lat, lng: b.lng },
-    originLabel: a.label,
-    destinationLabel: b.label,
+    distanceKm: route.distance / 1000,
+    durationHours: route.duration ? route.duration / 3600 : route.distance / 1000 / 55,
   };
 }
 
@@ -374,13 +279,6 @@ const BookingInput = z.object({
   notes: z.string().max(500).optional().or(z.literal("")),
   trip_type: z.enum(["one-way", "round-trip", "local"]).default("one-way"),
   user_id: z.string().uuid().optional().nullable(),
-  origin_lat: z.number().optional().nullable(),
-  origin_lng: z.number().optional().nullable(),
-  destination_lat: z.number().optional().nullable(),
-  destination_lng: z.number().optional().nullable(),
-  origin_label: z.string().max(200).optional().nullable(),
-  destination_label: z.string().max(200).optional().nullable(),
-  polyline: z.string().max(60000).optional().nullable(),
   coupon_code: z.string().trim().max(40).optional().nullable(),
 });
 
@@ -524,19 +422,6 @@ export const createBooking = createServerFn({ method: "POST" })
       }
     }
 
-    const hasCoords =
-      data.origin_lat != null &&
-      data.origin_lng != null &&
-      data.destination_lat != null &&
-      data.destination_lng != null;
-    const mapUrl = hasCoords
-      ? `https://www.google.com/maps/dir/?api=1&origin=${data.origin_lat},${data.origin_lng}&destination=${data.destination_lat},${data.destination_lng}&travelmode=driving`
-      : `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(data.pickup_city)}&destination=${encodeURIComponent(data.drop_city)}&travelmode=driving`;
-    const staticMapUrl =
-      hasCoords && data.polyline
-        ? `https://maps.googleapis.com/maps/api/staticmap?size=640x360&scale=2&maptype=roadmap&markers=color:green%7Clabel:A%7C${data.origin_lat},${data.origin_lng}&markers=color:red%7Clabel:B%7C${data.destination_lat},${data.destination_lng}&path=weight:4%7Ccolor:0x1a73e8ff%7Cenc:${encodeURIComponent(data.polyline)}&key=${process.env.GOOGLE_MAPS_BROWSER_KEY ?? ""}`
-        : null;
-
     await dispatch({
       type: "booking.created",
       payload: {
@@ -559,57 +444,8 @@ export const createBooking = createServerFn({ method: "POST" })
         discountPct: couponCode ? discountPct : null,
         discountAmount: couponCode ? discountAmount : null,
         finalFare: couponCode ? finalFare : (data.estimated_fare ?? null),
-        originLabel: data.origin_label ?? null,
-        destinationLabel: data.destination_label ?? null,
-        originLat: data.origin_lat ?? null,
-        originLng: data.origin_lng ?? null,
-        destinationLat: data.destination_lat ?? null,
-        destinationLng: data.destination_lng ?? null,
-        polyline: data.polyline ?? null,
-        mapUrl,
-        staticMapUrl,
       },
     }).catch((e) => console.error("[createBooking] dispatch failed", e));
     return { booking_ref: row.booking_ref };
   });
 
-// ---------- Place autocomplete (Google Places API New, via gateway) ----------
-export const suggestPlaces = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ q: z.string().min(1).max(120) }).parse(d))
-  .handler(async ({ data }) => {
-    const lovableKey = process.env.LOVABLE_API_KEY;
-    const gmapsKey = process.env.GOOGLE_MAPS_API_KEY;
-    if (!lovableKey || !gmapsKey) return { suggestions: [] as string[] };
-    try {
-      const r = await fetch(
-        "https://connector-gateway.lovable.dev/google_maps/places/v1/places:autocomplete",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${lovableKey}`,
-            "X-Connection-Api-Key": gmapsKey,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            input: data.q,
-            includedRegionCodes: ["in"],
-            languageCode: "en",
-          }),
-        },
-      );
-      if (!r.ok) {
-        console.error("[suggestPlaces]", r.status, await r.text());
-        return { suggestions: [] as string[] };
-      }
-      const j = (await r.json()) as {
-        suggestions?: Array<{ placePrediction?: { text?: { text?: string } } }>;
-      };
-      const out = (j.suggestions ?? [])
-        .map((s) => s.placePrediction?.text?.text)
-        .filter((t): t is string => Boolean(t));
-      return { suggestions: out.slice(0, 8) };
-    } catch (e) {
-      console.error("[suggestPlaces] failed", e);
-      return { suggestions: [] as string[] };
-    }
-  });
