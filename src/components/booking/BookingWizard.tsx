@@ -165,6 +165,7 @@ export function BookingWizard({
         },
       })
         .then((r) => {
+          if ("no_route" in r && r.no_route) setError(r.message);
           setEstimates(r.estimates);
           setDistance(Number(r.distance_km));
           setDuration(Number(r.duration_hours));

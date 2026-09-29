@@ -227,16 +227,54 @@ export const estimateFare = createServerFn({ method: "POST" })
   });
 
 // Free routing fallback keeps arbitrary-location fare estimates independent of a map provider.
+async function fetchJson(url: string, ms = 6000): Promise<unknown | null> {
+  try {
+    const r = await fetch(url, {
+      headers: { Accept: "application/json", "User-Agent": "OneWayCabs/1.0 (onewaycabstaxi.com)" },
+      signal: AbortSignal.timeout(ms),
+    });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch {
+    return null;
+  }
+}
+
+async function geocodeQuery(q: string): Promise<{ lat: number; lon: number } | null> {
+  const nom = (await fetchJson(
+    `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(q)}`,
+  )) as Array<{ lat: string; lon: string }> | null;
+  if (nom?.[0]) return { lat: Number(nom[0].lat), lon: Number(nom[0].lon) };
+  // Backup geocoder (Photon), biased to India
+  const ph = (await fetchJson(
+    `https://photon.komoot.io/api/?limit=5&lat=19.0&lon=75.0&q=${encodeURIComponent(q)}`,
+  )) as { features?: Array<{ geometry: { coordinates: [number, number] }; properties?: { countrycode?: string } }> } | null;
+  const f = ph?.features?.find((x) => x.properties?.countrycode === "IN") ?? ph?.features?.[0];
+  if (f) return { lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0] };
+  return null;
+}
+
 async function geocodeOne(q: string): Promise<{ lat: number; lon: number } | null> {
-  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=in&q=${encodeURIComponent(q)}`;
-  const r = await fetch(url, {
-    headers: { Accept: "application/json", "User-Agent": "OneWayCabs/1.0" },
-  });
-  if (!r.ok) return null;
-  const j = (await r.json()) as Array<{ lat: string; lon: string }>;
-  const first = j[0];
-  if (!first) return null;
-  return { lat: Number(first.lat), lon: Number(first.lon) };
+  const clean = q.trim();
+  const first = await geocodeQuery(clean);
+  if (first) return first;
+  // Retry with simpler forms: "Hinjewadi Phase 1, Pune, MH" -> "Pune, MH" -> "Pune"
+  const parts = clean.split(",").map((s) => s.trim()).filter(Boolean);
+  for (let i = 1; i < parts.length; i++) {
+    const hit = await geocodeQuery(parts.slice(i).join(", "));
+    if (hit) return hit;
+  }
+  return null;
+}
+
+function haversineKm(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {
+  const R = 6371;
+  const dLat = ((b.lat - a.lat) * Math.PI) / 180;
+  const dLon = ((b.lon - a.lon) * Math.PI) / 180;
+  const s =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((a.lat * Math.PI) / 180) * Math.cos((b.lat * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
 }
 
 async function openRoute(
@@ -248,17 +286,21 @@ async function openRoute(
 } | null> {
   const [a, b] = await Promise.all([geocodeOne(from), geocodeOne(to)]);
   if (!a || !b) return null;
-  const r = await fetch(
+  const j = (await fetchJson(
     `https://router.project-osrm.org/route/v1/driving/${a.lon},${a.lat};${b.lon},${b.lat}?overview=false`,
-  );
-  if (!r.ok) return null;
-  const j = (await r.json()) as { routes?: Array<{ distance?: number; duration?: number }> };
-  const route = j.routes?.[0];
-  if (!route?.distance) return null;
-  return {
-    distanceKm: route.distance / 1000,
-    durationHours: route.duration ? route.duration / 3600 : route.distance / 1000 / 55,
-  };
+    8000,
+  )) as { routes?: Array<{ distance?: number; duration?: number }> } | null;
+  const route = j?.routes?.[0];
+  if (route?.distance) {
+    return {
+      distanceKm: route.distance / 1000,
+      durationHours: route.duration ? route.duration / 3600 : route.distance / 1000 / 55,
+    };
+  }
+  // Road router unavailable: estimate road distance from straight-line distance
+  const km = haversineKm(a, b) * 1.3;
+  if (km < 1) return null;
+  return { distanceKm: km, durationHours: km / 55 };
 }
 
 const BookingInput = z.object({
