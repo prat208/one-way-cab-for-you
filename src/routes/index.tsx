@@ -41,7 +41,7 @@ export const Route = createFileRoute("/")({
     ],
     links: [
       { rel: "canonical", href: "https://onewaycabstaxi.com/" },
-      { rel: "preload", as: "image", href: heroImg, fetchpriority: "high" },
+      { rel: "preload", as: "image", href: heroImg, fetchPriority: "high" },
     ],
     scripts: [
       {
