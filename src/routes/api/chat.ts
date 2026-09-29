@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import { estimateFare } from "@/lib/booking.functions";
 
 function serverSupabase() {
   return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_PUBLISHABLE_KEY!, {
@@ -80,31 +81,23 @@ export const Route = createFileRoute("/api/chat")({
                     })),
                   };
                 }
-                const [r, v] = await Promise.all([
-                  supabase
-                    .from("routes")
-                    .select("distance_km,duration_hours")
-                    .or(
-                      `and(from_city.eq.${pickup_city},to_city.eq.${drop_city}),and(from_city.eq.${drop_city},to_city.eq.${pickup_city})`,
-                    )
-                    .maybeSingle(),
-                  supabase.from("vehicles").select("*").eq("is_active", true).order("sort_order"),
-                ]);
-                const oneWay = Number(r.data?.distance_km ?? 200);
-                const mult = trip_type === "round-trip" ? 2 : 1;
-                const distance = oneWay * mult;
-                const allowance = trip_type === "round-trip" ? 300 : 0;
+                // Reuse the booking wizard's pricing (live routing + minimum km slabs)
+                const res = await estimateFare({
+                  data: { pickup_city, drop_city, trip_type },
+                });
+                if ("no_route" in res && res.no_route) {
+                  return { no_route: true, message: res.message, estimates: [] };
+                }
                 return {
                   trip_type,
-                  distance_km: distance,
-                  duration_hours: Number(r.data?.duration_hours ?? distance / 55),
-                  estimates: (v.data ?? []).map((x) => ({
+                  distance_km: Math.round(res.distance_km),
+                  billable_km: "billable_km" in res ? res.billable_km : undefined,
+                  duration_hours: res.duration_hours,
+                  estimates: res.estimates.map((x) => ({
                     name: x.name,
                     category: x.category,
                     seats: x.seats,
-                    fare: Math.round(
-                      Number(x.base_fare) + Number(x.per_km_rate) * distance + allowance,
-                    ),
+                    fare: x.fare,
                   })),
                 };
               },
