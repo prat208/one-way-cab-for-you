@@ -1,6 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /auth
 Disallow: /admin
 Disallow: /admin-signup
 Disallow: /dashboard
