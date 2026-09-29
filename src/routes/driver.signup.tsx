@@ -13,7 +13,11 @@ export const Route = createFileRoute("/driver/signup")({
         content:
           "Register as a driver, add your cab, and start receiving outstation trips across Maharashtra and Goa.",
       },
+      { property: "og:title", content: "Drive with us — ONE WAY CAB" },
+      { property: "og:description", content: "Register as a driver and start receiving outstation trips across Maharashtra and Goa." },
+      { property: "og:url", content: "https://onewaycabstaxi.com/driver/signup" },
     ],
+    links: [{ rel: "canonical", href: "https://onewaycabstaxi.com/driver/signup" }],
   }),
   component: DriverSignup,
 });

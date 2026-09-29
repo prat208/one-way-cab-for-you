@@ -28,8 +28,10 @@ export const Route = createFileRoute("/auth")({
         name: "description",
         content: "Sign in to ONE WAY CAB with Google or a one-time email code.",
       },
-      { name: "robots", content: "noindex" },
+      { property: "og:title", content: "Sign in — ONE WAY CAB" },
+      { property: "og:url", content: "https://onewaycabstaxi.com/auth" },
     ],
+    links: [{ rel: "canonical", href: "https://onewaycabstaxi.com/auth" }],
   }),
   component: AuthPage,
 });
