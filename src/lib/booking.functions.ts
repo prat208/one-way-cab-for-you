@@ -3,7 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import type { Database } from "@/integrations/supabase/types";
 import { dispatch } from "@/lib/notify.server";
-import { billableDistanceKm } from "@/lib/fare";
+import { billableDistanceKm, fixedRouteFare, perKmRate } from "@/lib/fare";
 
 
 function serverSupabase() {
@@ -85,7 +85,7 @@ export const getCityPage = createServerFn({ method: "GET" })
         .order("distance_km"),
       supabase
         .from("vehicles")
-        .select("base_fare,per_km_rate")
+        .select("category,per_km_rate")
         .eq("is_active", true)
         .order("sort_order")
         .limit(1),
@@ -97,10 +97,11 @@ export const getCityPage = createServerFn({ method: "GET" })
         const other = r.from_city === meta.name ? r.to_city : r.from_city;
         const distance = Number(r.distance_km);
         const fare = cheapest
-          ? Math.round(
-              Number(cheapest.base_fare) +
-                Number(cheapest.per_km_rate) * billableDistanceKm(distance),
-            )
+          ? (fixedRouteFare(meta.name, other, cheapest.category) ??
+            Math.round(
+              perKmRate(cheapest.category, Number(cheapest.per_km_rate)) *
+                billableDistanceKm(distance),
+            ))
           : null;
         return {
           to: other,
@@ -207,14 +208,21 @@ export const estimateFare = createServerFn({ method: "POST" })
     // Minimum billable slabs: under 200 km bills at 200 km, 200–300 km bills at 300 km
     const billableKm = billableDistanceKm(distance);
 
-    const estimates = vehicles.map((v) => ({
-      vehicle_id: v.id,
-      name: v.name,
-      category: v.category,
-      seats: v.seats,
-      per_km_rate: Number(v.per_km_rate),
-      fare: Math.round(Number(v.base_fare) + Number(v.per_km_rate) * billableKm + driverAllowance),
-    }));
+    const estimates = vehicles.map((v) => {
+      const rate = perKmRate(v.category, Number(v.per_km_rate));
+      const fixed =
+        data.trip_type === "one-way"
+          ? fixedRouteFare(data.pickup_city, data.drop_city, v.category)
+          : null;
+      return {
+        vehicle_id: v.id,
+        name: v.name,
+        category: v.category,
+        seats: v.seats,
+        per_km_rate: rate,
+        fare: fixed ?? Math.round(rate * billableKm + driverAllowance),
+      };
+    });
 
     return {
       distance_km: distance,
