@@ -499,3 +499,40 @@ export const createBooking = createServerFn({ method: "POST" })
     return { booking_ref: row.booking_ref };
   });
 
+
+export const notifyCabSelected = createServerFn({ method: "POST" })
+  .inputValidator((d) =>
+    z
+      .object({
+        customer_name: z.string().max(100),
+        phone: z.string().max(25),
+        email: z.string().max(255).optional().default(""),
+        pickup_city: z.string().max(200),
+        drop_city: z.string().max(200),
+        pickup_date: z.string().max(20),
+        pickup_time: z.string().max(10).optional().default(""),
+        trip_type: z.string().max(20),
+        vehicle_name: z.string().max(100),
+        fare: z.number().nonnegative().max(1_000_000),
+        distance_km: z.number().nullable().optional(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { sendTelegramText } = await import("@/lib/notify.server");
+    const esc = (s: unknown) =>
+      String(s || "—").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const text =
+      `🟡 <b>Cab selected (booking in progress)</b>\n\n` +
+      `<b>Customer:</b> ${esc(data.customer_name)}\n` +
+      `<b>Phone:</b> ${esc(data.phone)}\n` +
+      `<b>Email:</b> ${esc(data.email)}\n` +
+      `<b>Route:</b> ${esc(data.pickup_city)} → ${esc(data.drop_city)}\n` +
+      `<b>Trip type:</b> ${esc(data.trip_type)}\n` +
+      `<b>Date:</b> ${esc(data.pickup_date)}${data.pickup_time ? ` at ${esc(data.pickup_time)}` : ""}\n` +
+      `<b>Cab:</b> ${esc(data.vehicle_name)}\n` +
+      `<b>Distance:</b> ${data.distance_km != null ? `${Math.round(data.distance_km)} km` : "—"}\n` +
+      `<b>Fare:</b> ₹${data.fare.toLocaleString("en-IN")}`;
+    await sendTelegramText(text);
+    return { ok: true };
+  });

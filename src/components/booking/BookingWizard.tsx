@@ -19,7 +19,7 @@ import {
   MessageSquare,
   PartyPopper,
 } from "lucide-react";
-import { createBooking, estimateFare, getCatalog, validateCoupon } from "@/lib/booking.functions";
+import { createBooking, estimateFare, getCatalog, notifyCabSelected, validateCoupon } from "@/lib/booking.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
 import { PlaceInput } from "@/components/booking/PlaceInput";
@@ -36,7 +36,7 @@ type Estimate = {
 type TripType = "one-way" | "round-trip" | "local";
 type LocalPackage = "4h-40km" | "8h-80km" | "12h-120km";
 
-const STEPS = ["Trip", "Route", "Cab", "You", "Offer", "Confirm"] as const;
+const STEPS = ["Trip", "Route", "You", "Cab", "Offer", "Confirm"] as const;
 
 const TRIPS: { id: TripType; label: string; hint: string; icon: string }[] = [
   { id: "one-way", label: "One Way", hint: "Pay only for one side", icon: "→" },
@@ -77,6 +77,7 @@ export function BookingWizard({
   const runEstimate = useServerFn(estimateFare);
   const runCreate = useServerFn(createBooking);
   const runCoupon = useServerFn(validateCoupon);
+  const runCabAlert = useServerFn(notifyCabSelected);
 
   const [step, setStep] = useState(initialPickup && initialDrop ? 1 : 0);
   const [cities, setCities] = useState<{ name: string }[]>([]);
@@ -228,9 +229,28 @@ export function BookingWizard({
     if (s === 0) return true;
     if (s === 1)
       return tripType === "local" ? !!pickup : pickup && drop && pickup !== drop && !!date;
-    if (s === 2) return !!selected;
-    if (s === 3) return name.trim().length >= 2 && /^[+0-9\s-]{7,20}$/.test(phone);
+    if (s === 3) return !!selected;
+    if (s === 2) return name.trim().length >= 2 && /^[+0-9\s-]{7,20}$/.test(phone);
     return true;
+  }
+
+  function sendCabAlert() {
+    if (!selected) return;
+    runCabAlert({
+      data: {
+        customer_name: name.trim(),
+        phone: phone.trim(),
+        email: email.trim(),
+        pickup_city: pickup,
+        drop_city: tripType === "local" ? pickup : drop,
+        pickup_date: date,
+        pickup_time: time,
+        trip_type: tripType,
+        vehicle_name: selected.name,
+        fare: selected.fare,
+        distance_km: distance ?? null,
+      },
+    }).catch(() => {});
   }
 
   async function confirm() {
@@ -484,7 +504,7 @@ export function BookingWizard({
                 </StepPane>
               )}
 
-              {step === 2 && (
+              {step === 3 && (
                 <StepPane
                   title="Choose your cab"
                   hint={busy ? "Calculating live fares…" : `${estimates.length} options available`}
@@ -543,7 +563,7 @@ export function BookingWizard({
                 </StepPane>
               )}
 
-              {step === 3 && (
+              {step === 2 && (
                 <StepPane title="Your details" hint="We'll call you to confirm">
                   <div className="grid gap-3 sm:grid-cols-2">
                     <Field
@@ -757,7 +777,10 @@ export function BookingWizard({
               <button
                 type="button"
                 disabled={!canProceed(step)}
-                onClick={() => setStep((s) => s + 1)}
+                onClick={() => {
+                  if (step === 3 && selected) sendCabAlert();
+                  setStep((s) => s + 1);
+                }}
                 className="inline-flex items-center gap-1.5 rounded-full btn-gold px-5 py-2 text-xs font-semibold disabled:opacity-40"
               >
                 Continue <ArrowRight className="h-3.5 w-3.5" />

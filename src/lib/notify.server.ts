@@ -453,3 +453,19 @@ export async function dispatch(event: NotificationEvent): Promise<void> {
     ),
   );
 }
+
+export async function sendTelegramText(text: string): Promise<void> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+  if (!botToken || !chatId) return;
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML", disable_web_page_preview: true }),
+    });
+    if (!res.ok) console.error(`[notify:telegram] ${res.status}: ${await res.text()}`);
+  } catch (e) {
+    console.error("[notify:telegram]", e);
+  }
+}
