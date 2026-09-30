@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Nav } from "@/components/landing/Nav";
 import { BookingWizard } from "@/components/booking/BookingWizard";
-import { AssistantPanel } from "@/components/chat/AssistantPanel";
 import { BackHome } from "@/components/BackHome";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyLead } from "@/lib/leads.functions";
@@ -120,9 +119,8 @@ function CustomerHub() {
         )}
 
         {tab === "book" ? (
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
+          <div className="mx-auto max-w-3xl">
             <BookingWizard />
-            <AssistantPanel />
           </div>
         ) : (
           <div className="space-y-3">
