@@ -2,12 +2,12 @@
 
 > Premium outstation cab booking across Maharashtra — transparent one-way fares, verified chauffeurs, 24×7 support.
 
-ONE WAY CAB offers outstation, one-way and round-trip cab bookings from Pune, Mumbai, Kolhapur and Nashik to destinations across Maharashtra and neighbouring states. Live fare calculator, instant WhatsApp booking, and AI concierge on the booking page.
+ONE WAY CAB offers outstation, one-way and round-trip cab bookings from Pune, Mumbai, Kolhapur and Nashik to destinations across Maharashtra and neighbouring states. Live fare calculator, instant WhatsApp booking.
 
 ## Pages
 
 - [Home](/): Overview, fleet, popular routes and booking widget.
-- [Book a cab](/book): Multi-step booking wizard with live fares and AI concierge.
+- [Book a cab](/book): Multi-step booking wizard with live fares.
 - [Fare calculator & rate card](/rates): Live fare calculator for any Maharashtra route and fixed rates for popular routes.
 
 ## Cities

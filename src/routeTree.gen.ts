@@ -20,7 +20,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TrackRefRouteImport } from './routes/track.$ref'
 import { Route as DriverSignupRouteImport } from './routes/driver.signup'
 import { Route as CitySlugRouteImport } from './routes/city.$slug'
-import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedLeadRouteImport } from './routes/_authenticated/lead'
 import { Route as AuthenticatedDriverRouteImport } from './routes/_authenticated/driver'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -85,11 +84,6 @@ const DriverSignupRoute = DriverSignupRouteImport.update({
 const CitySlugRoute = CitySlugRouteImport.update({
   id: '/city/$slug',
   path: '/city/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiChatRoute = ApiChatRouteImport.update({
-  id: '/api/chat',
-  path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedLeadRoute = AuthenticatedLeadRouteImport.update({
@@ -167,7 +161,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/lead': typeof AuthenticatedLeadRoute
-  '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
   '/driver/signup': typeof DriverSignupRoute
   '/track/$ref': typeof TrackRefRoute
@@ -191,7 +184,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/driver': typeof AuthenticatedDriverRoute
   '/lead': typeof AuthenticatedLeadRoute
-  '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
   '/driver/signup': typeof DriverSignupRoute
   '/track/$ref': typeof TrackRefRoute
@@ -217,7 +209,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/driver': typeof AuthenticatedDriverRoute
   '/_authenticated/lead': typeof AuthenticatedLeadRoute
-  '/api/chat': typeof ApiChatRoute
   '/city/$slug': typeof CitySlugRoute
   '/driver/signup': typeof DriverSignupRoute
   '/track/$ref': typeof TrackRefRoute
@@ -243,7 +234,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/driver'
     | '/lead'
-    | '/api/chat'
     | '/city/$slug'
     | '/driver/signup'
     | '/track/$ref'
@@ -267,7 +257,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/driver'
     | '/lead'
-    | '/api/chat'
     | '/city/$slug'
     | '/driver/signup'
     | '/track/$ref'
@@ -292,7 +281,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/driver'
     | '/_authenticated/lead'
-    | '/api/chat'
     | '/city/$slug'
     | '/driver/signup'
     | '/track/$ref'
@@ -312,7 +300,6 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
-  ApiChatRoute: typeof ApiChatRoute
   CitySlugRoute: typeof CitySlugRoute
   DriverSignupRoute: typeof DriverSignupRoute
   TrackRefRoute: typeof TrackRefRoute
@@ -397,13 +384,6 @@ declare module '@tanstack/react-router' {
       path: '/city/$slug'
       fullPath: '/city/$slug'
       preLoaderRoute: typeof CitySlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/chat': {
-      id: '/api/chat'
-      path: '/api/chat'
-      fullPath: '/api/chat'
-      preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/lead': {
@@ -530,7 +510,6 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
-  ApiChatRoute: ApiChatRoute,
   CitySlugRoute: CitySlugRoute,
   DriverSignupRoute: DriverSignupRoute,
   TrackRefRoute: TrackRefRoute,
