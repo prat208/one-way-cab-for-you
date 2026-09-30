@@ -2,7 +2,6 @@ import { createFileRoute, Link, useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { Nav } from "@/components/landing/Nav";
 import { BookingWizard } from "@/components/booking/BookingWizard";
-import { AssistantPanel } from "@/components/chat/AssistantPanel";
 
 const searchSchema = z.object({
   pickup: z.string().optional(),
@@ -53,8 +52,7 @@ function BookPage() {
               Modern booking, in five steps
             </h1>
             <p className="mt-1 max-w-xl text-sm text-muted-foreground">
-              Fill the wizard on the left, or ask <b>Aura</b> — our AI concierge — on the right to
-              price your trip or pick the best cab.
+              Pick your route, choose a cab and confirm — live fares at every step.
             </p>
           </div>
           <Link to="/" className="text-xs text-muted-foreground hover:text-foreground">
@@ -62,9 +60,8 @@ function BookPage() {
           </Link>
         </header>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(340px,420px)]">
+        <div className="mx-auto max-w-3xl">
           <BookingWizard {...prefill} initialPickup={prefill.pickup} initialDrop={prefill.drop} />
-          <AssistantPanel />
         </div>
       </main>
     </div>
